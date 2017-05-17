@@ -52,6 +52,7 @@ namespace RandomizerSharp
 
         /* @formatter:on */
 
+        // ReSharper disable once UnusedParameter.Local
         private MiscTweak(int value, string tweakId, int priority)
         {
             Value = value;
@@ -61,8 +62,10 @@ namespace RandomizerSharp
 
         public int Value { get; }
 
+        // ReSharper disable once UnassignedGetOnlyAutoProperty
         public string TweakName { get; }
 
+        // ReSharper disable once UnassignedGetOnlyAutoProperty
         public string TooltipText { get; }
 
         public int CompareTo(MiscTweak o)

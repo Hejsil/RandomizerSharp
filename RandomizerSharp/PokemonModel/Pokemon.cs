@@ -71,14 +71,14 @@ namespace RandomizerSharp.PokemonModel
         public int GuaranteedHeldItem, CommonHeldItem, RareHeldItem, DarkGrassHeldItem;
         public int Hp, Attack, Defense, Spatk, Spdef, Speed, Special;
         public string Name;
-        public int Id;
+        public readonly int Id;
         public Typing PrimaryType, SecondaryType;
-        public IList<int> ShuffledStatsOrder;
+        public IList<int> ShuffledStatsOrder = new List<int> {0, 1, 2, 3, 4, 5};
         public bool TemporaryFlag;
 
-        public Pokemon()
+        public Pokemon(int id)
         {
-            ShuffledStatsOrder = new List<int> {0, 1, 2, 3, 4, 5};
+            Id = id;
         }
 
         public bool Legendary => Legendaries.Contains(Id);
@@ -127,23 +127,45 @@ namespace RandomizerSharp.PokemonModel
 
         public override string ToString()
         {
-            return "Pokemon [name=" + Name + ", number=" + Id + ", primaryType=" + PrimaryType +
-                   ", secondaryType=" + SecondaryType + ", hp=" + Hp + ", attack=" + Attack + ", defense=" + Defense +
-                   ", spatk=" + Spatk + ", spdef=" + Spdef + ", speed=" + Speed + "]";
+            return 
+                $"Pokemon[" +
+                $"name={Name}, " +
+                $"number={Id}, " +
+                $"primaryType={PrimaryType}, " +
+                $"secondaryType={SecondaryType}, " +
+                $"hp={Hp}, " +
+                $"attack={Attack}, " +
+                $"defense={Defense}, " +
+                $"spatk={Spatk}, " +
+                $"spdef={Spdef}, " +
+                $"speed={Speed}" +
+                $"]";
         }
 
         public string ToStringRby()
         {
-            return "Pokemon [name=" + Name + ", number=" + Id + ", primaryType=" + PrimaryType +
-                   ", secondaryType=" + SecondaryType + ", hp=" + Hp + ", attack=" + Attack + ", defense=" + Defense +
-                   ", special=" + Special + ", speed=" + Speed + "]";
+            return
+                $"Pokemon[" +
+                $"name={Name}, " +
+                $"number={Id}, " +
+                $"primaryType={PrimaryType}, " +
+                $"secondaryType={SecondaryType}, " +
+                $"hp={Hp}, " +
+                $"attack={Attack}, " +
+                $"defense={Defense}, " +
+                $"special={Special}, " +
+                $"speed={Speed}" +
+                $"]";
         }
 
         public override int GetHashCode()
         {
             const int prime = 31;
             var result = 1;
+
+            // ReSharper disable once NonReadonlyMemberInGetHashCode
             result = prime * result + Id;
+
             return result;
         }
 

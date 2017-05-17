@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 
 namespace RandomizerSharp.NDS
 {
@@ -13,31 +12,44 @@ namespace RandomizerSharp.NDS
         private const int RawMaxim = 0x00FFFFFF;
         private const int BlzMaxim = 0x01400000;
 
-
-        public static void Exit(string text)
+        public static ArraySlice<byte> Decode(ArraySlice<byte> data, string reference)
         {
-            Console.Write(text);
-            Environment.Exit(0);
+            var bytes = new byte[data.Length];
+            data.CopyTo(bytes, 0);
+
+            var (result, resultLength) = BLZ_Decode(bytes);
+
+            var retbuf = new byte[resultLength];
+            for (var i = 0; i < resultLength; i++)
+                retbuf[i] = (byte)result[i];
+
+            return retbuf;
         }
 
-        public static byte[] BLZ_DecodePub(byte[] data, string reference)
+        public static ArraySlice<byte> Encode(ArraySlice<byte> data, bool arm9, string reference)
         {
-            var result = BLZ_Decode(data);
-            if (result != null)
-            {
-                var retbuf = new byte[result.Length];
-                for (var i = 0; i < result.Length; i++)
-                    retbuf[i] = (byte) result.Buffer[i];
-                return retbuf;
-            }
-            return null;
+            var bytes = new byte[data.Length];
+            data.CopyTo(bytes, 0);
+
+            Console.Write(@"- encoding '{0}' (memory)", reference);
+            var startTime = DateTime.Now;
+            var (result, resultLength) = BLZ_Encode(bytes, arm9);
+
+            Console.Write(@" - done, time=" + (DateTime.Now - startTime).TotalMilliseconds + @"ms");
+            Console.WriteLine();
+
+            var retbuf = new byte[resultLength];
+            for (var i = 0; i < resultLength; i++)
+                retbuf[i] = (byte)result[i];
+
+            return retbuf;
         }
 
-        private static BlzResult BLZ_Decode(byte[] data)
+        private static (int[], int) BLZ_Decode(byte[] data)
         {
             int rawLen, len;
             int decLen;
-            int flags = 0;
+            var flags = 0;
             var pakBuffer = PrepareData(data);
             var pakLen = pakBuffer.Length - 3;
             var incLen = ReadUnsigned(pakBuffer, pakLen - 4);
@@ -52,19 +64,16 @@ namespace RandomizerSharp.NDS
             {
                 if (pakLen < 8)
                 {
-                    Exit("\nFile has a bad header\n");
-                    return null;
+                    throw new NotImplementedException("\nFile has a bad header\n");
                 }
                 var hdrLen = pakBuffer[pakLen - 5];
                 if (hdrLen < 8 || hdrLen > 0xB)
                 {
-                    Exit("\nBad header length\n");
-                    return null;
+                    throw new NotImplementedException("\nBad header length\n");
                 }
                 if (pakLen <= hdrLen)
                 {
-                    Exit("\nBad length\n");
-                    return null;
+                    throw new NotImplementedException("\nBad length\n");
                 }
                 var encLen = ReadUnsigned(pakBuffer, pakLen - 8) & 0x00FFFFFF;
                 decLen = pakLen - encLen;
@@ -72,8 +81,7 @@ namespace RandomizerSharp.NDS
                 rawLen = decLen + encLen + incLen;
                 if (rawLen > RawMaxim)
                 {
-                    Exit("\nBad decoded length\n");
-                    return null;
+                    throw new NotImplementedException("\nBad decoded length\n");
                 }
             }
             var rawBuffer = new int[rawLen];
@@ -124,7 +132,7 @@ namespace RandomizerSharp.NDS
             rawLen = raw;
             if (raw != rawEnd)
                 Console.Write(@", WARNING: unexpected end of encoded file!");
-            return new BlzResult(rawBuffer, rawLen);
+            return (rawBuffer, rawLen);
         }
 
         private static int[] PrepareData(byte[] data)
@@ -150,25 +158,7 @@ namespace RandomizerSharp.NDS
             buffer[offset + 3] = (value >> 24) & 0x7F;
         }
 
-        public static byte[] BLZ_EncodePub(byte[] data, bool arm9, string reference)
-        {
-
-            Console.Write(@"- encoding '{0}' (memory)", reference);
-            var startTime = DateTimeHelperClass.CurrentUnixTimeMillis();
-            var result = BLZ_Encode(data, arm9);
-            Console.Write(@" - done, time=" + (DateTimeHelperClass.CurrentUnixTimeMillis() - startTime) + @"ms");
-            Console.WriteLine();
-            if (result != null)
-            {
-                var retbuf = new byte[result.Length];
-                for (var i = 0; i < result.Length; i++)
-                    retbuf[i] = (byte) result.Buffer[i];
-                return retbuf;
-            }
-            return null;
-        }
-
-        private static BlzResult BLZ_Encode(byte[] data, bool arm9)
+        private static (int[], int) BLZ_Encode(byte[] data, bool arm9)
         {
             var rawBuffer = PrepareData(data);
             var rawLen = rawBuffer.Length - 3;
@@ -176,11 +166,11 @@ namespace RandomizerSharp.NDS
             var (newBuffer, newlen) = BLZ_Code(rawBuffer, rawLen, arm9);
 
             if (newlen >= pakLen)
-                return new BlzResult(null, pakLen);
+                return (null, pakLen);
 
             var pakBuffer = newBuffer;
             pakLen = newlen;
-            return new BlzResult(pakBuffer, pakLen);
+            return (pakBuffer, pakLen);
         }
 
         private static (int[], int) BLZ_Code(int[] rawBuffer, int rawLen, bool arm9)
@@ -211,31 +201,8 @@ namespace RandomizerSharp.NDS
                     mask = BlzMask;
                 }
 
-                var tempBestPos = bestPosition;
-                var tempBestLength = BlzThreshold;
-
-                var max = raw >= BlzN ? BlzN : raw;
-                for (var pos = 3; pos <= max; pos++)
-                {
-                    var length = 0;
-                    for (; length < BlzF; length++)
-                    {
-                        if (raw + length == rawEnd || length >= pos || rawBuffer[raw + length] != rawBuffer[raw + length - pos])
-                            break;
-                    }
-
-                    if (length <= tempBestLength)
-                        continue;
-
-                    tempBestPos = pos;
-                    tempBestLength = length;
-
-                    if (tempBestLength == BlzF)
-                        break;
-                }
-
-                var lenBest1 = tempBestLength;
-                bestPosition = tempBestPos;
+                int lenBest1;
+                (bestPosition, lenBest1) = Search(bestPosition, raw, rawEnd, rawBuffer);
 
                 pakBuffer[flag] = pakBuffer[flag] << 1;
 
@@ -307,6 +274,36 @@ namespace RandomizerSharp.NDS
 
             return (pakBuffer, pak);
         }
+        
+        private static (int, int) Search(int bestPosition, int raw, int rawEnd, int[] rawBuffer)
+        {
+            var tempBestLength = BlzThreshold;
+
+            var max = raw >= BlzN ? BlzN : raw;
+            for (var pos = 3; pos <= max; pos++)
+            {
+                var length = 0;
+                for (; 
+                    length < BlzF && 
+                    raw + length != rawEnd && 
+                    length < pos && 
+                    rawBuffer[raw + length] == rawBuffer[raw + length - pos]; 
+                    length++)
+                {
+                }
+
+                if (length <= tempBestLength)
+                    continue;
+
+                bestPosition = pos;
+                tempBestLength = length;
+
+                if (tempBestLength == BlzF)
+                    break;
+            }
+
+            return (bestPosition, tempBestLength);
+        }
 
         private static void BLZ_Invert(int[] buffer, int offset, int length)
         {
@@ -317,36 +314,6 @@ namespace RandomizerSharp.NDS
                 buffer[offset++] = buffer[bottom];
                 buffer[bottom--] = ch;
             }
-        }
-
-        private class BlzResult
-        {
-            public readonly int[] Buffer;
-            public readonly int Length;
-
-            public BlzResult(int[] rawBuffer, int rawLen)
-            {
-                Buffer = rawBuffer;
-                Length = rawLen;
-            }
-        }
-    }
-
-//---------------------------------------------------------------------------------------------------------
-//	Copyright © 2007 - 2017 Tangible Software Solutions Inc.
-//	This class can be used by anyone provided that the copyright notice remains intact.
-//
-//	This class is used to replace calls to Java's System.currentTimeMillis with the C# equivalent.
-//	Unix time is defined as the number of seconds that have elapsed since midnight UTC, 1 January 1970.
-//---------------------------------------------------------------------------------------------------------
-    internal static class DateTimeHelperClass
-    {
-        private static readonly DateTime Jan1St1970 =
-            new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
-        internal static long CurrentUnixTimeMillis()
-        {
-            return (long) (DateTime.UtcNow - Jan1St1970).TotalMilliseconds;
         }
     }
 }

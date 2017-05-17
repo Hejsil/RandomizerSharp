@@ -89,40 +89,141 @@ namespace RandomizerSharp.Constants
 
         public static readonly byte[] Bw1NewStarterScript =
         {
-            0x24, 0x00, 0xA7, 0x02, 0xE7, 0x00, 0x00, 0x00,
-            0xDE, 0x00, 0x00, 0x00, 0xF8, 0x01, 0x05, 0x00
+            0x24,
+            0x00,
+            0xA7,
+            0x02,
+            0xE7,
+            0x00,
+            0x00,
+            0x00,
+            0xDE,
+            0x00,
+            0x00,
+            0x00,
+            0xF8,
+            0x01,
+            0x05,
+            0x00
         };
 
         public static readonly byte[] Bw2NewStarterScript =
         {
-            0x28, 0x00, 0xA1, 0x40, 0x04, 0x00, 0xDE,
-            0x00, 0x00, 0x00, 0xFD, 0x01, 0x05, 0x00
+            0x28,
+            0x00,
+            0xA1,
+            0x40,
+            0x04,
+            0x00,
+            0xDE,
+            0x00,
+            0x00,
+            0x00,
+            0xFD,
+            0x01,
+            0x05,
+            0x00
         };
 
-        public static readonly int[] EncountersOfEachType = {12, 12, 12, 5, 5, 5, 5};
+        public static readonly int[] EncountersOfEachType = { 12, 12, 12, 5, 5, 5, 5 };
 
         public static readonly string[] EncounterTypeNames =
         {
-            "Grass/Cave", "Doubles Grass", "Shaking Spots", "Surfing",
-            "Surfing Spots", "Fishing", "Fishing Spots"
+            "Grass/Cave",
+            "Doubles Grass",
+            "Shaking Spots",
+            "Surfing",
+            "Surfing Spots",
+            "Fishing",
+            "Fishing Spots"
         };
 
-        public static readonly int[] HabitatClassificationOfEachType = {0, 0, 0, 1, 1, 2, 2};
+        public static readonly int[] HabitatClassificationOfEachType = { 0, 0, 0, 1, 1, 2, 2 };
 
         public static readonly int[] Bw2HiddenHollowUnovaPokemon =
         {
-            505, 507, 510, 511, 513, 515, 519, 523, 525, 527, 529,
-            531, 533, 535, 538, 539, 542, 545, 546, 548, 550, 553, 556, 558, 559, 561, 564, 569, 572, 575, 578, 580,
-            583, 587, 588, 594, 596, 601, 605, 607, 610, 613, 616, 618, 619, 621, 622, 624, 626, 628, 630, 631, 632
+            505,
+            507,
+            510,
+            511,
+            513,
+            515,
+            519,
+            523,
+            525,
+            527,
+            529,
+            531,
+            533,
+            535,
+            538,
+            539,
+            542,
+            545,
+            546,
+            548,
+            550,
+            553,
+            556,
+            558,
+            559,
+            561,
+            564,
+            569,
+            572,
+            575,
+            578,
+            580,
+            583,
+            587,
+            588,
+            594,
+            596,
+            601,
+            605,
+            607,
+            610,
+            613,
+            616,
+            618,
+            619,
+            621,
+            622,
+            624,
+            626,
+            628,
+            630,
+            631,
+            632
         };
 
         public static readonly MoveCategory[] MoveCategoryIndices =
         {
-            MoveCategory.Status, MoveCategory.Physical,
+            MoveCategory.Status,
+            MoveCategory.Physical,
             MoveCategory.Special
         };
 
-        public static readonly ArraySlice<Typing> TypeTable = ConstructTypeTable();
+        public static readonly ArraySlice<Typing> TypeTable = new[]
+        {
+            Typing.Normal,
+            Typing.Fighting,
+            Typing.Flying,
+            Typing.Poison,
+            Typing.Ground,
+            Typing.Rock,
+            Typing.Bug,
+            Typing.Ghost,
+            Typing.Steel,
+            Typing.Fire,
+            Typing.Water,
+            Typing.Grass,
+            Typing.Electric,
+            Typing.Psychic,
+            Typing.Ice,
+            Typing.Dragon,
+            Typing.Dark
+        };
 
         public static readonly ArraySlice<int> Bw1RequiredFieldTMs = new[]
         {
@@ -209,77 +310,74 @@ namespace RandomizerSharp.Constants
             93
         };
 
-        public static readonly ArraySlice<int> Bw1EarlyRequiredHmMoves = new [] {15};
+        public static readonly ArraySlice<int> Bw1EarlyRequiredHmMoves = new[] { 15 };
         public static readonly ArraySlice<int> Bw2EarlyRequiredHmMoves = new int[0];
-        public static readonly ArraySlice<int> FieldMoves = new [] {15, 19, 57, 70, 148, 91, 100, 127, 230, 291};
+        public static readonly ArraySlice<int> FieldMoves = new[] { 15, 19, 57, 70, 148, 91, 100, 127, 230, 291 };
 
-        public static ItemList AllowedItems, NonBadItems;
-
-/* @formatter:off */
-
+        // ReSharper disable once UnusedMember.Local
         private static readonly int[][] HabitatListEntries =
         {
-            new[] {104, 105}, // Route 4
-            new[] {124}, // Route 15
-            new[] {134}, // Route 21
-            new[] {84, 85, 86}, // Clay Tunnel
-            new[] {23, 24, 25, 26}, // Twist Mountain
-            new[] {97}, // Village Bridge
-            new[] {27, 28, 29, 30}, // Dragonspiral Tower
-            new[] {81, 82, 83}, // Relic Passage
-            new[] {106}, // Route 5*
-            new[] {125}, // Route 16*
-            new[] {98}, // Marvelous Bridge
-            new[] {123}, // Abundant Shrine
-            new[] {132}, // Undella Town
-            new[] {107}, // Route 6
-            new[] {43}, // Undella Bay
-            new[] {102, 103}, // Wellspring Cave
-            new[] {95}, // Nature Preserve
-            new[] {127}, // Route 18
-            new[] {32, 33, 34, 35, 36}, // Giant Chasm
-            new[] {111}, // Route 7
-            new[] {31, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80}, // Victory Road
-            new[] {12, 13, 14, 15, 16, 17, 18, 19}, // Relic Castle
-            new[] {0}, // Striation City
-            new[] {128}, // Route 19
-            new[] {3}, // Aspertia City
-            new[] {116}, // Route 8*
-            new[] {44, 45}, // Floccesy Ranch
-            new[] {61, 62, 63, 64, 65, 66, 67, 68, 69, 70}, // Strange House
-            new[] {129}, // Route 20
-            new[] {4}, // Virbank City
-            new[] {37, 38, 39, 40, 41}, // Castelia Sewers
-            new[] {118}, // Route 9
-            new[] {46, 47}, // Virbank Complex
-            new[] {42}, // P2 Laboratory
-            new[] {1}, // Castelia City
-            new[] {8, 9}, // Pinwheel Forest
-            new[] {5}, // Humilau City
-            new[] {48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60}, // Reversal Mountain
-            new[] {6, 7}, // Dreamyard
-            new[] {112, 113, 114, 115}, // Celestial Tower
-            new[] {130}, // Route 22
-            new[] {10, 11}, // Desert Resort
-            new[] {119}, // Route 11
-            new[] {133}, // Route 17
-            new[] {99}, // Route 1
-            new[] {131}, // Route 23
-            new[] {2}, // Icirrus City*
-            new[] {120}, // Route 12
-            new[] {100}, // Route 2
-            new[] {108, 109}, // Mistralton Cave
-            new[] {121}, // Route 13
-            new[] {101}, // Route 3
-            new[] {117}, // Moor of Icirrus*
-            new[] {96}, // Driftveil Drawbridge
-            new[] {93, 94}, // Seaside Cave
-            new[] {126}, // Lostlorn Forest
-            new[] {122}, // Route 14
-            new[] {20, 21, 22} // Chargestone Cave
+            new[] { 104, 105 }, // Route 4
+            new[] { 124 }, // Route 15
+            new[] { 134 }, // Route 21
+            new[] { 84, 85, 86 }, // Clay Tunnel
+            new[] { 23, 24, 25, 26 }, // Twist Mountain
+            new[] { 97 }, // Village Bridge
+            new[] { 27, 28, 29, 30 }, // Dragonspiral Tower
+            new[] { 81, 82, 83 }, // Relic Passage
+            new[] { 106 }, // Route 5*
+            new[] { 125 }, // Route 16*
+            new[] { 98 }, // Marvelous Bridge
+            new[] { 123 }, // Abundant Shrine
+            new[] { 132 }, // Undella Town
+            new[] { 107 }, // Route 6
+            new[] { 43 }, // Undella Bay
+            new[] { 102, 103 }, // Wellspring Cave
+            new[] { 95 }, // Nature Preserve
+            new[] { 127 }, // Route 18
+            new[] { 32, 33, 34, 35, 36 }, // Giant Chasm
+            new[] { 111 }, // Route 7
+            new[] { 31, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80 }, // Victory Road
+            new[] { 12, 13, 14, 15, 16, 17, 18, 19 }, // Relic Castle
+            new[] { 0 }, // Striation City
+            new[] { 128 }, // Route 19
+            new[] { 3 }, // Aspertia City
+            new[] { 116 }, // Route 8*
+            new[] { 44, 45 }, // Floccesy Ranch
+            new[] { 61, 62, 63, 64, 65, 66, 67, 68, 69, 70 }, // Strange House
+            new[] { 129 }, // Route 20
+            new[] { 4 }, // Virbank City
+            new[] { 37, 38, 39, 40, 41 }, // Castelia Sewers
+            new[] { 118 }, // Route 9
+            new[] { 46, 47 }, // Virbank Complex
+            new[] { 42 }, // P2 Laboratory
+            new[] { 1 }, // Castelia City
+            new[] { 8, 9 }, // Pinwheel Forest
+            new[] { 5 }, // Humilau City
+            new[] { 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60 }, // Reversal Mountain
+            new[] { 6, 7 }, // Dreamyard
+            new[] { 112, 113, 114, 115 }, // Celestial Tower
+            new[] { 130 }, // Route 22
+            new[] { 10, 11 }, // Desert Resort
+            new[] { 119 }, // Route 11
+            new[] { 133 }, // Route 17
+            new[] { 99 }, // Route 1
+            new[] { 131 }, // Route 23
+            new[] { 2 }, // Icirrus City*
+            new[] { 120 }, // Route 12
+            new[] { 100 }, // Route 2
+            new[] { 108, 109 }, // Mistralton Cave
+            new[] { 121 }, // Route 13
+            new[] { 101 }, // Route 3
+            new[] { 117 }, // Moor of Icirrus*
+            new[] { 96 }, // Driftveil Drawbridge
+            new[] { 93, 94 }, // Seaside Cave
+            new[] { 126 }, // Lostlorn Forest
+            new[] { 122 }, // Route 14
+            new[] { 20, 21, 22 } // Chargestone Cave
         };
 
-        public static readonly ArraySlice<int> WildFileToAreaMap = new []
+        public static readonly ArraySlice<int> WildFileToAreaMap = new[]
         {
             2,
             4,
@@ -287,26 +385,95 @@ namespace RandomizerSharp.Constants
             59,
             61,
             63,
-            19, 19,
-            20, 20,
-            21, 21,
-            22, 22, 22, 22, 22, 22, 22, 22,
-            24, 24, 24,
-            25, 25, 25, 25,
-            26, 26, 26, 26,
+            19,
+            19,
+            20,
+            20,
+            21,
+            21,
+            22,
+            22,
+            22,
+            22,
+            22,
+            22,
+            22,
+            22,
+            24,
+            24,
+            24,
+            25,
+            25,
+            25,
+            25,
+            26,
+            26,
+            26,
+            26,
             76,
-            27, 27, 27, 27, 27,
-            70, 70, 70, 70, 70,
+            27,
+            27,
+            27,
+            27,
+            27,
+            70,
+            70,
+            70,
+            70,
+            70,
             29,
             35,
-            71, 71,
-            72, 72,
-            73, 73, 73, 73, 73, 73, 73, 73, 73, 73, 73, 73, 73,
-            74, 74, 74, 74, 74, 74, 74, 74, 74, 74,
-            76, 76, 76, 76, 76, 76, 76, 76, 76, 76,
-            77, 77, 77,
-            79, 79, 79, 79, 79, 79, 79, 79, 79,
-            78, 78,
+            71,
+            71,
+            72,
+            72,
+            73,
+            73,
+            73,
+            73,
+            73,
+            73,
+            73,
+            73,
+            73,
+            73,
+            73,
+            73,
+            73,
+            74,
+            74,
+            74,
+            74,
+            74,
+            74,
+            74,
+            74,
+            74,
+            74,
+            76,
+            76,
+            76,
+            76,
+            76,
+            76,
+            76,
+            76,
+            76,
+            76,
+            77,
+            77,
+            77,
+            79,
+            79,
+            79,
+            79,
+            79,
+            79,
+            79,
+            79,
+            79,
+            78,
+            78,
             -1, // Nature Preserve (not on map)
             55,
             57,
@@ -314,13 +481,20 @@ namespace RandomizerSharp.Constants
             37,
             38,
             39,
-            30, 30,
-            40, 40,
+            30,
+            30,
+            40,
+            40,
             41,
             42,
-            31, 31, 31,
+            31,
+            31,
+            31,
             43,
-            32, 32, 32, 32,
+            32,
+            32,
+            32,
+            32,
             44,
             33,
             45,
@@ -342,113 +516,30 @@ namespace RandomizerSharp.Constants
             68
         };
 
+        private static readonly ItemList AllowedItems1;
+        private static readonly ItemList NonBadItems1;
+
         static Gen5Constants()
         {
-            SetupAllowedItems();
-        }
-
-        public static byte MoveCategoryToByte(MoveCategory cat)
-        {
-            switch (cat)
-            {
-                case MoveCategory.Physical:
-                    return 1;
-                case MoveCategory.Special:
-                    return 2;
-                case MoveCategory.Status:
-                    return 0;
-                default:
-                    return 0;
-            }
-        }
-
-        private static Typing[] ConstructTypeTable()
-        {
-            var table = new Typing[256];
-            table[0x00] = Typing.Normal;
-            table[0x01] = Typing.Fighting;
-            table[0x02] = Typing.Flying;
-            table[0x03] = Typing.Poison;
-            table[0x04] = Typing.Ground;
-            table[0x05] = Typing.Rock;
-            table[0x06] = Typing.Bug;
-            table[0x07] = Typing.Ghost;
-            table[0x08] = Typing.Steel;
-            table[0x09] = Typing.Fire;
-            table[0x0A] = Typing.Water;
-            table[0x0B] = Typing.Grass;
-            table[0x0C] = Typing.Electric;
-            table[0x0D] = Typing.Psychic;
-            table[0x0E] = Typing.Ice;
-            table[0x0F] = Typing.Dragon;
-            table[0x10] = Typing.Dark;
-            return table;
-        }
-
-        public static byte TypeToByte(Typing type)
-        {
-            switch (type.InnerEnumValue)
-            {
-                case Typing.InnerEnum.Normal:
-                    return 0x00;
-                case Typing.InnerEnum.Fighting:
-                    return 0x01;
-                case Typing.InnerEnum.Flying:
-                    return 0x02;
-                case Typing.InnerEnum.Poison:
-                    return 0x03;
-                case Typing.InnerEnum.Ground:
-                    return 0x04;
-                case Typing.InnerEnum.Rock:
-                    return 0x05;
-                case Typing.InnerEnum.Bug:
-                    return 0x06;
-                case Typing.InnerEnum.Ghost:
-                    return 0x07;
-                case Typing.InnerEnum.Fire:
-                    return 0x09;
-                case Typing.InnerEnum.Water:
-                    return 0x0A;
-                case Typing.InnerEnum.Grass:
-                    return 0x0B;
-                case Typing.InnerEnum.Electric:
-                    return 0x0C;
-                case Typing.InnerEnum.Psychic:
-                    return 0x0D;
-                case Typing.InnerEnum.Ice:
-                    return 0x0E;
-                case Typing.InnerEnum.Dragon:
-                    return 0x0F;
-                case Typing.InnerEnum.Steel:
-                    return 0x08;
-                case Typing.InnerEnum.Dark:
-                    return 0x10;
-                default:
-                    return 0; // normal by default
-            }
-        }
-
-        private static void SetupAllowedItems()
-        {
-            AllowedItems = new ItemList(638);
-// Key items + version exclusives
+            AllowedItems1 = new ItemList(638);
+            // Key items + version exclusives
             AllowedItems.BanRange(428, 109);
             AllowedItems.BanRange(621, 18);
             AllowedItems.BanSingles(574, 578, 579, 616, 617);
-// Unknown blank items or version exclusives
+            // Unknown blank items or version exclusives
             AllowedItems.BanRange(113, 3);
             AllowedItems.BanRange(120, 14);
-// TMs & HMs - tms cant be held in gen5
+            // TMs & HMs - tms cant be held in gen5
             AllowedItems.TmRange(328, 92);
             AllowedItems.TmRange(618, 3);
             AllowedItems.BanRange(328, 100);
             AllowedItems.BanRange(618, 3);
-// Battle Launcher exclusives
+            // Battle Launcher exclusives
             AllowedItems.BanRange(592, 24);
 
-// non-bad items
-// ban specific pokemon hold items, berries, apricorns, mail
-            NonBadItems = AllowedItems.Copy();
+            // non-bad items
+            // ban specific pokemon hold items, berries, apricorns, mail
+            NonBadItems1 = AllowedItems.Copy();
             NonBadItems.BanSingles(0x6F, 0x70, 0xEC, 0x9B);
             NonBadItems.BanRange(0x5F, 4); // mulch
             NonBadItems.BanRange(0x87, 2); // orbs
@@ -458,15 +549,54 @@ namespace RandomizerSharp.Constants
             NonBadItems.BanRange(0x104, 5); // contest scarves
         }
 
-/* @formatter:on */
+        public static ItemList AllowedItems => AllowedItems1.Copy();
+        public static ItemList NonBadItems => NonBadItems1.Copy();
+
+        public static byte MoveCategoryToByte(MoveCategory cat)
+        {
+            switch (cat)
+            {
+                case MoveCategory.Physical: return 1;
+                case MoveCategory.Special: return 2;
+                case MoveCategory.Status: return 0;
+                default: return 0;
+            }
+        }
+
+        public static byte TypeToByte(Typing type)
+        {
+            switch (type.InnerEnumValue)
+            {
+                case Typing.InnerEnum.Normal: return 0x00;
+                case Typing.InnerEnum.Fighting: return 0x01;
+                case Typing.InnerEnum.Flying: return 0x02;
+                case Typing.InnerEnum.Poison: return 0x03;
+                case Typing.InnerEnum.Ground: return 0x04;
+                case Typing.InnerEnum.Rock: return 0x05;
+                case Typing.InnerEnum.Bug: return 0x06;
+                case Typing.InnerEnum.Ghost: return 0x07;
+                case Typing.InnerEnum.Fire: return 0x09;
+                case Typing.InnerEnum.Water: return 0x0A;
+                case Typing.InnerEnum.Grass: return 0x0B;
+                case Typing.InnerEnum.Electric: return 0x0C;
+                case Typing.InnerEnum.Psychic: return 0x0D;
+                case Typing.InnerEnum.Ice: return 0x0E;
+                case Typing.InnerEnum.Dragon: return 0x0F;
+                case Typing.InnerEnum.Steel: return 0x08;
+                case Typing.InnerEnum.Dark: return 0x10;
+                default: return 0; // normal by default
+            }
+        }
+
+        /* @formatter:on */
         public static void TagTrainersBw(ArraySlice<Trainer> trs)
         {
-// We use different Gym IDs to cheat the system for the 3 n00bs
-// Chili, Cress, and Cilan
-// Cilan can be GYM1, then Chili is GYM9 and Cress GYM10
-// Also their *trainers* are GYM11 lol
+            // We use different Gym IDs to cheat the system for the 3 n00bs
+            // Chili, Cress, and Cilan
+            // Cilan can be GYM1, then Chili is GYM9 and Cress GYM10
+            // Also their *trainers* are GYM11 lol
 
-// Gym Trainers
+            // Gym Trainers
             Tag(trs, "GYM11", 0x09, 0x0A);
             Tag(trs, "GYM2", 0x56, 0x57, 0x58);
             Tag(trs, "GYM3", 0xC4, 0xC6, 0xC7, 0xC8);
@@ -476,7 +606,7 @@ namespace RandomizerSharp.Constants
             Tag(trs, "GYM7", 0xD7, 0xD8, 0xD9, 0xD4, 0xD5, 0xD6);
             Tag(trs, "GYM8", 0x109, 0x10A, 0x10F, 0x10E, 0x110, 0x10B, 0x113, 0x112);
 
-// Gym Leaders
+            // Gym Leaders
             Tag(trs, 0x0C, "GYM1"); // Cilan
             Tag(trs, 0x0B, "GYM9"); // Chili
             Tag(trs, 0x0D, "GYM10"); // Cress
@@ -489,27 +619,27 @@ namespace RandomizerSharp.Constants
             Tag(trs, 0x84, "GYM8"); // Iris or Drayden
             Tag(trs, 0x85, "GYM8"); // Iris or Drayden
 
-// Elite 4
+            // Elite 4
             Tag(trs, 0xE4, "ELITE1"); // Shauntal
             Tag(trs, 0xE6, "ELITE2"); // Grimsley
             Tag(trs, 0xE7, "ELITE3"); // Caitlin
             Tag(trs, 0xE5, "ELITE4"); // Marshal
 
-// Elite 4 R2
+            // Elite 4 R2
             Tag(trs, 0x233, "ELITE1"); // Shauntal
             Tag(trs, 0x235, "ELITE2"); // Grimsley
             Tag(trs, 0x236, "ELITE3"); // Caitlin
             Tag(trs, 0x234, "ELITE4"); // Marshal
             Tag(trs, 0x197, "CHAMPION"); // Alder
 
-// Ubers?
+            // Ubers?
             Tag(trs, 0x21E, "UBER"); // Game Freak Guy
             Tag(trs, 0x237, "UBER"); // Cynthia
             Tag(trs, 0xE8, "UBER"); // Ghetsis
             Tag(trs, 0x24A, "UBER"); // N-White
             Tag(trs, 0x24B, "UBER"); // N-Black
 
-// Rival - Cheren
+            // Rival - Cheren
             TagRivalBw(trs, "RIVAL1", 0x35);
             TagRivalBw(trs, "RIVAL2", 0x11F);
             TagRivalBw(trs, "RIVAL3", 0x38); // used for 3rd battle AND tag battle
@@ -519,7 +649,7 @@ namespace RandomizerSharp.Constants
             TagRivalBw(trs, "RIVAL7", 0x24C);
             TagRivalBw(trs, "RIVAL8", 0x24F);
 
-// Rival - Bianca
+            // Rival - Bianca
             TagRivalBw(trs, "FRIEND1", 0x3B);
             TagRivalBw(trs, "FRIEND2", 0x1F2);
             TagRivalBw(trs, "FRIEND3", 0x1FB);
@@ -530,30 +660,30 @@ namespace RandomizerSharp.Constants
 
         public static void TagTrainersBw2(ArraySlice<Trainer> trs)
         {
-// Use GYM9/10/11 for the retired Chili/Cress/Cilan.
-// Lenora doesn't have a team, or she'd be 12.
-// Likewise for Brycen
+            // Use GYM9/10/11 for the retired Chili/Cress/Cilan.
+            // Lenora doesn't have a team, or she'd be 12.
+            // Likewise for Brycen
 
-// Some trainers have TWO teams because of Challenge Mode
-// I believe this is limited to Gym Leaders, E4, Champ...
-// The "Challenge Mode" teams have levels at similar to regular,
-// but have the normal boost applied too.
+            // Some trainers have TWO teams because of Challenge Mode
+            // I believe this is limited to Gym Leaders, E4, Champ...
+            // The "Challenge Mode" teams have levels at similar to regular,
+            // but have the normal boost applied too.
 
-// Gym Trainers
+            // Gym Trainers
             Tag(trs, "GYM1", 0xab, 0xac);
             Tag(trs, "GYM2", 0xb2, 0xb3);
             Tag(trs, "GYM3", 0x2de, 0x2df, 0x2e0, 0x2e1);
-// GYM4: old gym site included to give the city a theme
+            // GYM4: old gym site included to give the city a theme
             Tag(trs, "GYM4", 0x26d, 0x94, 0xcf, 0xd0, 0xd1); // 0x94 might be 0x324
             Tag(trs, "GYM5", 0x13f, 0x140, 0x141, 0x142, 0x143, 0x144, 0x145);
             Tag(trs, "GYM6", 0x95, 0x96, 0x97, 0x98, 0x14c);
             Tag(trs, "GYM7", 0x17d, 0x17e, 0x17f, 0x180, 0x181);
             Tag(trs, "GYM8", 0x15e, 0x15f, 0x160, 0x161, 0x162, 0x163);
 
-// Gym Leaders
-// Order: Normal, Challenge Mode
-// All the challenge mode teams are near the end of the ROM
-// which makes things a bit easier.
+            // Gym Leaders
+            // Order: Normal, Challenge Mode
+            // All the challenge mode teams are near the end of the ROM
+            // which makes things a bit easier.
             Tag(trs, "GYM1", 0x9c, 0x2fc); // Cheren
             Tag(trs, "GYM2", 0x9d, 0x2fd); // Roxie
             Tag(trs, "GYM3", 0x9a, 0x2fe); // Burgh
@@ -563,15 +693,15 @@ namespace RandomizerSharp.Constants
             Tag(trs, "GYM7", 0x9f, 0x302); // Drayden
             Tag(trs, "GYM8", 0xa0, 0x303); // Marlon
 
-// Elite 4 / Champion
-// Order: Normal, Challenge Mode, Rematch, Rematch Challenge Mode
+            // Elite 4 / Champion
+            // Order: Normal, Challenge Mode, Rematch, Rematch Challenge Mode
             Tag(trs, "ELITE1", 0x26, 0x304, 0x8f, 0x309);
             Tag(trs, "ELITE2", 0x28, 0x305, 0x91, 0x30a);
             Tag(trs, "ELITE3", 0x29, 0x307, 0x92, 0x30c);
             Tag(trs, "ELITE4", 0x27, 0x306, 0x90, 0x30b);
             Tag(trs, "CHAMPION", 0x155, 0x308, 0x218, 0x30d);
 
-// Rival - Hugh
+            // Rival - Hugh
             TagRivalBw(trs, "RIVAL1", 0xa1); // Start
             TagRivalBw(trs, "RIVAL2", 0xa6); // Floccessy Ranch
             TagRivalBw(trs, "RIVAL3", 0x24c); // Tag Battles in the sewers
@@ -583,28 +713,28 @@ namespace RandomizerSharp.Constants
             TagRivalBw(trs, "RIVAL9", 0x2b5); // Undella Town Post-E4
             TagRivalBw(trs, "RIVAL10", 0x2b8); // Driftveil Post-Undella-Battle
 
-// Tag Battle with Opposite Gender Hero
+            // Tag Battle with Opposite Gender Hero
             TagRivalBw(trs, "FRIEND1", 0x168);
             TagRivalBw(trs, "FRIEND1", 0x16b);
 
-// Tag/PWT Battles with Cheren
+            // Tag/PWT Battles with Cheren
             Tag(trs, "GYM1", 0x173, 0x278, 0x32E);
 
-// The Restaurant Brothers
+            // The Restaurant Brothers
             Tag(trs, "GYM9", 0x1f0); // Cilan
             Tag(trs, "GYM10", 0x1ee); // Chili
             Tag(trs, "GYM11", 0x1ef); // Cress
 
-// Themed Trainers
+            // Themed Trainers
             Tag(trs, "THEMED:ZINZOLIN", 0x2c0, 0x248, 0x15b);
             Tag(trs, "THEMED:COLRESS", 0x166, 0x158, 0x32d, 0x32f);
             Tag(trs, "THEMED:SHADOW1", 0x247, 0x15c, 0x2af);
             Tag(trs, "THEMED:SHADOW2", 0x1f2, 0x2b0);
             Tag(trs, "THEMED:SHADOW3", 0x1f3, 0x2b1);
 
-// Uber-Trainers
-// There are *fourteen* ubers of 17 allowed (incl. the champion)
-// It's a rather stacked game...
+            // Uber-Trainers
+            // There are *fourteen* ubers of 17 allowed (incl. the champion)
+            // It's a rather stacked game...
             Tag(trs, 0x246, "UBER"); // Alder
             Tag(trs, 0x1c8, "UBER"); // Cynthia
             Tag(trs, 0xca, "UBER"); // Benga/BlackTower
@@ -629,15 +759,12 @@ namespace RandomizerSharp.Constants
 
         private static void Tag(IList<Trainer> allTrainers, int number, string tag)
         {
-            if (allTrainers.Count > number - 1)
-                allTrainers[number - 1].Tag = tag;
+            if (allTrainers.Count > number - 1) allTrainers[number - 1].Tag = tag;
         }
 
         private static void Tag(IList<Trainer> allTrainers, string tag, params int[] numbers)
         {
-            foreach (var num in numbers)
-                if (allTrainers.Count > num - 1)
-                    allTrainers[num - 1].Tag = tag;
+            foreach (var num in numbers) if (allTrainers.Count > num - 1) allTrainers[num - 1].Tag = tag;
         }
     }
 }

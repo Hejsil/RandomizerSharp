@@ -65,14 +65,15 @@ namespace RandomizerSharp.Randomizers
                     if (Random.Next(100) == 0)
                         mv.Power += 50;
 
-                if (mv.HitCount != 1)
-                {
-                    //  Divide randomized power by average hit count, round to
-                    //  nearest 5
-                    mv.Power = (int) (Math.Round(mv.Power / (mv.HitCount / 5)) * 5);
-                    if (mv.Power < 5)
-                        mv.Power = 5;
-                }
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
+                if (mv.HitCount == 1)
+                    continue;
+
+                //  Divide randomized power by average hit count, round to
+                //  nearest 5
+                mv.Power = (int) (Math.Round(mv.Power / (mv.HitCount / 5)) * 5);
+                if (mv.Power < 5)
+                    mv.Power = 5;
             }
         }
 
@@ -556,7 +557,7 @@ namespace RandomizerSharp.Randomizers
                 foreach (var pk in pokemonPool)
                     if (pk.BstForPowerLevels() >= minTarget &&
                         pk.BstForPowerLevels() <= maxTarget &&
-                        (!banSamePokemon || pk != current) &&
+                        (!banSamePokemon || !ReferenceEquals(pk, current)) &&
                         (usedUp == null || !usedUp.Contains(pk)) &&
                         !canPick.Contains(pk))
                         canPick.Add(pk);
@@ -739,10 +740,9 @@ namespace RandomizerSharp.Randomizers
                 {
                     var pickedLeft = Random.Next(remainingLeft.Count);
                     var pickedLeftP = remainingLeft[pickedLeft];
-                    Pokemon pickedRightP = null;
                     remainingLeft.RemoveAt(pickedLeft);
 
-                    pickedRightP = remainingRight.Count == 1
+                    var pickedRightP = remainingRight.Count == 1
                         ? remainingRight[0]
                         : PickWildPowerLvlReplacement(remainingRight, pickedLeftP, true, null);
 
@@ -1266,11 +1266,12 @@ namespace RandomizerSharp.Randomizers
                 if (tp.Level >= minLevel)
                 {
                     var newPokemon = FullyEvolve(tp.Pokemon);
-                    if (newPokemon != tp.Pokemon)
-                    {
-                        tp.Pokemon = newPokemon;
-                        tp.ResetMoves = true;
-                    }
+
+                    if (ReferenceEquals(newPokemon, tp.Pokemon))
+                            continue;
+
+                    tp.Pokemon = newPokemon;
+                    tp.ResetMoves = true;
                 }
         }
         
@@ -1298,7 +1299,7 @@ namespace RandomizerSharp.Randomizers
                         //  with a 10% chance to increase by 50%
                         mv.Hitratio = Random.Next(7) * 5 + 20;
                         if (Random.Next(10) == 0)
-                            mv.Hitratio = mv.Hitratio * (3 / 2) / (5 * 5);
+                            mv.Hitratio = mv.Hitratio * 1 / (5 * 5);
                     }
                     else if (mv.Hitratio < 90)
                     {
@@ -1890,7 +1891,7 @@ namespace RandomizerSharp.Randomizers
                         foreach (var pk in RomHandler.ValidPokemons)
                         {
                             //  Prevent evolving into oneself (mandatory)
-                            if (pk == fromPk)
+                            if (ReferenceEquals(pk, fromPk))
                                 continue;
 
                             //  Force same EXP curve (mandatory)
@@ -1970,7 +1971,7 @@ namespace RandomizerSharp.Randomizers
                         }
 
                         //  Step 3: pick - by similar strength or otherwise
-                        Pokemon picked = null;
+                        Pokemon picked;
                         if (replacements.Count == 1)
                             picked = replacements[0];
                         else if (similarStrength)

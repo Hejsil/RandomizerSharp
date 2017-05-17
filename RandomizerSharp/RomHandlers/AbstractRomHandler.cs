@@ -8,7 +8,7 @@ namespace RandomizerSharp.RomHandlers
 {
     public abstract class AbstractRomHandler
     {
-        public IDictionary<Pokemon, List<MoveLearnt>> MovesLearnt { get; protected set; }
+        public IDictionary<Pokemon, List<MoveLearnt>> MovesLearnt { get; protected set; } = new Dictionary<Pokemon, List<MoveLearnt>>();
         public ArraySlice<Trainer> Trainers { get; protected set; } = Slice<Trainer>.Empty;
         public ArraySlice<Pokemon> NonLegendaryPokemons => ValidPokemons.Where(p => !p.Legendary).Slice();
         public ArraySlice<Pokemon> LegendaryPokemons => ValidPokemons.Where(p => p.Legendary).Slice();

@@ -58,7 +58,7 @@ namespace RandomizerSharp
         }
         public static void ReadFully(Stream @in, byte[] buf, int offset, int length)
         {
-            int offs = 0, read = 0;
+            int offs = 0, read;
             while (offs < length && (read = @in.Read(buf, offs + offset, length - offs)) != -1)
                 offs += read;
         }

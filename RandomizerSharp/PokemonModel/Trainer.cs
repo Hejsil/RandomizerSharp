@@ -73,7 +73,10 @@ namespace RandomizerSharp.PokemonModel
         {
             const int prime = 31;
             var result = 1;
+
+            // ReSharper disable once NonReadonlyMemberInGetHashCode
             result = prime * result + Offset;
+
             return result;
         }
 
@@ -86,8 +89,10 @@ namespace RandomizerSharp.PokemonModel
             if (GetType() != obj.GetType())
                 return false;
             var other = (Trainer) obj;
+
             if (Offset != other.Offset)
                 return false;
+
             return true;
         }
     }

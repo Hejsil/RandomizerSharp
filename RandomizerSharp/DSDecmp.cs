@@ -43,10 +43,9 @@ namespace RandomizerSharp
                     int b;
                     if (flag)
                     {
-                        var disp = 0;
                         b = data[offset++] & 0xFF;
                         var n = b >> 4;
-                        disp = (b & 0x0F) << 8;
+                        var disp = (b & 0x0F) << 8;
                         disp |= data[offset++] & 0xFF;
                         n += 3;
                         var cdest = currSize;

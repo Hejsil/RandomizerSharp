@@ -41,8 +41,13 @@ namespace RandomizerSharp.PokemonModel
         {
             const int prime = 31;
             var result = 1;
+            // ReSharper disable once NonReadonlyMemberInGetHashCode
             result = prime * result + From.Id;
+
+            // ReSharper disable once NonReadonlyMemberInGetHashCode
             result = prime * result + To.Id;
+
+            // ReSharper disable once NonReadonlyMemberInGetHashCode
             result = prime * result + Type.Ordinal();
             return result;
         }

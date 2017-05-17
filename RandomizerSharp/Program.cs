@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using RandomizerSharp.Randomizers;
 using RandomizerSharp.RomHandlers;
 
@@ -7,7 +6,7 @@ namespace RandomizerSharp
 {
     internal class Program
     {
-        private static void Main(string[] args)
+        private static void Main()
         {
             var rom = @"A:\Mega\ProgramDataDump\RandomizerSettings\6149 - Pokemon Black Version 2 (DSi Enhanced)(U)(frieNDS).nds";
             var radomized = @"A:\Programs\desmume-0.9.11-win64\roms\random.nds";

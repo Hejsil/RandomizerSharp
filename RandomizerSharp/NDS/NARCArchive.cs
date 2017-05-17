@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace RandomizerSharp.NDS
 {
@@ -106,7 +105,7 @@ namespace RandomizerSharp.NDS
 
                 if (HasFilenames)
                     bytesForFntbFrame += Filenames.Sum(
-                        filename => RandomizerSharp.StringHelperClass.GetBytes(filename, Encoding.ASCII).Length + 1);
+                        filename => Encoding.ASCII.GetBytes(filename).Length + 1);
 
                 var fntbFrame = new byte[bytesForFntbFrame];
 
@@ -124,7 +123,7 @@ namespace RandomizerSharp.NDS
                     var fntbOffset = 16;
                     foreach (var filename in Filenames)
                     {
-                        var fntbfilename = RandomizerSharp.StringHelperClass.GetBytes(filename, Encoding.ASCII);
+                        var fntbfilename = Encoding.ASCII.GetBytes(filename);
                         fntbFrame[fntbOffset] = (byte) fntbfilename.Length;
                         Array.Copy(fntbfilename, 0, fntbFrame, fntbOffset + 1, fntbfilename.Length);
                         fntbOffset += 1 + fntbfilename.Length;

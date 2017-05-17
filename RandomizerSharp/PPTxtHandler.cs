@@ -64,28 +64,27 @@ namespace RandomizerSharp
             var trans = 0;
             while (true)
             {
-                var tmp = chars[j];
-                tmp = tmp >> shift1;
-                var tmp1 = tmp;
+                int tmp;
                 if (shift1 >= 0x10)
                 {
                     shift1 -= 0x10;
-                    if (shift1 > 0)
-                    {
-                        tmp1 = trans | ((chars[j] << (9 - shift1)) & 0x1FF);
-                        if ((tmp1 & 0xFF) == 0xFF)
-                            break;
-                        if (tmp1 != 0x0 && tmp1 != 0x1)
-                            uncomp.Add(tmp1);
-                    }
+
+                    if (shift1 <= 0)
+                        continue;
+
+                    tmp = trans | ((chars[j] << (9 - shift1)) & 0x1FF);
+                    if ((tmp & 0xFF) == 0xFF)
+                        break;
+                    if (tmp != 0x0 && tmp != 0x1)
+                        uncomp.Add(tmp);
                 }
                 else
                 {
-                    tmp1 = (chars[j] >> shift1) & 0x1FF;
-                    if ((tmp1 & 0xFF) == 0xFF)
+                    tmp = (chars[j] >> shift1) & 0x1FF;
+                    if ((tmp & 0xFF) == 0xFF)
                         break;
-                    if (tmp1 != 0x0 && tmp1 != 0x1)
-                        uncomp.Add(tmp1);
+                    if (tmp != 0x0 && tmp != 0x1)
+                        uncomp.Add(tmp);
                     shift1 += 9;
                     if (shift1 < 0x10)
                     {
@@ -129,9 +128,7 @@ namespace RandomizerSharp
 
                 var tableOffsets = new List<int>();
                 var characterCount = new List<int>();
-                var unknown = new List<int>();
                 var encText = new List<IList<int>>();
-                var decText = new List<IList<string>>();
 
                 for (var j = 0; j < numEntries; j++)
                 {
@@ -143,7 +140,6 @@ namespace RandomizerSharp
                     pos += 2;
                     tableOffsets.Add(tmpOffset);
                     characterCount.Add(tmpCharCount);
-                    unknown.Add(tmpUnknown);
                     _lastUnknowns.Add(tmpUnknown);
                 }
                 for (var j = 0; j < numEntries; j++)
@@ -195,7 +191,6 @@ namespace RandomizerSharp
                         }
 
                     strings[j] = str.ToString();
-                    decText.Add(chars);
                 }
             }
             for (var sn = 0; sn < strings.Count; sn++)
@@ -240,7 +235,6 @@ namespace RandomizerSharp
             {
                 pos = sectionOffset[z];
                 sizeSections[z] = ReadLong(ds, pos);
-                pos += 4;
             }
             newsizeSections[0] = newEntry.Length;
             var newDataSize = ds.Length - sizeSections[0] + newsizeSections[0];

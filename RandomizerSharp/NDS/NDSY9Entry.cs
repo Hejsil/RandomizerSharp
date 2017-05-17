@@ -16,7 +16,7 @@ namespace RandomizerSharp.NDS
         public int BssSize;
         public int CompressFlag;
         public int CompressedSize;
-        public byte[] Data;
+        public ArraySlice<byte> Data;
         private bool _decompressedData;
         public string ExtFilename;
         public int FileId;
@@ -34,79 +34,80 @@ namespace RandomizerSharp.NDS
         }
 
         // returns null if no override
-        public virtual byte[] OverrideContents
+        public virtual ArraySlice<byte> OverrideContents
         {
             get
             {
-                if (Status == Extracted.Not)
-                    return null;
                 var buf = GetContents();
-                if (_decompressedData)
-                {
-                    buf = BlzCoder.BLZ_EncodePub(buf, false, "overlay " + OverlayId);
-                    // update our compressed size
-                    CompressedSize = buf.Length;
-                }
+
+                if (!_decompressedData)
+                    return buf;
+
+                buf = BlzCoder.Encode(buf, false, "overlay " + OverlayId);
+
+                // update our compressed size
+                CompressedSize = buf.Length;
                 return buf;
             }
         }
         
-        public virtual byte[] GetContents()
+        public virtual ArraySlice<byte> GetContents()
         {
-            if (Status == Extracted.Not)
+            switch (Status)
             {
-                // extract file
-                _parent.ReopenRom();
-                var rom = _parent.BaseRom;
-                var buf = new byte[OriginalSize];
-                rom.Seek(Offset);
-                rom.ReadFully(buf);
-                // Compression?
-                if (CompressFlag != 0 && OriginalSize == CompressedSize && CompressedSize != 0)
+                case Extracted.Not:
                 {
-                    buf = BlzCoder.BLZ_DecodePub(buf, "overlay " + OverlayId);
-                    _decompressedData = true;
-                }
-                if (_parent.WritingEnabled)
-                {
-                    // make a file
-                    var tmpDir = _parent.TmpFolder;
-                    var fullPath = $"overlay_{OverlayId:D4}";
-                    var tmpFilename = Regex.Replace(fullPath, "[^A-Za-z0-9_]+", "");
-                    ExtFilename = tmpFilename;
-                    var tmpFile = tmpDir + ExtFilename;
-                    var fos = new FileStream(tmpFile, FileMode.Create, FileAccess.Write);
-                    fos.Write(buf, 0, buf.Length);
-                    fos.Close();
+                    // extract file
+                    _parent.ReopenRom();
+                    var rom = _parent.BaseRom;
+                    var buf = new byte[OriginalSize];
+                    rom.Seek(Offset);
+                    rom.ReadFully(buf);
 
-                    Status = Extracted.ToFile;
-                    Data = null;
-                    return buf;
+                    if (_parent.WritingEnabled)
+                    {
+                        // make a file
+                        var tmpDir = _parent.TmpFolder;
+                        var fullPath = $"overlay_{OverlayId:D4}";
+                        var tmpFilename = Regex.Replace(fullPath, "[^A-Za-z0-9_]+", "");
+                        ExtFilename = tmpFilename;
+                        var tmpFile = tmpDir + ExtFilename;
+                        var fos = new FileStream(tmpFile, FileMode.Create, FileAccess.Write);
+                        fos.Write(buf, 0, buf.Length);
+                        fos.Close();
+
+                        Status = Extracted.ToFile;
+                        Data = null;
+                        return buf;
+                    }
+
+                    Status = Extracted.ToRam;
+                    Data = buf;
+
+                    return Data;
                 }
-                Status = Extracted.ToRam;
-                Data = buf;
-                var newcopy = new byte[buf.Length];
-                Array.Copy(buf, 0, newcopy, 0, buf.Length);
-                return newcopy;
-            }
-            if (Status == Extracted.ToRam)
-            {
-                var newcopy = new byte[Data.Length];
-                Array.Copy(Data, 0, newcopy, 0, Data.Length);
-                return newcopy;
-            }
-            {
-                var tmpDir = _parent.TmpFolder;
-                var file = FileFunctions.ReadFileFullyIntoBuffer(tmpDir + ExtFilename);
-                return file;
+                case Extracted.ToRam:
+                {
+                    return Data;
+                }
+                case Extracted.ToFile:
+                {
+                    var tmpDir = _parent.TmpFolder;
+                    var file = FileFunctions.ReadFileFullyIntoBuffer(tmpDir + ExtFilename);
+                    return file;
+                }
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
         
-        public virtual void WriteOverride(byte[] data)
+        public virtual void WriteOverride(ArraySlice<byte> data)
         {
             if (Status == Extracted.Not)
                 GetContents();
+
             Size = data.Length;
+
             if (Status == Extracted.ToFile)
             {
                 var tmpDir = _parent.TmpFolder;
@@ -116,17 +117,23 @@ namespace RandomizerSharp.NDS
             }
             else
             {
+                // Compression?
+                if (CompressFlag != 0 && OriginalSize == CompressedSize && CompressedSize != 0)
+                    Data = BlzCoder.Decode(Data, "overlay " + OverlayId);
+
+                _decompressedData = true;
+
                 if (Data.Length == data.Length)
                 {
-                    // copy new in
-                    Array.Copy(data, 0, Data, 0, data.Length);
+                    for (var i = 0; i < data.Length; i++)
+                        Data[i] = data[i];
                 }
                 else
                 {
-                    // make new array
-                    Data = null;
-                    Data = new byte[data.Length];
+                    var newData = new byte[data.Length];
                     Array.Copy(data, 0, Data, 0, data.Length);
+
+                    Data = newData;
                 }
             }
         }

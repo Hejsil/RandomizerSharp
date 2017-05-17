@@ -32,6 +32,10 @@ namespace RandomizerSharp.NDS
             BaseRom = new FileStream(filename, FileMode.Open, FileAccess.Read);
             _romOpen = true;
             var rawFilename = Path.GetFileName(filename);
+
+            if (rawFilename == null)
+                throw new NullReferenceException();
+
             var dataFolder = "tmp_" + rawFilename.Substring(0, rawFilename.LastIndexOf('.'));
             dataFolder = Regex.Replace(dataFolder, "[^A-Za-z0-9_]+", "");
 
@@ -201,7 +205,7 @@ namespace RandomizerSharp.NDS
                 var newArm9 = GetArm9();
                 if (_arm9Compressed)
                 {
-                    newArm9 = BlzCoder.BLZ_EncodePub(newArm9, true, "arm9.bin");
+                    newArm9 = BlzCoder.Encode(newArm9, true, "arm9.bin");
                     if (_arm9Szoffset > 0)
                     {
                         var newValue = _arm9Szmode == 1 ? newArm9.Length : newArm9.Length + 0x4000;
@@ -259,27 +263,24 @@ namespace RandomizerSharp.NDS
                 var copiedCustom = false;
                 if (_filesById.ContainsKey(fid))
                 {
-                    var customContents = _filesById[fid].OverrideContents;
-                    if (customContents != null)
-                    {
-                        fNew.Seek(offsetOfFile, SeekOrigin.Begin);
-                        fNew.Write(customContents, 0, customContents.Length);
-                        copiedCustom = true;
-                        fileLen = customContents.Length;
-                    }
+                    var customContents = _filesById[fid].LoadContents();
+
+                    fNew.Seek(offsetOfFile, SeekOrigin.Begin);
+                    fNew.Write(customContents, 0, customContents.Length);
+                    copiedCustom = true;
+                    fileLen = customContents.Length;
                 }
                 if (_arm9OverlaysByFileId.ContainsKey(fid))
                 {
                     var entry = _arm9OverlaysByFileId[fid];
                     var overlayId = entry.OverlayId;
                     var customContents = entry.OverrideContents;
-                    if (customContents != null)
-                    {
-                        fNew.Seek(offsetOfFile, SeekOrigin.Begin);
-                        fNew.Write(customContents, 0, customContents.Length);
-                        copiedCustom = true;
-                        fileLen = customContents.Length;
-                    }
+
+                    fNew.Seek(offsetOfFile, SeekOrigin.Begin);
+                    fNew.Write(customContents, 0, customContents.Length);
+                    copiedCustom = true;
+                    fileLen = customContents.Length;
+
                     WriteToByteArr(y9Table, overlayId * 32, 4, overlayId);
                     WriteToByteArr(y9Table, overlayId * 32 + 4, 4, entry.RamAddress);
                     WriteToByteArr(y9Table, overlayId * 32 + 8, 4, entry.RamSize);
@@ -362,13 +363,13 @@ namespace RandomizerSharp.NDS
                 to.Write(copybuf, 0, read);
                 bytes -= read;
             }
-            copybuf = null;
         }
         
         public virtual byte[] GetFile(string filename)
         {
             if (_files.ContainsKey(filename))
-                return _files[filename].GetContents();
+                return _files[filename].LoadContents();
+
             return null;
         }
         
@@ -459,7 +460,7 @@ namespace RandomizerSharp.NDS
                     }
                 }
                 if (_arm9Compressed)
-                    arm9 = BlzCoder.BLZ_DecodePub(arm9, "arm9.bin");
+                    arm9 = BlzCoder.Decode(arm9, "arm9.bin");
 
                 if (WritingEnabled)
                 {
@@ -497,7 +498,6 @@ namespace RandomizerSharp.NDS
         public void WriteOverlay(int number, byte[] data)
         {
             if (number >= 0 && number <= _arm9Overlays.Length)
-
                 _arm9Overlays[number].WriteOverride(data);
         }
 

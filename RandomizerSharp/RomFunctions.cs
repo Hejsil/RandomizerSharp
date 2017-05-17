@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 using RandomizerSharp.PokemonModel;
 using RandomizerSharp.RomHandlers;
 
@@ -238,7 +239,7 @@ namespace RandomizerSharp
             moveDesc = moveDesc.Replace("Sp. Def", "Sp__Def");
             moveDesc = moveDesc.Replace("SP. ATK", "SP__ATK");
             moveDesc = moveDesc.Replace("SP. DEF", "SP__DEF");
-            var words = moveDesc.Split(" ", true);
+            var words = Regex.Split(moveDesc, " ");
             var fullDesc = new StringBuilder();
             var thisLine = new StringBuilder();
             var currLineWc = 0;
@@ -274,13 +275,15 @@ namespace RandomizerSharp
                     currLineCc = ssd.LengthFor(words[i]);
                 }
             }
-            if (currLineWc > 0)
-            {
-                if (linesWritten > 0)
-                    fullDesc.Append(newline);
-                fullDesc.Append(thisLine);
-                linesWritten++;
-            }
+
+            if (currLineWc <= 0)
+                return fullDesc.ToString();
+
+            if (linesWritten > 0)
+                fullDesc.Append(newline);
+
+            fullDesc.Append(thisLine);
+
             return fullDesc.ToString();
         }
 
@@ -309,12 +312,12 @@ namespace RandomizerSharp
                     text = text.Replace("<tmpreplace" + index + ">", toReplace.Value);
                 }
             }
-            var oldParagraphs = text.Split(newpara.Replace("\\", "\\\\"), true);
+            var oldParagraphs = Regex.Split(text, newpara.Replace("\\", "\\\\"));
             var finalResult = new StringBuilder();
             var sentenceNewLineSize = Math.Max(10, maxLineLength / 2);
             for (var para = 0; para < oldParagraphs.Length; para++)
             {
-                var words = oldParagraphs[para].Split(" ", true);
+                var words = Regex.Split(oldParagraphs[para], " ");
                 var fullPara = new StringBuilder();
                 var thisLine = new StringBuilder();
                 var currLineWc = 0;
@@ -365,17 +368,22 @@ namespace RandomizerSharp
                 {
                     if (linesWritten > 1)
                         fullPara.Append(extraline);
+
                     else if (linesWritten == 1)
                         fullPara.Append(newline);
+
                     fullPara.Append(thisLine);
-                    linesWritten++;
                 }
+
                 if (para > 0)
                     finalResult.Append(newpara);
+
                 finalResult.Append(fullPara);
             }
+
             if (endsWithPara)
                 finalResult.Append(newpara);
+
             return finalResult.ToString();
         }
 
