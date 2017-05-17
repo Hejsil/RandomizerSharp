@@ -11,6 +11,9 @@
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -32,8 +35,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Corvalius.ArraySlice, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d25f25c3d70e51b3, processorArchitecture=MSIL">
+      <HintPath>..\packages\ArraySlice.Fody.0.5.12\lib\net35\Corvalius.ArraySlice.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.4.0-preview1-25305-02\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -42,11 +52,109 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants\GlobalConstants.cs" />
+    <Compile Include="Constants\SysConstants.cs" />
+    <Compile Include="CustomNamesSet.cs" />
+    <Compile Include="DSDecmp.cs" />
+    <Compile Include="Exceptions\RandomizationException.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="FileFunctions.cs" />
+    <Compile Include="GFXFunctions.cs" />
+    <Compile Include="MiscTweak.cs" />
+    <Compile Include="NDS\BLZCoder.cs" />
+    <Compile Include="NDS\CRC16.cs" />
+    <Compile Include="NDS\NARCArchive.cs" />
+    <Compile Include="NDS\NDSFile.cs" />
+    <Compile Include="NDS\NDSRom.cs" />
+    <Compile Include="NDS\NDSY9Entry.cs" />
+    <Compile Include="PokemonModel\Encounter.cs" />
+    <Compile Include="PokemonModel\EncounterSet.cs" />
+    <Compile Include="PokemonModel\EvolutionType.cs" />
+    <Compile Include="PokemonModel\GenRestrictions.cs" />
+    <Compile Include="PokemonModel\HiddenHollow.cs" />
+    <Compile Include="PokemonModel\IngameTrade.cs" />
+    <Compile Include="PokemonModel\Move.cs" />
+    <Compile Include="PokemonModel\MoveLearnt.cs" />
+    <Compile Include="PokemonModel\ItemList.cs" />
+    <Compile Include="PokemonModel\Evolution.cs" />
+    <Compile Include="PokemonModel\Exp.cs" />
+    <Compile Include="Constants\Gen5Constants.cs" />
+    <Compile Include="PokemonModel\MoveCategory.cs" />
+    <Compile Include="PokemonModel\Pokemon.cs" />
+    <Compile Include="PokemonModel\Trainer.cs" />
+    <Compile Include="PokemonModel\TrainerPokemon.cs" />
+    <Compile Include="PPTxtHandler.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Randomizers\Gen5Randomizer.cs" />
+    <Compile Include="Randomizers\Randomizer.cs" />
+    <Compile Include="RomFunctions.cs" />
+    <Compile Include="RomHandlers\AbstractDSRomHandler.cs" />
+    <Compile Include="RomHandlers\AbstractRomHandler.cs" />
+    <Compile Include="RomHandlers\TrainerNameMode.cs" />
+    <Compile Include="RomHandlers\Gen5RomHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PokemonModel\Typing.cs" />
+    <Compile Include="Slicing.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
+    <None Include="Resources\b1_instant_text.ips" />
+    <None Include="Resources\b2_instant_text.ips" />
+    <None Include="Resources\crystal_en_bwxp.ips" />
+    <None Include="Resources\customnames.rncn" />
+    <None Include="Resources\gameboy_jap.tbl" />
+    <None Include="Resources\gba_english.tbl" />
+    <None Include="Resources\gba_jap.tbl" />
+    <None Include="Resources\gen1_offsets.ini" />
+    <None Include="Resources\gen2_offsets.ini" />
+    <None Include="Resources\gen3_offsets.ini" />
+    <None Include="Resources\gen4_offsets.ini" />
+    <None Include="Resources\gen5_offsets.ini" />
+    <None Include="Resources\Generation4.tbl" />
+    <None Include="Resources\Generation5.tbl" />
+    <None Include="Resources\green_translation.tbl" />
+    <None Include="Resources\gsc_english.tbl" />
+    <None Include="Resources\gsc_espita.tbl" />
+    <None Include="Resources\gsc_freger.tbl" />
+    <None Include="Resources\gs_en_bwxp.ips" />
+    <None Include="Resources\hgss_instant_text.ips" />
+    <None Include="Resources\plat_instant_text.ips" />
+    <None Include="Resources\rby_english.tbl" />
+    <None Include="Resources\rby_espita.tbl" />
+    <None Include="Resources\rby_freger.tbl" />
+    <None Include="Resources\rb_en_bwxp.ips" />
+    <None Include="Resources\rb_en_critrate.ips" />
+    <None Include="Resources\rb_en_xaccnerf.ips" />
+    <None Include="Resources\realistic_gen1_english.tbl" />
+    <None Include="Resources\vietcrystal.tbl" />
+    <None Include="Resources\w1_instant_text.ips" />
+    <None Include="Resources\w2_instant_text.ips" />
+    <None Include="Resources\yellow_en_bwxp.ips" />
+    <None Include="Resources\yellow_en_critrate.ips" />
+    <None Include="Resources\yellow_en_xaccnerf.ips" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="FodyWeavers.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\Fody.2.0.8\build\dotnet\Fody.targets" Condition="Exists('..\packages\Fody.2.0.8\build\dotnet\Fody.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Fody.2.0.8\build\dotnet\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.2.0.8\build\dotnet\Fody.targets'))" />
+  </Target>
 </Project>
