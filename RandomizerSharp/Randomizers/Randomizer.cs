@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using RandomizerSharp.Constants;
-using RandomizerSharp.Exceptions;
 using RandomizerSharp.PokemonModel;
 using RandomizerSharp.RomHandlers;
 
@@ -424,7 +423,7 @@ namespace RandomizerSharp.Randomizers
                             tempPickable.RemoveAll(area.BannedPokemon.Contains);
 
                             if (tempPickable.Count == 0)
-                                throw new RandomizationException("ERROR: Couldn\'t replace a wild Pokemon!");
+                                throw new NotImplementedException("ERROR: Couldn\'t replace a wild Pokemon!");
 
                             var picked = Random.Next(tempPickable.Count);
                             enc.Pokemon = tempPickable[picked];
@@ -485,7 +484,7 @@ namespace RandomizerSharp.Randomizers
                     }
 
                     if (possiblePokemon == null)
-                        throw new RandomizationException(
+                        throw new NotImplementedException(
                             "Could not randomize an area in a reasonable amount of attempts.");
 
                     foreach (var enc in area.Encounters)
@@ -796,7 +795,7 @@ namespace RandomizerSharp.Randomizers
                     tempPickable.RemoveAll(banned.Contains);
                     tempPickable.RemoveAll(area.BannedPokemon.Contains);
                     if (tempPickable.Count == 0)
-                        throw new RandomizationException("ERROR: Couldn\'t replace a wild Pokemon!");
+                        throw new NotImplementedException("ERROR: Couldn\'t replace a wild Pokemon!");
 
                     if (usePowerLevels)
                     {
@@ -854,7 +853,7 @@ namespace RandomizerSharp.Randomizers
                             tempPickable.RemoveAll(banned.Contains);
                             tempPickable.RemoveAll(area.BannedPokemon.Contains);
                             if (tempPickable.Count == 0)
-                                throw new RandomizationException("ERROR: Couldn\'t replace a wild Pokemon!");
+                                throw new NotImplementedException("ERROR: Couldn\'t replace a wild Pokemon!");
 
                             var picked = Random.Next(tempPickable.Count);
                             var pickedMn = tempPickable[picked];
@@ -919,7 +918,7 @@ namespace RandomizerSharp.Randomizers
                     }
 
                     if (possiblePokemon == null)
-                        throw new RandomizationException(
+                        throw new NotImplementedException(
                             "Could not randomize an area in a reasonable amount of attempts.");
 
                     //  Build area map using type theme.
@@ -1755,7 +1754,7 @@ namespace RandomizerSharp.Randomizers
                     candidates.Add(ev.To);
 
             if (candidates.Count == 0)
-                throw new RandomizationException("Random evolution called on a Pokemon without any usable evolutions.");
+                throw new NotImplementedException("Random evolution called on a Pokemon without any usable evolutions.");
 
             return candidates[Random.Next(candidates.Count)];
         }
@@ -1997,17 +1996,17 @@ namespace RandomizerSharp.Randomizers
             }
 
             //  If we made it out of the loop, we weren't able to randomize evos.
-            throw new RandomizationException("Not able to randomize evolutions in a sane amount of retries.");
+            throw new NotImplementedException("Not able to randomize evolutions in a sane amount of retries.");
         }
 
         private bool EvoCycleCheck(Pokemon from, Pokemon to)
         {
             var tempEvo = new Evolution(from, to, false, EvolutionType.None, 0);
-            from.EvolutionsFrom.Add(tempEvo);
+            @from.EvolutionsFrom.Add(tempEvo);
             var visited = new HashSet<Pokemon>();
             var recStack = new HashSet<Pokemon>();
             var recur = IsCyclic(from, visited, recStack);
-            from.EvolutionsFrom.Remove(tempEvo);
+            @from.EvolutionsFrom.Remove(tempEvo);
             return recur;
         }
         
@@ -2143,8 +2142,8 @@ namespace RandomizerSharp.Randomizers
         public void RemoveBrokenMoves()
         {
             var allBanned = new HashSet<int>(RomHandler.GameBreakingMoves);
-            foreach (var movesLearnt in RomHandler.MovesLearnt.Values)
-                movesLearnt.RemoveAll(move => allBanned.Contains(move.Move));
+            foreach (var pokemon in RomHandler.ValidPokemons)
+                pokemon.MovesLearnt.RemoveAll(move => allBanned.Contains(move.Move));
         }
 
         public void RandomizeMovesLearnt(
@@ -2194,10 +2193,10 @@ namespace RandomizerSharp.Randomizers
                         }
                 }
 
-            foreach (var pkmn in RomHandler.MovesLearnt.Keys)
+            foreach (var pokemon in RomHandler.ValidPokemons)
             {
                 var learnt = new HashSet<int>();
-                var moves = RomHandler.MovesLearnt[pkmn];
+                var moves = pokemon.MovesLearnt;
                 //  4 starting moves?
                 if (forceFourStartingMoves)
                 {
@@ -2240,10 +2239,10 @@ namespace RandomizerSharp.Randomizers
                     if (typeThemed)
                     {
                         var picked = Random.NextDouble();
-                        if (pkmn.PrimaryType == Typing.Normal ||
-                            pkmn.SecondaryType == Typing.Normal)
+                        if (pokemon.PrimaryType == Typing.Normal ||
+                            pokemon.SecondaryType == Typing.Normal)
                         {
-                            if (pkmn.SecondaryType == null)
+                            if (pokemon.SecondaryType == null)
                             {
                                 //  Pure NORMAL: 75% normal, 25% random
                                 if (picked < 0.75)
@@ -2255,9 +2254,9 @@ namespace RandomizerSharp.Randomizers
                             {
                                 //  Find the other type
                                 //  Normal/OTHER: 30% normal, 55% other, 15% random
-                                var otherType = pkmn.PrimaryType;
+                                var otherType = pokemon.PrimaryType;
                                 if (otherType == Typing.Normal)
-                                    otherType = pkmn.SecondaryType;
+                                    otherType = pokemon.SecondaryType;
 
                                 if (picked < 0.3)
                                     typeOfMove = Typing.Normal;
@@ -2267,14 +2266,14 @@ namespace RandomizerSharp.Randomizers
                                 //  else random
                             }
                         }
-                        else if (pkmn.SecondaryType != null)
+                        else if (pokemon.SecondaryType != null)
                         {
                             //  Primary/Secondary: 50% primary, 30% secondary, 5%
                             //  normal, 15% random
                             if (picked < 0.5)
-                                typeOfMove = pkmn.PrimaryType;
+                                typeOfMove = pokemon.PrimaryType;
                             else if (picked < 0.8)
-                                typeOfMove = pkmn.SecondaryType;
+                                typeOfMove = pokemon.SecondaryType;
                             else if (picked < 0.85)
                                 typeOfMove = Typing.Normal;
 
@@ -2284,7 +2283,7 @@ namespace RandomizerSharp.Randomizers
                         {
                             //  Primary/None: 60% primary, 20% normal, 20% random
                             if (picked < 0.6)
-                                typeOfMove = pkmn.PrimaryType;
+                                typeOfMove = pokemon.PrimaryType;
                             else if (picked < 0.8)
                                 typeOfMove = Typing.Normal;
 
@@ -2422,10 +2421,9 @@ namespace RandomizerSharp.Randomizers
 
         public void OrderDamagingMovesByDamage()
         {
-            var movesets = RomHandler.MovesLearnt;
-            foreach (var pkmn in movesets.Keys)
+            foreach (var pkmn in RomHandler.ValidPokemons)
             {
-                var moves = movesets[pkmn];
+                var moves = pkmn.MovesLearnt;
                 //  Build up a list of damaging moves and their positions
                 var damagingMoveIndices = new List<int>();
                 var damagingMoves = new List<Move>();
@@ -2465,10 +2463,10 @@ namespace RandomizerSharp.Randomizers
                 Level = 1,
                 Move = GlobalConstants.MetronomeMove
             };
-            foreach (var ms in RomHandler.MovesLearnt.Values)
+            foreach (var pkmn in RomHandler.ValidPokemons)
             {
-                ms.Clear();
-                ms.Add(metronomeMl);
+                pkmn.MovesLearnt.Clear();
+                pkmn.MovesLearnt.Add(metronomeMl);
             }
 
             //  trainers
@@ -2631,13 +2629,12 @@ namespace RandomizerSharp.Randomizers
             //  Get current compatibility
             //  new: increase HM chances if required early on
             var requiredEarlyOn = RomHandler.EarlyRequiredHmMoves;
-            var compat = RomHandler.TmhmCompatibility;
             var tmHMs = new List<int>(RomHandler.TmMoves);
             tmHMs.AddRange(RomHandler.HmMoves);
-            foreach (var compatEntry in compat)
+            
+            foreach (var pkmn in RomHandler.ValidPokemons)
             {
-                var pkmn = compatEntry.Key;
-                var flags = compatEntry.Value;
+                var flags = pkmn.TMHMCompatibility;
                 for (var i = 1; i <= tmHMs.Count; i++)
                 {
                     var move = tmHMs[i - 1];
@@ -2662,10 +2659,9 @@ namespace RandomizerSharp.Randomizers
         }
         public void FullTmhmCompatibility()
         {
-            var compat = RomHandler.TmhmCompatibility;
-            foreach (var compatEntry in compat)
+            foreach (var pokemon in RomHandler.ValidPokemons)
             {
-                var flags = compatEntry.Value;
+                var flags = pokemon.TMHMCompatibility;
                 for (var i = 1; i < flags.Length; i++)
                     flags[i] = true;
             }
@@ -2677,12 +2673,12 @@ namespace RandomizerSharp.Randomizers
             //  if a pokemon learns a move in its moveset
             //  and there is a TM of that move, make sure
             //  that TM can be learned.
-            var compat = RomHandler.TmhmCompatibility;
             var tmMoves = RomHandler.TmMoves;
-            foreach (var pkmn in compat.Keys)
+
+            foreach (var pokemon in RomHandler.ValidPokemons)
             {
-                var moveset = RomHandler.MovesLearnt[pkmn];
-                var pkmnCompat = compat[pkmn];
+                var moveset = pokemon.MovesLearnt;
+                var pkmnCompat = pokemon.TMHMCompatibility;
                 foreach (var ml in moveset)
                     if (tmMoves.Contains(ml.Move))
                     {
@@ -2696,11 +2692,13 @@ namespace RandomizerSharp.Randomizers
 
         public void FullHmCompatibility()
         {
-            var compat = RomHandler.TmhmCompatibility;
             var tmCount = RomHandler.TmMoves.Count;
-            foreach (var flags in compat.Values)
+            foreach (var pokemon in RomHandler.ValidPokemons)
+            {
+                var flags = pokemon.TMHMCompatibility;
                 for (var i = tmCount + 1; i < flags.Length; i++)
                     flags[i] = true;
+            }
         }
 
 
@@ -2835,9 +2833,9 @@ namespace RandomizerSharp.Randomizers
             //  that tutor can be learned.
             var compat = RomHandler.MoveTutorCompatibility;
             var mtMoves = RomHandler.MoveTutorMoves;
-            foreach (var pkmn in compat.Keys)
+            foreach (var pkmn in RomHandler.ValidPokemons)
             {
-                var moveset = RomHandler.MovesLearnt[pkmn];
+                var moveset = pkmn.MovesLearnt;
                 var pkmnCompat = compat[pkmn];
                 foreach (var ml in moveset)
                     if (mtMoves.Contains(ml.Move))
@@ -2984,7 +2982,7 @@ namespace RandomizerSharp.Randomizers
             }
 
             if (!success)
-                throw new RandomizationException(
+                throw new NotImplementedException(
                     "Could not randomize trainer names in a reasonable amount of attempts." +
                     "\nPlease add some shorter names to your custom trainer names.");
         }
@@ -3266,7 +3264,7 @@ namespace RandomizerSharp.Randomizers
                             // read move
                             var move = evo.ExtraInfo;
                             var levelLearntAt = 1;
-                            foreach (var ml in RomHandler.MovesLearnt[evo.From])
+                            foreach (var ml in evo.From.MovesLearnt)
                                 if (ml.Move == move)
                                 {
                                     levelLearntAt = ml.Level;

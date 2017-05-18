@@ -26,9 +26,6 @@ namespace RandomizerSharp.NDS
             if (Data.Length != 0)
                 return Data;
 
-            // extract file
-            _parent.ReopenRom();
-
             var rom = _parent.BaseRom;
             var buf = new byte[Size];
 

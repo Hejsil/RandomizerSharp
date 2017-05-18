@@ -61,20 +61,38 @@ namespace RandomizerSharp.PokemonModel
                 649
             };
 
-        public int Ability1, Ability2, Ability3;
-        public int CatchRate, ExpYield;
-        public IList<Evolution> EvolutionsFrom = new List<Evolution>();
-        public IList<Evolution> EvolutionsTo = new List<Evolution>();
-        public int FrontSpritePointer, PicDimensions;
-        public int GenderRatio;
-        public Exp.Curve GrowthCurve;
-        public int GuaranteedHeldItem, CommonHeldItem, RareHeldItem, DarkGrassHeldItem;
-        public int Hp, Attack, Defense, Spatk, Spdef, Speed, Special;
-        public string Name;
-        public readonly int Id;
-        public Typing PrimaryType, SecondaryType;
-        public IList<int> ShuffledStatsOrder = new List<int> {0, 1, 2, 3, 4, 5};
-        public bool TemporaryFlag;
+        public int Ability1 { get; set; }
+        public int Ability2 { get; set; }
+        public int Ability3 { get; set; }
+        public int CatchRate { get; set; }
+        public int ExpYield { get; set; }
+        public List<Evolution> EvolutionsFrom { get; } = new List<Evolution>();
+        public List<Evolution> EvolutionsTo { get; } = new List<Evolution>();
+        public int FrontSpritePointer { get; set; }
+        public int PicDimensions { get; set; }
+        public int GenderRatio { get; set; }
+        public Exp.Curve GrowthCurve { get; set; }
+        public int GuaranteedHeldItem { get; set; }
+        public int CommonHeldItem { get; set; }
+        public int RareHeldItem { get; set; }
+        public int DarkGrassHeldItem { get; set; }
+        public int Hp { get; set; }
+        public int Attack { get; set; }
+        public int Defense { get; set; }
+        public int Spatk { get; set; }
+        public int Spdef { get; set; }
+        public int Speed { get; set; }
+        public int Special { get; set; }
+        public string Name { get; set; }
+        public int Id { get; }
+        public Typing PrimaryType { get; set; }
+        public Typing SecondaryType { get; set; }
+        public List<int> ShuffledStatsOrder { get; set; } = new List<int> { 0, 1, 2, 3, 4, 5 };
+        public bool TemporaryFlag { get; set; }
+        public List<MoveLearnt> MovesLearnt { get; } = new List<MoveLearnt>();
+
+        // ReSharper disable once InconsistentNaming
+        public ArraySlice<bool> TMHMCompatibility { get; set; } = Slice<bool>.Empty;
 
         public Pokemon(int id)
         {

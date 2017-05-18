@@ -29,11 +29,6 @@ namespace RandomizerSharp.RomHandlers
             ret[2] = unchecked((byte) ((amount >> 16) & 0xFF));
             return ret;
         }
-        
-        public void CloseInnerRom()
-        {
-            BaseRom.CloseRom();
-        }
 
         public NarcArchive ReadNarc(string subpath)
         {

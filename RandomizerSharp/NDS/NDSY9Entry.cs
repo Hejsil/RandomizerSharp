@@ -34,31 +34,26 @@ namespace RandomizerSharp.NDS
         }
 
         // returns null if no override
-        public virtual ArraySlice<byte> OverrideContents
+        public ArraySlice<byte> OverrideContents()
         {
-            get
-            {
-                var buf = GetContents();
+            var buf = GetContents();
 
-                if (!_decompressedData)
-                    return buf;
-
-                buf = BlzCoder.Encode(buf, false, "overlay " + OverlayId);
-
-                // update our compressed size
-                CompressedSize = buf.Length;
+            if (!_decompressedData)
                 return buf;
-            }
+
+            buf = BlzCoder.Encode(buf, false, "overlay " + OverlayId);
+
+            // update our compressed size
+            CompressedSize = buf.Length;
+            return buf;
         }
         
-        public virtual ArraySlice<byte> GetContents()
+        public ArraySlice<byte> GetContents()
         {
             switch (Status)
             {
                 case Extracted.Not:
                 {
-                    // extract file
-                    _parent.ReopenRom();
                     var rom = _parent.BaseRom;
                     var buf = new byte[OriginalSize];
                     rom.Seek(Offset);

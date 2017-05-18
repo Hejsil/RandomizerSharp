@@ -8,8 +8,8 @@ namespace RandomizerSharp.NDS
 {
     public class NarcArchive
     {
-        public IList<string> Filenames = new List<string>();
-        public IList<ArraySlice<byte>> Files = new List<ArraySlice<byte>>();
+        public List<string> Filenames = new List<string>();
+        public List<ArraySlice<byte>> Files = new List<ArraySlice<byte>>();
         public bool HasFilenames;
 
         public NarcArchive()
@@ -49,7 +49,9 @@ namespace RandomizerSharp.NDS
                     var fnLength = fntbframe[offset] & 0xFF;
                     offset++;
 
-                    Filenames.Add(Encoding.ASCII.GetString(fntbframe, offset, fnLength));
+                    var array = new byte[fntbframe.Length];
+                    fntbframe.CopyTo(array, 0);
+                    Filenames.Add(Encoding.ASCII.GetString(array, offset, fnLength));
                 }
             }
             else

@@ -34,7 +34,7 @@ namespace RandomizerSharp
             ISet<Pokemon> middleEvolutions = new SortedSet<Pokemon>();
             foreach (var pkmn in allPokes)
             {
-                if (pkmn?.EvolutionsTo.Count != 1 || pkmn.EvolutionsFrom.Count <= 0)
+                if (pkmn.EvolutionsTo.Count != 1 || pkmn.EvolutionsFrom.Count <= 0)
                     continue;
 
                 var onlyEvo = pkmn.EvolutionsTo[0];
@@ -50,7 +50,7 @@ namespace RandomizerSharp
             ISet<Pokemon> finalEvolutions = new SortedSet<Pokemon>();
             foreach (var pkmn in allPokes)
             {
-                if (pkmn?.EvolutionsTo.Count != 1 || pkmn.EvolutionsFrom.Count != 0)
+                if (pkmn.EvolutionsTo.Count != 1 || pkmn.EvolutionsFrom.Count != 0)
                     continue;
 
                 var onlyEvo = pkmn.EvolutionsTo[0];
@@ -60,20 +60,14 @@ namespace RandomizerSharp
             return finalEvolutions;
         }
 
-        public static int[] GetMovesAtLevel(Pokemon pkmn, IDictionary<Pokemon, List<MoveLearnt>> movesets, int level)
-        {
-            return GetMovesAtLevel(pkmn, movesets, level, 0);
-        }
-
-        public static int[] GetMovesAtLevel(Pokemon pkmn, IDictionary<Pokemon, List<MoveLearnt>> movesets, int level,
-            int emptyValue)
+        public static int[] GetMovesAtLevel(Pokemon pkmn, int level, int emptyValue = 0)
         {
             var curMoves = new int[4];
             if (emptyValue != 0)
                 curMoves.Populate(emptyValue);
 
             var moveCount = 0;
-            IList<MoveLearnt> movepool = movesets[pkmn];
+            IList<MoveLearnt> movepool = pkmn.MovesLearnt;
             foreach (var ml in movepool)
             {
                 if (ml.Level > level)

@@ -8,7 +8,6 @@ namespace RandomizerSharp.RomHandlers
 {
     public abstract class AbstractRomHandler
     {
-        public IDictionary<Pokemon, List<MoveLearnt>> MovesLearnt { get; protected set; } = new Dictionary<Pokemon, List<MoveLearnt>>();
         public ArraySlice<Trainer> Trainers { get; protected set; } = Slice<Trainer>.Empty;
         public ArraySlice<Pokemon> NonLegendaryPokemons => ValidPokemons.Where(p => !p.Legendary).Slice();
         public ArraySlice<Pokemon> LegendaryPokemons => ValidPokemons.Where(p => p.Legendary).Slice();
@@ -30,8 +29,6 @@ namespace RandomizerSharp.RomHandlers
         public ArraySlice<Pokemon> StaticPokemon { get; protected set; } = Slice<Pokemon>.Empty;
 
         public bool CanChangeStaticPokemon { get; protected set; }
-
-        public IDictionary<Pokemon, ArraySlice<bool>> TmhmCompatibility { get; protected set; }
 
         public bool HasMoveTutors { get; protected set; }
 

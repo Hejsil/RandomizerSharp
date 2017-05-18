@@ -8,10 +8,12 @@ namespace RandomizerSharp.Randomizers
     {
         private Gen5RomHandler Gen5Rom => (Gen5RomHandler) RomHandler;
 
+        // ReSharper disable once SuggestBaseTypeForParameter
         public Gen5Randomizer(Gen5RomHandler romHandler, StreamWriter log) 
             : base(romHandler, log)
         { }
 
+        // ReSharper disable once SuggestBaseTypeForParameter
         public Gen5Randomizer(Gen5RomHandler romHandler, StreamWriter log, int seed) 
             : base(romHandler, log, seed)
         { }

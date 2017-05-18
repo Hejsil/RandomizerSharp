@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.ConstrainedExecution;
 
 namespace RandomizerSharp.NDS
 {
@@ -202,7 +203,7 @@ namespace RandomizerSharp.NDS
                 }
 
                 int lenBest1;
-                (bestPosition, lenBest1) = Search(bestPosition, raw, rawEnd, rawBuffer);
+                (bestPosition, lenBest1) = Search(rawBuffer, bestPosition, raw, rawEnd);
 
                 pakBuffer[flag] = pakBuffer[flag] << 1;
 
@@ -275,34 +276,36 @@ namespace RandomizerSharp.NDS
             return (pakBuffer, pak);
         }
         
-        private static (int, int) Search(int bestPosition, int raw, int rawEnd, int[] rawBuffer)
+        public static (int, int) Search(int[] rawBuffer, int bestPosition, int raw, int rawEnd)
         {
-            var tempBestLength = BlzThreshold;
+            var bestLength = BlzThreshold;
 
-            var max = raw >= BlzN ? BlzN : raw;
+            var max = Math.Min(raw, BlzF);
+
             for (var pos = 3; pos <= max; pos++)
             {
                 var length = 0;
-                for (; 
-                    length < BlzF && 
-                    raw + length != rawEnd && 
-                    length < pos && 
-                    rawBuffer[raw + length] == rawBuffer[raw + length - pos]; 
-                    length++)
+                for (; length < BlzF; length++)
                 {
+                    if (raw + length == rawEnd)
+                        break;
+                    if (length >= pos)
+                        break;
+                    if (rawBuffer[raw + length] != rawBuffer[raw + length - pos])
+                        break;
                 }
 
-                if (length <= tempBestLength)
+                if (length <= bestLength)
                     continue;
 
                 bestPosition = pos;
-                tempBestLength = length;
+                bestLength = length;
 
-                if (tempBestLength == BlzF)
+                if (bestLength == BlzF)
                     break;
             }
 
-            return (bestPosition, tempBestLength);
+            return (bestPosition, bestLength);
         }
 
         private static void BLZ_Invert(int[] buffer, int offset, int length)
