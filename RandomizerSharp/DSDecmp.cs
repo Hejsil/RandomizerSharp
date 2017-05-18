@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace RandomizerSharp
 {
@@ -22,14 +23,14 @@ namespace RandomizerSharp
             }
         }
 
-        private static ArraySlice<byte> Decompress10Lz(ArraySlice<byte> data, int offset)
+        private static ArraySlice<byte> Decompress10Lz(IList<byte> data, int offset)
         {
             offset++;
             var length = (data[offset] & 0xFF) | ((data[offset + 1] & 0xFF) << 8) | ((data[offset + 2] & 0xFF) << 16);
             offset += 3;
             if (length == 0)
             {
-                length = FileFunctions.ReadFullInt(data, offset);
+                length = PpTxtHandler.ReadInt(data, offset);
                 offset += 4;
             }
             var outData = new byte[length];
@@ -83,7 +84,7 @@ namespace RandomizerSharp
             offset += 3;
             if (length == 0)
             {
-                length = FileFunctions.ReadFullInt(data, offset);
+                length = PpTxtHandler.ReadInt((byte[]) data, offset);
                 offset += 4;
             }
             var outData = new byte[length];

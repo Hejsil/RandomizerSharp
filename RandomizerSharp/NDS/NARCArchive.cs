@@ -8,16 +8,19 @@ namespace RandomizerSharp.NDS
 {
     public class NarcArchive
     {
-        public List<string> Filenames = new List<string>();
-        public List<ArraySlice<byte>> Files = new List<ArraySlice<byte>>();
-        public bool HasFilenames;
+        private byte[] _bytes;
+
+        public List<string> Filenames { get; } = new List<string>();
+        public List<ArraySlice<byte>> Files { get; } = new List<ArraySlice<byte>>();
+        public bool HasFilenames { get; }
 
         public NarcArchive()
         {
         }
 
-        public NarcArchive(ArraySlice<byte> data)
+        public NarcArchive(byte[] data)
         {
+            _bytes = data;
             var frames = ReadNitroFrames(data);
 
             if (!frames.ContainsKey("FATB") || !frames.ContainsKey("FNTB") || !frames.ContainsKey("FIMG"))
@@ -63,10 +66,12 @@ namespace RandomizerSharp.NDS
         }
 
 
-        public virtual ArraySlice<byte> Bytes
+        public virtual byte[] Bytes
         {
             get
             {
+                if (_bytes != null) return _bytes;
+
                 var offset = 0;
 
                 var bytesRequired = Files.Sum(file => (int) Math.Ceiling(file.Length / 4.0) * 4);
@@ -136,24 +141,26 @@ namespace RandomizerSharp.NDS
                     WriteLong(fntbFrame, 12, 0x10000);
                 }
                 var nitrolength = 16 + fatbFrame.Length + fntbFrame.Length + fimgFrame.Length;
-                var nitroFile = new byte[nitrolength];
-                nitroFile[0] = (byte) 'N';
-                nitroFile[1] = (byte) 'A';
-                nitroFile[2] = (byte) 'R';
-                nitroFile[3] = (byte) 'C';
-                WriteWord(nitroFile, 4, 0xFFFE);
-                WriteWord(nitroFile, 6, 0x0100);
-                WriteLong(nitroFile, 8, nitrolength);
-                WriteWord(nitroFile, 12, 0x10);
-                WriteWord(nitroFile, 14, 3);
-                Array.Copy(fatbFrame, 0, nitroFile, 16, fatbFrame.Length);
-                Array.Copy(fntbFrame, 0, nitroFile, 16 + fatbFrame.Length, fntbFrame.Length);
-                Array.Copy(fimgFrame, 0, nitroFile, 16 + fatbFrame.Length + fntbFrame.Length, fimgFrame.Length);
-                return nitroFile;
+
+                _bytes = new byte[nitrolength];
+                _bytes[0] = (byte) 'N';
+                _bytes[1] = (byte) 'A';
+                _bytes[2] = (byte) 'R';
+                _bytes[3] = (byte) 'C';
+                WriteWord(_bytes, 4, 0xFFFE);
+                WriteWord(_bytes, 6, 0x0100);
+                WriteLong(_bytes, 8, nitrolength);
+                WriteWord(_bytes, 12, 0x10);
+                WriteWord(_bytes, 14, 3);
+                Array.Copy(fatbFrame, 0, _bytes, 16, fatbFrame.Length);
+                Array.Copy(fntbFrame, 0, _bytes, 16 + fatbFrame.Length, fntbFrame.Length);
+                Array.Copy(fimgFrame, 0, _bytes, 16 + fatbFrame.Length + fntbFrame.Length, fimgFrame.Length);
+
+                return _bytes;
             }
         }
 
-        private IDictionary<string, ArraySlice<byte>> ReadNitroFrames(ArraySlice<byte> data)
+        private static Dictionary<string, ArraySlice<byte>> ReadNitroFrames(ArraySlice<byte> data)
         {
             var frameCount = ReadWord(data, 0x0E);
             var offset = 0x10;
@@ -174,12 +181,12 @@ namespace RandomizerSharp.NDS
             return frames;
         }
 
-        private int ReadWord(ArraySlice<byte> data, int offset)
+        private static int ReadWord(IList<byte> data, int offset)
         {
             return (data[offset] & 0xFF) | ((data[offset + 1] & 0xFF) << 8);
         }
 
-        private int ReadLong(ArraySlice<byte> data, int offset)
+        private static int ReadLong(IList<byte> data, int offset)
         {
             return (data[offset] & 0xFF) |
                    ((data[offset + 1] & 0xFF) << 8) |
@@ -187,13 +194,13 @@ namespace RandomizerSharp.NDS
                    ((data[offset + 3] & 0xFF) << 24);
         }
 
-        private void WriteWord(ArraySlice<byte> data, int offset, int value)
+        private static void WriteWord(IList<byte> data, int offset, int value)
         {
             data[offset] = unchecked((byte) (value & 0xFF));
             data[offset + 1] = unchecked((byte) ((value >> 8) & 0xFF));
         }
 
-        private void WriteLong(ArraySlice<byte> data, int offset, int value)
+        private static void WriteLong(IList<byte> data, int offset, int value)
         {
             data[offset] = unchecked((byte) (value & 0xFF));
             data[offset + 1] = unchecked((byte) ((value >> 8) & 0xFF));

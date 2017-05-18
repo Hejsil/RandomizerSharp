@@ -24,8 +24,7 @@ namespace RandomizerSharp.NDS
         private int _arm9Szmode, _arm9Szoffset;
         private Ndsy9Entry[] _arm9Overlays;
         private byte[] _fat;
-        private string _romCode;
-        
+
         public NdsRom(string filename)
         {
             BaseRom = new FileStream(filename, FileMode.Open, FileAccess.Read);
@@ -49,7 +48,7 @@ namespace RandomizerSharp.NDS
             _arm9Ramstored = null;
         }
 
-        public virtual string Code => _romCode;
+        public string Code { get; private set; }
 
         public string TmpFolder { get; }
 
@@ -71,7 +70,7 @@ namespace RandomizerSharp.NDS
             var sig = new byte[4];
             BaseRom.Read(sig, 0, sig.Length);
 
-            _romCode = Encoding.ASCII.GetString(sig, 0, sig.Length);
+            Code = Encoding.ASCII.GetString(sig, 0, sig.Length);
             BaseRom.Seek(0x40, SeekOrigin.Begin);
 
             var fntOffset = ReadFromFile(BaseRom, 4);
@@ -222,7 +221,7 @@ namespace RandomizerSharp.NDS
             }
         }
         
-        public virtual void SaveTo(string filename)
+        public void SaveTo(string filename)
         {
             using (var fNew = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.ReadWrite))
             {
@@ -426,7 +425,7 @@ namespace RandomizerSharp.NDS
             }
         }
         
-        public virtual byte[] GetFile(string filename)
+        public byte[] GetFile(string filename)
         {
             if (_files.ContainsKey(filename))
                 return _files[filename].LoadContents();
@@ -434,21 +433,21 @@ namespace RandomizerSharp.NDS
             return null;
         }
         
-        public virtual byte[] GetOverlay(int number)
+        public byte[] GetOverlay(int number)
         {
             if (number >= 0 && number < _arm9Overlays.Length)
                 return _arm9Overlays[number].GetContents();
             return null;
         }
 
-        public virtual int GetOverlayAddress(int number)
+        public int GetOverlayAddress(int number)
         {
             if (number >= 0 && number < _arm9Overlays.Length)
                 return _arm9Overlays[number].RamAddress;
             return -1;
         }
         
-        public virtual byte[] GetArm9()
+        public byte[] GetArm9()
         {
             if (!_arm9Open)
             {
@@ -540,7 +539,7 @@ namespace RandomizerSharp.NDS
             }
             if (WritingEnabled)
             {
-                var file = FileFunctions.ReadFileFullyIntoBuffer(TmpFolder + "arm9.bin");
+                var file = File.ReadAllBytes(TmpFolder + "arm9.bin");
                 return file;
             }
             {

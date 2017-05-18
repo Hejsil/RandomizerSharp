@@ -4,9 +4,9 @@ using System.Linq;
 
 namespace RandomizerSharp
 {
-    public static class Slice<T>
+    public static class Array<T>
     {
-        public static readonly ArraySlice<T> Empty = new T[0];
+        public static readonly T[] Empty = new T[0];
     }
 
     public static class SliceExtensions
@@ -72,5 +72,13 @@ namespace RandomizerSharp
 
         public static ArraySlice<T> SliceFrom<T>(this T[] array, int from, int to) => array.Slice(to - from, from);
         public static ArraySlice<T> SliceFrom<T>(this ArraySlice<T> slice, int from, int to) => slice.Slice(to - from, from);
+
+        public static T[] ToArray<T>(this ArraySlice<T> slice, int count, int offset = 0)
+        {
+            var result = new T[count];
+            Buffer.BlockCopy(slice.Array, slice.Offset + offset, result, 0, count);
+
+            return result;
+        }
     }
 }

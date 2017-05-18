@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using RandomizerSharp.NDS;
@@ -21,7 +22,7 @@ namespace RandomizerSharp.RomHandlers
             IsRomHack = false;
         }
         
-        protected ArraySlice<byte> Get3Byte(int amount)
+        protected byte[] Get3Byte(int amount)
         {
             var ret = new byte[3];
             ret[0] = unchecked((byte) (amount & 0xFF));
@@ -50,29 +51,29 @@ namespace RandomizerSharp.RomHandlers
             return ndsCode;
         }
 
-        protected int ReadWord(ArraySlice<byte> data, int offset)
+        protected int ReadWord(IList<byte> data, int offset)
         {
             return (data[offset] & 0xFF) | ((data[offset + 1] & 0xFF) << 8);
         }
 
-        protected int ReadLong(ArraySlice<byte> data, int offset)
+        protected int ReadLong(IList<byte> data, int offset)
         {
             return (data[offset] & 0xFF) | ((data[offset + 1] & 0xFF) << 8) | ((data[offset + 2] & 0xFF) << 16) |
                    ((data[offset + 3] & 0xFF) << 24);
         }
 
-        protected int ReadRelativePointer(ArraySlice<byte> data, int offset)
+        protected int ReadRelativePointer(IList<byte> data, int offset)
         {
             return ReadLong(data, offset) + offset + 4;
         }
 
-        protected void WriteWord(ArraySlice<byte> data, int offset, int value)
+        protected void WriteWord(IList<byte> data, int offset, int value)
         {
             data[offset] = unchecked((byte) (value & 0xFF));
             data[offset + 1] = unchecked((byte) ((value >> 8) & 0xFF));
         }
 
-        protected void WriteLong(ArraySlice<byte> data, int offset, int value)
+        protected void WriteLong(IList<byte> data, int offset, int value)
         {
             data[offset] = unchecked((byte) (value & 0xFF));
             data[offset + 1] = unchecked((byte) ((value >> 8) & 0xFF));
@@ -80,7 +81,7 @@ namespace RandomizerSharp.RomHandlers
             data[offset + 3] = unchecked((byte) ((value >> 24) & 0xFF));
         }
 
-        protected void WriteRelativePointer(ArraySlice<byte> data, int offset, int pointer)
+        protected void WriteRelativePointer(IList<byte> data, int offset, int pointer)
         {
             var relPointer = pointer - (offset + 4);
             WriteLong(data, offset, relPointer);
@@ -91,12 +92,12 @@ namespace RandomizerSharp.RomHandlers
             return BaseRom.GetFile(location);
         }
         
-        protected void WriteFile(string location, ArraySlice<byte> data)
+        protected void WriteFile(string location, byte[] data)
         {
             WriteFile(location, data, 0, data.Length);
         }
         
-        protected void WriteFile(string location, ArraySlice<byte> data, int offset, int length)
+        protected void WriteFile(string location, byte[] data, int offset, int length)
         {
             if (offset != 0 || length != data.Length)
                 data = data.Slice(length, offset);
@@ -104,38 +105,37 @@ namespace RandomizerSharp.RomHandlers
             BaseRom.WriteFile(location, data);
         }
         
-        protected ArraySlice<byte> ReadArm9()
+        protected byte[] ReadArm9()
         {
             return BaseRom.GetArm9();
         }
         
-        protected void WriteArm9(ArraySlice<byte> data)
+        protected void WriteArm9(byte[] data)
         {
             BaseRom.WriteArm9(data);
         }
         
-        protected ArraySlice<byte> ReadOverlay(int number)
+        protected byte[] ReadOverlay(int number)
         {
             return BaseRom.GetOverlay(number);
         }
         
-        protected void WriteOverlay(int number, ArraySlice<byte> data)
+        protected void WriteOverlay(int number, byte[] data)
         {
             BaseRom.WriteOverlay(number, data);
         }
 
-        protected void ReadByteIntoFlags(ArraySlice<byte> data, ArraySlice<bool> flags, int offsetIntoFlags,
-            int offsetIntoData)
+        protected void ReadByteIntoFlags(IList<byte> data, IList<bool> flags, int offsetIntoFlags, int offsetIntoData)
         {
             var thisByte = data[offsetIntoData] & 0xFF;
-            for (var i = 0; i < 8 && i + offsetIntoFlags < flags.Length; i++)
+            for (var i = 0; i < 8 && i + offsetIntoFlags < flags.Count; i++)
                 flags[offsetIntoFlags + i] = ((thisByte >> i) & 0x01) == 0x01;
         }
 
-        protected byte GetByteFromFlags(ArraySlice<bool> flags, int offsetIntoFlags)
+        protected byte GetByteFromFlags(IList<bool> flags, int offsetIntoFlags)
         {
             var thisByte = 0;
-            for (var i = 0; i < 8 && i + offsetIntoFlags < flags.Length; i++)
+            for (var i = 0; i < 8 && i + offsetIntoFlags < flags.Count; i++)
                 thisByte |= (flags[offsetIntoFlags + i] ? 1 : 0) << i;
             return (byte) thisByte;
         }

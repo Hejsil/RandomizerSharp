@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Runtime.ConstrainedExecution;
+using System.Collections.Generic;
 
 namespace RandomizerSharp.NDS
 {
@@ -8,14 +8,13 @@ namespace RandomizerSharp.NDS
         private const int BlzShift = 1;
         private const int BlzMask = 0x80;
         private const int BlzThreshold = 2;
-        private const int BlzN = 0x1002;
         private const int BlzF = 0x12;
         private const int RawMaxim = 0x00FFFFFF;
         private const int BlzMaxim = 0x01400000;
 
-        public static ArraySlice<byte> Decode(ArraySlice<byte> data, string reference)
+        public static byte[] Decode(IList<byte> data, string reference)
         {
-            var bytes = new byte[data.Length];
+            var bytes = new byte[data.Count];
             data.CopyTo(bytes, 0);
 
             var (result, resultLength) = BLZ_Decode(bytes);
@@ -27,9 +26,9 @@ namespace RandomizerSharp.NDS
             return retbuf;
         }
 
-        public static ArraySlice<byte> Encode(ArraySlice<byte> data, bool arm9, string reference)
+        public static byte[] Encode(IList<byte> data, bool arm9, string reference)
         {
-            var bytes = new byte[data.Length];
+            var bytes = new byte[data.Count];
             data.CopyTo(bytes, 0);
 
             Console.Write(@"- encoding '{0}' (memory)", reference);

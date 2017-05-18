@@ -12,8 +12,9 @@ namespace RandomizerSharp
         public static IDictionary<string, string> PokeToText = new Dictionary<string, string>();
         public static IDictionary<string, string> TextToPoke = new Dictionary<string, string>();
         public static string PokeToTextPattern, TextToPokePattern;
-        private static IList<int> _lastKeys;
-        private static IList<int> _lastUnknowns;
+
+        private static readonly List<int> LastKeys = new List<int>();
+        private static readonly List<int> LastUnknowns = new List<int>();
 
         static PpTxtHandler()
         {
@@ -56,9 +57,9 @@ namespace RandomizerSharp
             return sb.ToString();
         }
 
-        private static IList<int> Decompress(IList<int> chars)
+        private static List<int> Decompress(IList<int> chars)
         {
-            IList<int> uncomp = new List<int>();
+            var uncomp = new List<int>();
             var j = 1;
             var shift1 = 0;
             var trans = 0;
@@ -97,106 +98,101 @@ namespace RandomizerSharp
             return uncomp;
         }
 
-        public static ArraySlice<string> ReadTexts(ArraySlice<byte> ds)
+        public static string[] ReadTexts(IList<byte> ds)
         {
             var pos = 0;
-            _lastKeys = new List<int>();
-            _lastUnknowns = new List<int>();
+            LastKeys.Clear();
+            LastUnknowns.Clear();
 
-            ArraySlice<int> sizeSections = new [] { 0, 0, 0 };
-            ArraySlice<int> sectionOffset = new [] { 0, 0, 0 };
+            var sizeSections = new [] { 0, 0, 0 };
+            var sectionOffset = new [] { 0, 0, 0 };
 
 
             var numSections = ReadWord(ds, 0);
             var numEntries = ReadWord(ds, 2);
             
-            ArraySlice<string> strings = new string[numEntries];
+            var strings = new string[numEntries];
 
-            sizeSections[0] = ReadLong(ds, 4);
+            sizeSections[0] = ReadInt(ds, 4);
             pos += 12;
             if (numSections > 0)
             {
                 for (var z = 0; z < numSections; z++)
                 {
-                    sectionOffset[z] = ReadLong(ds, pos);
+                    sectionOffset[z] = ReadInt(ds, pos);
                     pos += 4;
                 }
 
                 pos = sectionOffset[0];
-                sizeSections[0] = ReadLong(ds, pos);
+                sizeSections[0] = ReadInt(ds, pos);
                 pos += 4;
 
-                var tableOffsets = new List<int>();
-                var characterCount = new List<int>();
-                var encText = new List<IList<int>>();
+                var tableOffsets = new int[numEntries];
+                var characterCount = new int[numEntries];
 
                 for (var j = 0; j < numEntries; j++)
                 {
-                    var tmpOffset = ReadLong(ds, pos);
+                    var tmpOffset = ReadInt(ds, pos);
                     pos += 4;
                     var tmpCharCount = ReadWord(ds, pos);
                     pos += 2;
                     var tmpUnknown = ReadWord(ds, pos);
                     pos += 2;
-                    tableOffsets.Add(tmpOffset);
-                    characterCount.Add(tmpCharCount);
-                    _lastUnknowns.Add(tmpUnknown);
+                    tableOffsets[j] = tmpOffset;
+                    characterCount[j] = tmpCharCount;
+                    LastUnknowns.Add(tmpUnknown);
                 }
+
                 for (var j = 0; j < numEntries; j++)
                 {
-                    IList<int> tmpEncChars = new List<int>();
+                    var tmpEncChars = new List<int>();
                     pos = sectionOffset[0] + tableOffsets[j];
+
                     for (var k = 0; k < characterCount[j]; k++)
                     {
                         var tmpChar = ReadWord(ds, pos);
                         pos += 2;
                         tmpEncChars.Add(tmpChar);
                     }
-                    encText.Add(tmpEncChars);
-                    var key = encText[j][characterCount[j] - 1] ^ 0xFFFF;
+                    
+
+                    var key = tmpEncChars[characterCount[j] - 1] ^ 0xFFFF;
                     for (var k = characterCount[j] - 1; k >= 0; k--)
                     {
-                        encText[j][k] = encText[j][k] ^ key;
+                        tmpEncChars[k] = tmpEncChars[k] ^ key;
+
                         if (k == 0)
-                            _lastKeys.Add(key);
+                            LastKeys.Add(key);
+
                         key = ((int) ((uint) key >> 3) | (key << 13)) & 0xffff;
                     }
-                    if (encText[j][0] == 0xF100)
-                    {
-                        encText[j] = Decompress(encText[j]);
-                        characterCount[j] = encText[j].Count;
-                    }
 
-                    var chars = new List<string>();
-                    var str = new StringBuilder();
+                    if (tmpEncChars[0] == 0xF100)
+                    {
+                        tmpEncChars = Decompress(tmpEncChars);
+                        characterCount[j] = tmpEncChars.Count;
+                    }
+                    
+                    var str = new StringBuilder(characterCount[j]);
 
                     for (var k = 0; k < characterCount[j]; k++)
-                        if (encText[j][k] == 0xFFFF)
-                        {
-                            chars.Add("\\xFFFF");
-                        }
-                        else
-                        {
-                            if (encText[j][k] > 20 && encText[j][k] <= 0xFFF0)
-                            {
-                                chars.Add("" + (char) encText[j][k]);
-                            }
-                            else
-                            {
-                                var num = $"{encText[j][k]:X4}";
-                                chars.Add("\\x" + num);
-                            }
+                    {
+                        if (tmpEncChars[k] == 0xFFFF) continue;
 
-                            str.Append(chars[k]);
-                        }
+                        if (tmpEncChars[k] > 20 && tmpEncChars[k] <= 0xFFF0)
+                            str.Append((char)tmpEncChars[k]);
+                        else
+                            str.AppendFormat("\\x{0:X4}", tmpEncChars[k]);
+                    }
 
                     strings[j] = str.ToString();
                 }
             }
-            for (var sn = 0; sn < strings.Count; sn++)
+
+            for (var sn = 0; sn < strings.Length; sn++)
                 strings[sn] = BulkReplace(strings[sn], PokeToTextPattern, PokeToText);
 
-            return strings.Slice();
+            return strings;
         }
 
         private static string BulkReplace(string @string, string pattern, IDictionary<string, string> replacements)
@@ -210,41 +206,48 @@ namespace RandomizerSharp
                 text[sn] = BulkReplace(text[sn], TextToPokePattern, TextToPoke);
 
             ReadTexts(originalData);
-            ArraySlice<int> sizeSections = new[] { 0, 0, 0};
-            ArraySlice<int> sectionOffset = new[] { 0, 0, 0};
-            ArraySlice<int> newsizeSections = new[] { 0, 0, 0};
-            ArraySlice<int> newsectionOffset = new[] { 0, 0, 0};
+
+            var sizeSections = new[] { 0, 0, 0};
+            var sectionOffset = new[] { 0, 0, 0};
+            var newsizeSections = new[] { 0, 0, 0};
+            var newsectionOffset = new[] { 0, 0, 0};
             var ds = originalData;
             var pos = 0;
             var numSections = ReadWord(ds, 0);
             var numEntries = ReadWord(ds, 2);
-            sizeSections[0] = ReadLong(ds, 4);
+
+            sizeSections[0] = ReadInt(ds, 4);
             pos += 12;
+
             if (text.Count < numEntries)
             {
                 Console.Error.WriteLine("Can't do anything due to too few lines");
                 return originalData;
             }
+
             var newEntry = MakeSection(text, numEntries);
             for (var z = 0; z < numSections; z++)
             {
-                sectionOffset[z] = ReadLong(ds, pos);
+                sectionOffset[z] = ReadInt(ds, pos);
                 pos += 4;
             }
+
             for (var z = 0; z < numSections; z++)
             {
                 pos = sectionOffset[z];
-                sizeSections[z] = ReadLong(ds, pos);
+                sizeSections[z] = ReadInt(ds, pos);
             }
+
             newsizeSections[0] = newEntry.Length;
+
             var newDataSize = ds.Length - sizeSections[0] + newsizeSections[0];
             var newData = ds.Slice(Math.Min(ds.Length, newDataSize));
 
-            WriteLong(newData, 4, newsizeSections[0]);
+            WriteInt(newData, 4, newsizeSections[0]);
             if (numSections == 2)
             {
                 newsectionOffset[1] = newsizeSections[0] + sectionOffset[0];
-                WriteLong(newData, 0x10, newsectionOffset[1]);
+                WriteInt(newData, 0x10, newsectionOffset[1]);
             }
 
             newData = newEntry.SliceFrom(sectionOffset[0]);
@@ -255,67 +258,78 @@ namespace RandomizerSharp
             return newData;
         }
 
-        private static ArraySlice<byte> MakeSection(IList<string> strings, int numEntries)
+        private static byte[] MakeSection(IList<string> strings, int numEntries)
         {
-            IList<IList<int>> data = new List<IList<int>>();
+            var data = new List<int[]>();
             var size = 0;
             var offset = 4 + 8 * numEntries;
+
             for (var i = 0; i < numEntries; i++)
             {
                 data.Add(ParseString(strings[i], i));
-                size += data[i].Count * 2;
+                size += data[i].Length * 2;
             }
+
             if (size % 4 == 2)
             {
                 size += 2;
-                var tmpKey = _lastKeys[numEntries - 1];
-                for (var i = 0; i < data[numEntries - 1].Count; i++)
+                var tmpKey = LastKeys[numEntries - 1];
+                var entry = data[numEntries - 1];
+
+                for (var i = 0; i < entry.Length; i++)
                     tmpKey = ((tmpKey << 3) | (tmpKey >> 13)) & 0xFFFF;
-                data[numEntries - 1].Add(0xFFFF ^ tmpKey);
+
+                data[numEntries - 1][entry.Length - 1] = 0xFFFF ^ tmpKey;
             }
+
             size += offset;
             var section = new byte[size];
             var pos = 0;
-            WriteLong(section, pos, size);
+            WriteInt(section, pos, size);
             pos += 4;
+
             for (var i = 0; i < numEntries; i++)
             {
-                var charCount = data[i].Count;
-                WriteLong(section, pos, offset);
+                var charCount = data[i].Length;
+                WriteInt(section, pos, offset);
                 pos += 4;
                 WriteWord(section, pos, charCount);
                 pos += 2;
-                WriteWord(section, pos, _lastUnknowns[i]);
+                WriteWord(section, pos, LastUnknowns[i]);
                 pos += 2;
                 offset += charCount * 2;
             }
+
             for (var i = 0; i < numEntries; i++)
+            {
                 foreach (var word in data[i])
                 {
                     WriteWord(section, pos, word);
                     pos += 2;
                 }
+            }
 
             return section;
         }
 
-        private static IList<int> ParseString(string @string, int entryId)
+        private static int[] ParseString(string str, int entryId)
         {
-            IList<int> chars = new List<int>();
-            for (var i = 0; i < @string.Length; i++)
-                if (@string[i] != '\\')
+            var chars = new int[str.Length + 2];
+            for (var i = 0; i < str.Length; i++)
+            {
+                if (str[i] != '\\')
                 {
-                    chars.Add(@string[i]);
+                    chars[i] = str[i];
                 }
                 else
                 {
-                    if (i + 2 < @string.Length && @string[i + 2] == '{')
+                    if (i + 2 < str.Length && str[i + 2] == '{')
                     {
-                        chars.Add(@string[i]);
+                        chars[i] = str[i];
                     }
                     else
                     {
-                        var substring = @string.Substring(i + 2, i + 6 - (i + 2));
+                        var substring = str.Substring(i + 2, i + 6 - (i + 2));
 
                         if (substring.StartsWith("x"))
                             substring = substring.Remove(0, 1);
@@ -323,13 +337,16 @@ namespace RandomizerSharp
                         if (substring.StartsWith(@"\x"))
                             substring = substring.Remove(0, 3);
 
-                        chars.Add(Convert.ToInt32(substring, 16));
+                        chars[i] = Convert.ToInt32(substring, 16);
                         i += 5;
                     }
                 }
-            chars.Add(0xFFFF);
-            var key = _lastKeys[entryId];
-            for (var i = 0; i < chars.Count; i++)
+            }
+
+            chars[str.Length] = 0xFFFF;
+
+            var key = LastKeys[entryId];
+            for (var i = 0; i < chars.Length; i++)
             {
                 chars[i] = (chars[i] ^ key) & 0xFFFF;
                 key = ((key << 3) | (int) ((uint) key >> 13)) & 0xFFFF;
@@ -337,24 +354,24 @@ namespace RandomizerSharp
             return chars;
         }
 
-        private static int ReadWord(ArraySlice<byte> data, int offset)
+        public static int ReadWord(IList<byte> data, int offset)
         {
             return (data[offset] & 0xFF) + ((data[offset + 1] & 0xFF) << 8);
         }
 
-        private static int ReadLong(ArraySlice<byte> data, int offset)
+        public static int ReadInt(IList<byte> data, int offset)
         {
             return (data[offset] & 0xFF) + ((data[offset + 1] & 0xFF) << 8) + ((data[offset + 2] & 0xFF) << 16) +
                    ((data[offset + 3] & 0xFF) << 24);
         }
 
-        protected internal static void WriteWord(ArraySlice<byte> data, int offset, int value)
+        public static void WriteWord(IList<byte> data, int offset, int value)
         {
             data[offset] = unchecked((byte) (value & 0xFF));
             data[offset + 1] = unchecked((byte) ((value >> 8) & 0xFF));
         }
 
-        protected internal static void WriteLong(ArraySlice<byte> data, int offset, int value)
+        public static void WriteInt(IList<byte> data, int offset, int value)
         {
             data[offset] = unchecked((byte) (value & 0xFF));
             data[offset + 1] = unchecked((byte) ((value >> 8) & 0xFF));

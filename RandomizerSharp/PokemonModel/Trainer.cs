@@ -34,7 +34,7 @@ namespace RandomizerSharp.PokemonModel
         public bool ImportantTrainer;
         public string Name;
         public int Offset;
-        public IList<TrainerPokemon> Pokemon = new List<TrainerPokemon>();
+        public TrainerPokemon[] Pokemon;
         public int Poketype;
         public string Tag;
         public int Trainerclass;

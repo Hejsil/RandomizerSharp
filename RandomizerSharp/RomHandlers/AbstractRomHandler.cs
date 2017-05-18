@@ -8,15 +8,17 @@ namespace RandomizerSharp.RomHandlers
 {
     public abstract class AbstractRomHandler
     {
-        public ArraySlice<Trainer> Trainers { get; protected set; } = Slice<Trainer>.Empty;
-        public ArraySlice<Pokemon> NonLegendaryPokemons => ValidPokemons.Where(p => !p.Legendary).Slice();
-        public ArraySlice<Pokemon> LegendaryPokemons => ValidPokemons.Where(p => p.Legendary).Slice();
-        public ArraySlice<Move> ValidMoves { get; protected set; } = Slice<Move>.Empty;
-        public ArraySlice<Pokemon> ValidPokemons { get; protected set; } = Slice<Pokemon>.Empty;
-        public ArraySlice<Move> AllMoves { get; protected set; } = Slice<Move>.Empty;
-        public ArraySlice<Pokemon> AllPokemons { get; protected set; } = Slice<Pokemon>.Empty;
+        public Trainer[] Trainers { get; protected set; } = Array<Trainer>.Empty;
 
-        public ArraySlice<EncounterSet> Encounters { get; protected set; } = Slice<EncounterSet>.Empty;
+        public Pokemon[] NonLegendaryPokemons => ValidPokemons.Where(p => !p.Legendary).ToArray();
+        public Pokemon[] LegendaryPokemons => ValidPokemons.Where(p => p.Legendary).ToArray();
+        public ArraySlice<Move> ValidMoves { get; protected set; } = Array<Move>.Empty;
+        public ArraySlice<Pokemon> ValidPokemons { get; protected set; } = Array<Pokemon>.Empty;
+
+        public Move[] AllMoves { get; protected set; } = Array<Move>.Empty;
+        public Pokemon[] AllPokemons { get; protected set; } = Array<Pokemon>.Empty;
+
+        public EncounterSet[] Encounters { get; protected set; } = Array<EncounterSet>.Empty;
 
 
         public int AbilitiesPerPokemon { get; protected set; }
@@ -26,55 +28,55 @@ namespace RandomizerSharp.RomHandlers
         public bool HasPhysicalSpecialSplit { get; protected set; }
 
         public bool SupportsFourStartingMoves { get; protected set; }
-        public ArraySlice<Pokemon> StaticPokemon { get; protected set; } = Slice<Pokemon>.Empty;
+        public Pokemon[] StaticPokemon { get; protected set; } = Array<Pokemon>.Empty;
 
         public bool CanChangeStaticPokemon { get; protected set; }
 
         public bool HasMoveTutors { get; protected set; }
 
-        public ArraySlice<int> MoveTutorMoves { get; protected set; } = Slice<int>.Empty;
+        public int[] MoveTutorMoves { get; protected set; } = Array<int>.Empty;
 
-        public IDictionary<Pokemon, ArraySlice<bool>> MoveTutorCompatibility { get; protected set; }
+        public Dictionary<Pokemon, bool[]> MoveTutorCompatibility { get; protected set; } = new Dictionary<Pokemon, bool[]>();
 
         public bool CanChangeTrainerText { get; protected set; }
 
-        public ArraySlice<string> TrainerNames { get; protected set; } = Slice<string>.Empty;
+        public string[] TrainerNames { get; protected set; } = Array<string>.Empty;
 
         public TrainerNameMode TrainerNameMode { get; protected set; }
         public int MaxTrainerNameLength { get; protected set; }
 
         public int MaxSumOfTrainerNameLengths { get; protected set; } = int.MaxValue;
 
-        public ArraySlice<int> TcNameLengthsByTrainer { get; protected set; } = Slice<int>.Empty;
+        public int[] TcNameLengthsByTrainer { get; protected set; } = Array<int>.Empty;
 
 
-        public ArraySlice<string> TrainerClassNames { get; protected set; } = Slice<string>.Empty;
+        public string[] TrainerClassNames { get; protected set; } = Array<string>.Empty;
         public int MaxTrainerClassNameLength { get; protected set; }
 
 
-        public ArraySlice<int> DoublesTrainerClasses { get; protected set; } = Slice<int>.Empty;
+        public int[] DoublesTrainerClasses { get; protected set; } = Array<int>.Empty;
         public ItemList AllowedItems { get; protected set; }
         public ItemList NonBadItems { get; protected set; }
 
 
-        public ArraySlice<string> ItemNames { get; protected set; } = Slice<string>.Empty;
-        public ArraySlice<int> StarterHeldItems { get; protected set; } = Slice<int>.Empty;
+        public string[] ItemNames { get; protected set; } = Array<string>.Empty;
+        public int[] StarterHeldItems { get; protected set; } = Array<int>.Empty;
 
 
-        public ArraySlice<int> RequiredFieldTMs { get; protected set; } = Slice<int>.Empty;
+        public int[] RequiredFieldTMs { get; protected set; } = Array<int>.Empty;
 
-        public ArraySlice<int> CurrentFieldTMs { get; protected set; } = Slice<int>.Empty;
-        public ArraySlice<int> RegularFieldItems { get; protected set; } = Slice<int>.Empty;
+        public int[] CurrentFieldTMs { get; protected set; } = Array<int>.Empty;
+        public int[] RegularFieldItems { get; protected set; } = Array<int>.Empty;
 
 
-        public ArraySlice<IngameTrade> IngameTrades { get; protected set; } = Slice<IngameTrade>.Empty;
+        public IngameTrade[] IngameTrades { get; protected set; } = Array<IngameTrade>.Empty;
 
 
         public bool HasDVs { get; protected set; }
 
 
-        public string DefaultExtension { get; protected set; }
-        public ArraySlice<Bitmap> PokemonSprites { get; protected set; } = Slice<Bitmap>.Empty;
+        public string DefaultExtension { get; protected set; } = "";
+        public Bitmap[] PokemonSprites { get; protected set; } = Array<Bitmap>.Empty;
 
         public bool IsRomHack { get; protected set; }
 
@@ -86,41 +88,41 @@ namespace RandomizerSharp.RomHandlers
 
         public bool HasTimeBasedEncounters { get; protected set; }
 
-        public ArraySlice<Pokemon> BannedForWildEncounters { get; protected set; } = Slice<Pokemon>.Empty;
+        public Pokemon[] BannedForWildEncounters { get; protected set; } = Array<Pokemon>.Empty;
 
-        public ArraySlice<Pokemon> BannedForStaticPokemon { get; protected set; } = Slice<Pokemon>.Empty;
+        public Pokemon[] BannedForStaticPokemon { get; protected set; } = Array<Pokemon>.Empty;
 
-        public ArraySlice<int> TmMoves { get; protected set; } = Slice<int>.Empty;
+        public int[] TmMoves { get; protected set; } = Array<int>.Empty;
 
-        public ArraySlice<int> HmMoves { get; protected set; } = Slice<int>.Empty;
+        public int[] HmMoves { get; protected set; } = Array<int>.Empty;
 
         public int MaxTradeNicknameLength => 10;
 
         public int MaxTradeOtNameLength => 7;
-        public string LoadedFilename { get; protected set; }
-        public ArraySlice<Pokemon> Starters { get; protected set; } = Slice<Pokemon>.Empty;
+        public string LoadedFilename { get; protected set; } = "";
+        public Pokemon[] Starters { get; protected set; } = Array<Pokemon>.Empty;
 
-        public ArraySlice<int> MovesBannedFromLevelup { get; protected set; } = Slice<int>.Empty;
+        public int[] MovesBannedFromLevelup { get; protected set; } = Array<int>.Empty;
 
-        public ISet<int> GameBreakingMoves { get; } = new HashSet<int> { 49, 82 };
+        public HashSet<int> GameBreakingMoves { get; } = new HashSet<int> { 49, 82 };
 
-        public ArraySlice<int> FieldMoves { get; protected set; } = Slice<int>.Empty;
+        public int[] FieldMoves { get; protected set; } = Array<int>.Empty;
 
-        public ArraySlice<int> EarlyRequiredHmMoves { get; protected set; } = Slice<int>.Empty;
+        public int[] EarlyRequiredHmMoves { get; protected set; } = Array<int>.Empty;
 
         public bool IsYellow { get; protected set; }
 
-        public string RomName { get; protected set; }
+        public string RomName { get; protected set; } = "";
 
-        public string RomCode { get; protected set; }
+        public string RomCode { get; protected set; } = "";
 
-        public string SupportLevel { get; protected set; }
+        public string SupportLevel { get; protected set; } = "";
 
         public bool FixedTrainerClassNamesLength { get; protected set; }
-        public ArraySlice<int> FieldItems { get; protected set; } = Slice<int>.Empty;
+        public int[] FieldItems { get; protected set; } = Array<int>.Empty;
 
 
-        public ArraySlice<string> AbilityNames { get; protected set; } = Slice<string>.Empty;
+        public string[] AbilityNames { get; protected set; } = Array<string>.Empty;
 
         public abstract int InternalStringLength(string @string);
 

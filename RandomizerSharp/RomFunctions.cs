@@ -138,34 +138,37 @@ namespace RandomizerSharp
             }
         }
 
-        public static IList<int> Search(byte[] haystack, byte[] needle)
+        public static List<int> Search(byte[] haystack, byte[] needle)
         {
             return Search(haystack, 0, haystack.Length, needle);
         }
 
-        public static IList<int> Search(byte[] haystack, int beginOffset, byte[] needle)
+        public static List<int> Search(byte[] haystack, int beginOffset, byte[] needle)
         {
             return Search(haystack, beginOffset, haystack.Length, needle);
         }
 
-        public static IList<int> Search(byte[] haystack, int beginOffset, int endOffset, byte[] needle)
+        public static List<int> Search(byte[] haystack, int beginOffset, int endOffset, byte[] needle)
         {
             var currentMatchStart = beginOffset;
             var currentCharacterPosition = 0;
             var docSize = endOffset;
             var needleSize = needle.Length;
             var toFillTable = BuildKmpSearchTable(needle);
-            IList<int> results = new List<int>();
+            var results = new List<int>();
+
             while (currentMatchStart + currentCharacterPosition < docSize)
+            {
                 if (needle[currentCharacterPosition] == haystack[currentCharacterPosition + currentMatchStart])
                 {
                     currentCharacterPosition = currentCharacterPosition + 1;
-                    if (currentCharacterPosition == needleSize)
-                    {
-                        results.Add(currentMatchStart);
-                        currentCharacterPosition = 0;
-                        currentMatchStart = currentMatchStart + needleSize;
-                    }
+
+                    if (currentCharacterPosition != needleSize)
+                        continue;
+
+                    results.Add(currentMatchStart);
+                    currentCharacterPosition = 0;
+                    currentMatchStart = currentMatchStart + needleSize;
                 }
                 else
                 {
@@ -173,6 +176,8 @@ namespace RandomizerSharp
                                         toFillTable[currentCharacterPosition];
                     currentCharacterPosition = toFillTable[currentCharacterPosition] > -1 ? toFillTable[currentCharacterPosition] : 0;
                 }
+            }
+
             return results;
         }
 

@@ -6,7 +6,7 @@ namespace RandomizerSharp.NDS
 {
     public class NdsFile
     {
-        public ArraySlice<byte> Data { get; private set; } = Slice<byte>.Empty;
+        public byte[] Data { get; private set; } = Array<byte>.Empty;
         public string ExtFilename { get; set; }
         public int FileId { get; set; }
         public string FullPath { get; set; }
@@ -21,7 +21,7 @@ namespace RandomizerSharp.NDS
             _parent = parent;
         }
 
-        public virtual ArraySlice<byte> LoadContents()
+        public byte[] LoadContents()
         {
             if (Data.Length != 0)
                 return Data;
@@ -37,7 +37,7 @@ namespace RandomizerSharp.NDS
             return Data;
         }
         
-        public virtual void WriteOverride(ArraySlice<byte> data)
+        public void WriteOverride(byte[] data)
         {
             LoadContents();
             
