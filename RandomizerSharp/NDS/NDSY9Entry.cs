@@ -70,14 +70,18 @@ namespace RandomizerSharp.NDS
                         var tmpDir = _parent.TmpFolder;
                         var fullPath = $"overlay_{OverlayId:D4}";
                         var tmpFilename = Regex.Replace(fullPath, "[^A-Za-z0-9_]+", "");
+
                         ExtFilename = tmpFilename;
+
                         var tmpFile = tmpDir + ExtFilename;
                         var fos = new FileStream(tmpFile, FileMode.Create, FileAccess.Write);
+
                         fos.Write(buf, 0, buf.Length);
                         fos.Close();
 
                         Status = Extracted.ToFile;
                         Data = null;
+
                         return buf;
                     }
 

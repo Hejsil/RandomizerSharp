@@ -18,7 +18,6 @@ namespace RandomizerSharp.NDS
 
         public NarcArchive(ArraySlice<byte> data)
         {
-
             var frames = ReadNitroFrames(data);
 
             if (!frames.ContainsKey("FATB") || !frames.ContainsKey("FNTB") || !frames.ContainsKey("FIMG"))

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using ImageProcessor;
+using ImageProcessor.Imaging;
 
 namespace RandomizerSharp
 {
@@ -31,7 +33,8 @@ namespace RandomizerSharp
             var numTiles = width * height / (tileWidth * tileHeight);
             var widthInTiles = width / tileWidth;
 
-            var bim = new Bitmap(width, height);
+            var result = new Bitmap(width, height);
+            var bim = new FastBitmap(result);
 
             for (var tile = 0; tile < numTiles; tile++)
             {
