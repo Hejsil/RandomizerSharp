@@ -1,31 +1,43 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Linq;
 using RandomizerSharp.Constants;
+using RandomizerSharp.PokemonModel;
 using RandomizerSharp.RomHandlers;
 
 namespace RandomizerSharp.Randomizers
 {
-    public class Gen5Randomizer : Randomizer
+    public class Gen5Randomizer
     {
-        private Gen5RomHandler Gen5Rom => (Gen5RomHandler) RomHandler;
+        private readonly Gen5RomHandler _gen5Rom;
+        private readonly Random _random;
+        private readonly StreamWriter _log;
 
         // ReSharper disable once SuggestBaseTypeForParameter
-        public Gen5Randomizer(Gen5RomHandler romHandler, StreamWriter log) 
-            : base(romHandler, log)
-        { }
+        public Gen5Randomizer(Gen5RomHandler romHandler, StreamWriter log)
+        {
+            _gen5Rom = romHandler;
+            _log = log;
+            _random = new Random();
+        }
 
         // ReSharper disable once SuggestBaseTypeForParameter
-        public Gen5Randomizer(Gen5RomHandler romHandler, StreamWriter log, int seed) 
-            : base(romHandler, log, seed)
-        { }
+        public Gen5Randomizer(Gen5RomHandler romHandler, StreamWriter log, int seed)
+        {
+            _gen5Rom = romHandler;
+            _log = log;
+            _random = new Random(seed);
+        }
+
         public void RandomizeHiddenHollowPokemon()
         {
             var allowedUnovaPokemon = Gen5Constants.Bw2HiddenHollowUnovaPokemon;
             var randomSize = Gen5Constants.NonUnovaPokemonCount + allowedUnovaPokemon.Length;
 
-            foreach (var hollow in Gen5Rom.HiddenHollows)
+            foreach (var hollow in _gen5Rom.HiddenHollows)
             {
-                var pokeChoice = Random.Next(randomSize) + 1;
-                var genderRatio = Random.Next(101);
+                var pokeChoice = _random.Next(randomSize) + 1;
+                var genderRatio = _random.Next(101);
 
                 if (pokeChoice > Gen5Constants.NonUnovaPokemonCount)
                     pokeChoice = allowedUnovaPokemon[pokeChoice - (Gen5Constants.NonUnovaPokemonCount + 1)];
@@ -38,13 +50,13 @@ namespace RandomizerSharp.Randomizers
 
         public void ApplyFastestText()
         {
-            Gen5Rom.GenericIpsPatch(Gen5Rom.Arm9, "FastestTextTweak");
+            _gen5Rom.GenericIpsPatch(_gen5Rom.Arm9, "FastestTextTweak");
         }
 
         public void BanLuckyEgg()
         {
-            Gen5Rom.AllowedItems.BanSingles(Gen5Constants.LuckyEggIndex);
-            Gen5Rom.NonBadItems.BanSingles(Gen5Constants.LuckyEggIndex);
+            _gen5Rom.AllowedItems.BanSingles(Gen5Constants.LuckyEggIndex);
+            _gen5Rom.NonBadItems.BanSingles(Gen5Constants.LuckyEggIndex);
         }
     }
 }

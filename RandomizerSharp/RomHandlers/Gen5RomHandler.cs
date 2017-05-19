@@ -55,13 +55,17 @@ namespace RandomizerSharp.RomHandlers
             _scriptNarc = ReadNarc(REntry.GetString("Scripts"));
             _pokeNarc = ReadNarc(REntry.GetString("PokemonStats"));
             _moveNarc = ReadNarc(REntry.GetString("MoveData"));
-            _hhNarc = ReadNarc(REntry.GetString("HiddenHollows"));
             _tradeNarc = ReadNarc(REntry.GetString("InGameTrades"));
             _evoNarc = ReadNarc(REntry.GetString("PokemonEvolutions"));
-            _driftveilNarc = ReadNarc(REntry.GetString("DriftveilPokemon"));
             _movesLearntNarc = ReadNarc(REntry.GetString("PokemonMovesets"));
             _encounterNarc = ReadNarc(REntry.GetString("WildPokemon"));
             _pokespritesNarc = ReadNarc(REntry.GetString("PokemonGraphics"));
+
+            if (REntry.RomType == Gen5Constants.TypeBw2)
+            {
+                _hhNarc = ReadNarc(REntry.GetString("HiddenHollows"));
+                _driftveilNarc = ReadNarc(REntry.GetString("DriftveilPokemon"));
+            }
 
             _mtFile = ReadOverlay(REntry.GetInt("MoveTutorOvlNumber"));
 
@@ -707,77 +711,102 @@ namespace RandomizerSharp.RomHandlers
             // Save
             WriteNarc(REntry.GetString("PokemonAreaData"), areaNarc);
             WriteNarc(REntry.GetString("WildPokemon"), _encounterNarc);
-        }
 
-        public void ParseAreaData(ArraySlice<byte> entry, int startOffset, byte[][] areaData, int season, int fileNumber)
-        {
-            var amounts = Gen5Constants.EncountersOfEachType;
 
-            var offset = 8;
-            for (var i = 0; i < 7; i++)
+            void ParseAreaData(ArraySlice<byte> entry, int startOffset, byte[][] areaData, int season, int fileNumber)
             {
-                var rate = entry[startOffset + i] & 0xFF;
-                if (rate != 0)
-                    for (var e = 0; e < amounts[i]; e++)
+                var amounts = Gen5Constants.EncountersOfEachType;
+
+                var offset = 8;
+                for (var i = 0; i < 7; i++)
+                {
+                    var rate = entry[startOffset + i] & 0xFF;
+                    if (rate != 0)
+                        for (var e = 0; e < amounts[i]; e++)
+                        {
+                            var newOffset = startOffset + offset + e * 4;
+                            var pkmn = AllPokemons[(entry[newOffset] & 0xFF) + ((entry[newOffset + 1] & 0x03) << 8)];
+                            var pokeFile = areaData[pkmn.Id - 1];
+                            var areaIndex = Gen5Constants.WildFileToAreaMap[fileNumber];
+
+                            // Route 4?
+                            if (areaIndex == Gen5Constants.Bw2Route4AreaIndex)
+                            {
+                                if (fileNumber == Gen5Constants.B2Route4EncounterFile && REntry.Code[2] == 'D')
+                                    areaIndex = -1; // wrong version
+                                else if (fileNumber == Gen5Constants.W2Route4EncounterFile && REntry.Code[2] == 'E')
+                                    areaIndex = -1; // wrong version
+                            }
+
+                            // Victory Road?
+                            if (areaIndex == Gen5Constants.Bw2VictoryRoadAreaIndex)
+                            {
+                                if (REntry.Code[2] == 'D')
+                                {
+                                    // White 2
+                                    if (fileNumber == Gen5Constants.B2VrExclusiveRoom1 ||
+                                        fileNumber == Gen5Constants.B2VrExclusiveRoom2) areaIndex = -1; // wrong version
+                                }
+                                else
+                                {
+                                    // Black 2
+                                    if (fileNumber == Gen5Constants.W2VrExclusiveRoom1 ||
+                                        fileNumber == Gen5Constants.W2VrExclusiveRoom2) areaIndex = -1; // wrong version
+                                }
+                            }
+
+                            // Reversal Mountain?
+                            if (areaIndex == Gen5Constants.Bw2ReversalMountainAreaIndex)
+                            {
+                                if (REntry.Code[2] == 'D')
+                                {
+                                    // White 2
+                                    if (fileNumber >= Gen5Constants.B2ReversalMountainStart &&
+                                        fileNumber <= Gen5Constants.B2ReversalMountainEnd) areaIndex = -1; // wrong version
+                                }
+                                else
+                                {
+                                    // Black 2
+                                    if (fileNumber >= Gen5Constants.W2ReversalMountainStart &&
+                                        fileNumber <= Gen5Constants.W2ReversalMountainEnd) areaIndex = -1; // wrong version
+                                }
+                            }
+
+                            // Skip stuff that isn't on the map or is wrong version
+                            if (areaIndex != -1) { }
+                            pokeFile[season * (Gen5Constants.Bw2EncounterAreaCount + 1) + 2 + areaIndex] |= (byte)(1 << i);
+                        }
+                    offset += amounts[i] * 4;
+                }
+            }
+
+            void WriteEncounterEntry(IEnumerator encs, ArraySlice<byte> entry, int startOffset)
+            {
+                var amounts = Gen5Constants.EncountersOfEachType;
+
+                var offset = 8;
+                for (var i = 0; i < 7; i++)
+                {
+                    var rate = entry[startOffset + i] & 0xFF;
+                    if (rate != 0)
                     {
-                        var newOffset = startOffset + offset + e * 4;
-                        var pkmn = AllPokemons[(entry[newOffset] & 0xFF) + ((entry[newOffset + 1] & 0x03) << 8)];
-                        var pokeFile = areaData[pkmn.Id - 1];
-                        var areaIndex = Gen5Constants.WildFileToAreaMap[fileNumber];
-
-                        // Route 4?
-                        if (areaIndex == Gen5Constants.Bw2Route4AreaIndex)
+                        encs.MoveNext();
+                        var area = (EncounterSet)encs.Current;
+                        for (var j = 0; j < amounts[i]; j++)
                         {
-                            if (fileNumber == Gen5Constants.B2Route4EncounterFile && REntry.Code[2] == 'D')
-                                areaIndex = -1; // wrong version
-                            else if (fileNumber == Gen5Constants.W2Route4EncounterFile && REntry.Code[2] == 'E')
-                                areaIndex = -1; // wrong version
+                            var enc = area.Encounters[j];
+                            WriteWord(entry, startOffset + offset + j * 4, enc.Pokemon.Id);
+                            entry[startOffset + offset + j * 4 + 2] = (byte)enc.Level;
+                            entry[startOffset + offset + j * 4 + 3] = (byte)enc.MaxLevel;
                         }
-
-                        // Victory Road?
-                        if (areaIndex == Gen5Constants.Bw2VictoryRoadAreaIndex)
-                        {
-                            if (REntry.Code[2] == 'D')
-                            {
-                                // White 2
-                                if (fileNumber == Gen5Constants.B2VrExclusiveRoom1 ||
-                                    fileNumber == Gen5Constants.B2VrExclusiveRoom2) areaIndex = -1; // wrong version
-                            }
-                            else
-                            {
-                                // Black 2
-                                if (fileNumber == Gen5Constants.W2VrExclusiveRoom1 ||
-                                    fileNumber == Gen5Constants.W2VrExclusiveRoom2) areaIndex = -1; // wrong version
-                            }
-                        }
-
-                        // Reversal Mountain?
-                        if (areaIndex == Gen5Constants.Bw2ReversalMountainAreaIndex)
-                        {
-                            if (REntry.Code[2] == 'D')
-                            {
-                                // White 2
-                                if (fileNumber >= Gen5Constants.B2ReversalMountainStart &&
-                                    fileNumber <= Gen5Constants.B2ReversalMountainEnd) areaIndex = -1; // wrong version
-                            }
-                            else
-                            {
-                                // Black 2
-                                if (fileNumber >= Gen5Constants.W2ReversalMountainStart &&
-                                    fileNumber <= Gen5Constants.W2ReversalMountainEnd) areaIndex = -1; // wrong version
-                            }
-                        }
-
-                        // Skip stuff that isn't on the map or is wrong version
-                        if (areaIndex != -1) { }
-                        pokeFile[season * (Gen5Constants.Bw2EncounterAreaCount + 1) + 2 + areaIndex] |= (byte) (1 << i);
                     }
-                offset += amounts[i] * 4;
+                    offset += amounts[i] * 4;
+                }
             }
         }
 
-
-        public void AddHabitats(
+        
+        private void AddHabitats(
             ArraySlice<byte> entry,
             int startOffset,
             Dictionary<Pokemon, ArraySlice<byte>> pokemonHere,
@@ -804,30 +833,6 @@ namespace RandomizerSharp.RomHandlers
                             pokemonHere[pkmn] = locs;
                         }
                     }
-                offset += amounts[i] * 4;
-            }
-        }
-
-        public void WriteEncounterEntry(IEnumerator encounters, ArraySlice<byte> entry, int startOffset)
-        {
-            var amounts = Gen5Constants.EncountersOfEachType;
-
-            var offset = 8;
-            for (var i = 0; i < 7; i++)
-            {
-                var rate = entry[startOffset + i] & 0xFF;
-                if (rate != 0)
-                {
-                    encounters.MoveNext();
-                    var area = (EncounterSet) encounters.Current;
-                    for (var j = 0; j < amounts[i]; j++)
-                    {
-                        var enc = area.Encounters[j];
-                        WriteWord(entry, startOffset + offset + j * 4, enc.Pokemon.Id);
-                        entry[startOffset + offset + j * 4 + 2] = (byte) enc.Level;
-                        entry[startOffset + offset + j * 4 + 3] = (byte) enc.MaxLevel;
-                    }
-                }
                 offset += amounts[i] * 4;
             }
         }
@@ -1661,7 +1666,7 @@ namespace RandomizerSharp.RomHandlers
         {
             PokemonSprites = new Bitmap[ValidPokemons.Count];
 
-            for (int i = 0; i < PokemonSprites.Length; i++)
+            for (var i = 0; i < PokemonSprites.Length; i++)
             {
                 var pokemon = ValidPokemons[i];
 

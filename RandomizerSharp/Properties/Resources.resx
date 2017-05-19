@@ -117,82 +117,164 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <!-- ReSharper disable once ResxNotResolved -->
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <!-- ReSharper disable once ResxNotResolved -->
   <data name="gameboy_jap" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\gameboy_jap.tbl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <!-- ReSharper disable once ResxNotResolved -->
   <data name="gba_english" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\gba_english.tbl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <!-- ReSharper disable once ResxNotResolved -->
   <data name="gba_jap" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\gba_jap.tbl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <!-- ReSharper disable once ResxNotResolved -->
   <data name="gen1_offsets" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\gen1_offsets.ini;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
-  <!-- ReSharper disable once ResxNotResolved -->
   <data name="gen2_offsets" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\gen2_offsets.ini;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
-  <!-- ReSharper disable once ResxNotResolved -->
   <data name="gen3_offsets" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\gen3_offsets.ini;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
-  <!-- ReSharper disable once ResxNotResolved -->
   <data name="gen4_offsets" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\gen4_offsets.ini;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <!-- ReSharper disable once ResxNotResolved -->
   <data name="gen5_offsets" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\gen5_offsets.ini;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <!-- ReSharper disable once ResxNotResolved -->
   <data name="Generation4" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Generation4.tbl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <!-- ReSharper disable once ResxNotResolved -->
   <data name="Generation5" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Generation5.tbl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <!-- ReSharper disable once ResxNotResolved -->
   <data name="green_translation" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\green_translation.tbl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <!-- ReSharper disable once ResxNotResolved -->
   <data name="gsc_english" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\gsc_english.tbl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <!-- ReSharper disable once ResxNotResolved -->
   <data name="gsc_espita" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\gsc_espita.tbl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <!-- ReSharper disable once ResxNotResolved -->
   <data name="gsc_freger" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\gsc_freger.tbl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <!-- ReSharper disable once ResxNotResolved -->
   <data name="rby_english" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\rby_english.tbl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <!-- ReSharper disable once ResxNotResolved -->
   <data name="rby_espita" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\rby_espita.tbl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <!-- ReSharper disable once ResxNotResolved -->
   <data name="rby_freger" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\rby_freger.tbl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <!-- ReSharper disable once ResxNotResolved -->
   <data name="realistic_gen1_english" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\realistic_gen1_english.tbl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <!-- ReSharper disable once ResxNotResolved -->
   <data name="vietcrystal" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\vietcrystal.tbl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="b1_instant_text" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\b1_instant_text.ips;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="b2_instant_text" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\b2_instant_text.ips;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="crystal_en_bwxp" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\crystal_en_bwxp.ips;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="customnames" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\customnames.rncn;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="gameboy_jap1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\gameboy_jap.tbl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="gba_english1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\gba_english.tbl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="gba_jap1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\gba_jap.tbl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="gen1_offsets1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\gen1_offsets.ini;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="gen2_offsets1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\gen2_offsets.ini;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="gen3_offsets1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\gen3_offsets.ini;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="gen4_offsets1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\gen4_offsets.ini;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="gen5_offsets1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\gen5_offsets.ini;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="Generation41" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Generation4.tbl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Generation51" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Generation5.tbl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="green_translation1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\green_translation.tbl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="gsc_english1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\gsc_english.tbl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="gsc_espita1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\gsc_espita.tbl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="gsc_freger1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\gsc_freger.tbl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="gs_en_bwxp" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\gs_en_bwxp.ips;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="hgss_instant_text" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\hgss_instant_text.ips;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="plat_instant_text" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\plat_instant_text.ips;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="rby_english1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\rby_english.tbl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="rby_espita1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\rby_espita.tbl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="rby_freger1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\rby_freger.tbl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="rb_en_bwxp" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\rb_en_bwxp.ips;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="rb_en_critrate" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\rb_en_critrate.ips;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="rb_en_xaccnerf" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\rb_en_xaccnerf.ips;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="realistic_gen1_english1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\realistic_gen1_english.tbl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="vietcrystal1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\vietcrystal.tbl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="w1_instant_text" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\w1_instant_text.ips;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="w2_instant_text" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\w2_instant_text.ips;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="yellow_en_bwxp" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\yellow_en_bwxp.ips;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="yellow_en_critrate" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\yellow_en_critrate.ips;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="yellow_en_xaccnerf" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\yellow_en_xaccnerf.ips;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

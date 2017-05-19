@@ -29,19 +29,6 @@ namespace RandomizerSharp.NDS
         {
             BaseRom = new FileStream(filename, FileMode.Open, FileAccess.Read);
 
-            var rawFilename = Path.GetFileName(filename);
-
-            if (rawFilename == null)
-                throw new NullReferenceException();
-
-            var dataFolder = "tmp_" + rawFilename.Substring(0, rawFilename.LastIndexOf('.'));
-            dataFolder = Regex.Replace(dataFolder, "[^A-Za-z0-9_]+", "");
-
-            Directory.CreateDirectory(dataFolder);
-
-            WritingEnabled = true;
-            TmpFolder = dataFolder + Path.PathSeparator;
-
             ReadFileSystem();
             _arm9Open = false;
             _arm9Changed = false;
@@ -50,11 +37,7 @@ namespace RandomizerSharp.NDS
 
         public string Code { get; private set; }
 
-        public string TmpFolder { get; }
-
         public FileStream BaseRom { get; }
-
-        public bool WritingEnabled { get; }
         
         private void ReadFileSystem()
         {
@@ -522,26 +505,13 @@ namespace RandomizerSharp.NDS
                 if (_arm9Compressed)
                     arm9 = BlzCoder.Decode(arm9, "arm9.bin");
 
-                if (WritingEnabled)
-                {
-                    var arm9File = TmpFolder + "arm9.bin";
-                    var fos =
-                        new FileStream(arm9File, FileMode.Create, FileAccess.Write);
-                    fos.Write(arm9, 0, arm9.Length);
-                    fos.Close();
-                    _arm9Ramstored = null;
-                    return arm9;
-                }
+
                 _arm9Ramstored = arm9;
                 var newcopy = new byte[arm9.Length];
                 Array.Copy(arm9, 0, newcopy, 0, arm9.Length);
                 return newcopy;
             }
-            if (WritingEnabled)
-            {
-                var file = File.ReadAllBytes(TmpFolder + "arm9.bin");
-                return file;
-            }
+
             {
                 var newcopy = new byte[_arm9Ramstored.Length];
                 Array.Copy(_arm9Ramstored, 0, newcopy, 0, _arm9Ramstored.Length);
@@ -567,15 +537,7 @@ namespace RandomizerSharp.NDS
                 GetArm9();
 
             _arm9Changed = true;
-            if (WritingEnabled)
 
-            {
-                var fos = new FileStream(TmpFolder + "arm9.bin", FileMode.Create,
-                    FileAccess.Write);
-                fos.Write(arm9, 0, arm9.Length);
-                fos.Close();
-            }
-            else
 
             {
                 if (_arm9Ramstored.Length == arm9.Length)

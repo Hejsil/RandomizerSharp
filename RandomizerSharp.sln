@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RandomizerSharp", "Randomiz
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RandomizerSharp.Benchmarks", "RandomizerSharp.Benchmarks\RandomizerSharp.Benchmarks.csproj", "{2EE5AF61-E2E3-4442-A3A8-298392C8E53F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RandomizerSharp.UI", "RandomizerSharp.UI\RandomizerSharp.UI.csproj", "{60F87882-F270-4A1A-AD90-8C77F9F409DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{2EE5AF61-E2E3-4442-A3A8-298392C8E53F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2EE5AF61-E2E3-4442-A3A8-298392C8E53F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2EE5AF61-E2E3-4442-A3A8-298392C8E53F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60F87882-F270-4A1A-AD90-8C77F9F409DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60F87882-F270-4A1A-AD90-8C77F9F409DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60F87882-F270-4A1A-AD90-8C77F9F409DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60F87882-F270-4A1A-AD90-8C77F9F409DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

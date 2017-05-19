@@ -6,6 +6,14 @@ namespace RandomizerSharp
 {
     public static class Extensions
     {
+        public static void RemoveAll<T>(this ICollection<T> col, IEnumerable<T> items)
+        {
+            var table = new HashSet<T>(items);
+            foreach (var item in col)
+                if (table.Contains(item))
+                    col.Remove(item);
+        }
+
         public static void Shuffle<T>(this IList<T> list, Random random)
         {
             var n = list.Count;

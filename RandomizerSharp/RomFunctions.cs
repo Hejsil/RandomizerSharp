@@ -323,7 +323,7 @@ namespace RandomizerSharp
                 var currLineCc = 0;
                 var linesWritten = 0;
                 var currLineLastChar = (char) 0;
-                foreach (string t in words)
+                foreach (var t in words)
                 {
                     var reqLength = ssd.LengthFor(t);
                     if (currLineWc > 0)

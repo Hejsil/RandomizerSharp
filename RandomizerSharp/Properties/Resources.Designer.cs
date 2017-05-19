@@ -63,9 +63,59 @@ namespace RandomizerSharp.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] b1_instant_text {
+            get {
+                object obj = ResourceManager.GetObject("b1_instant_text", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] b2_instant_text {
+            get {
+                object obj = ResourceManager.GetObject("b2_instant_text", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] crystal_en_bwxp {
+            get {
+                object obj = ResourceManager.GetObject("crystal_en_bwxp", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] customnames {
+            get {
+                object obj = ResourceManager.GetObject("customnames", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] gameboy_jap {
             get {
                 object obj = ResourceManager.GetObject("gameboy_jap", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] gameboy_jap1 {
+            get {
+                object obj = ResourceManager.GetObject("gameboy_jap1", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -83,9 +133,29 @@ namespace RandomizerSharp.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] gba_english1 {
+            get {
+                object obj = ResourceManager.GetObject("gba_english1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] gba_jap {
             get {
                 object obj = ResourceManager.GetObject("gba_jap", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] gba_jap1 {
+            get {
+                object obj = ResourceManager.GetObject("gba_jap1", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -122,6 +192,37 @@ namespace RandomizerSharp.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [Red (U)]
+        ///Game=POKEMON RED
+        ///Version=0
+        ///NonJapanese=1
+        ///Type=RB
+        ///ExtraTableFile=rby_english
+        ///BWXPTweak=rb_en_bwxp
+        ///XAccNerfTweak=rb_en_xaccnerf
+        ///CritRateTweak=rb_en_critrate
+        ///InternalPokemonCount=190
+        ///PokedexOrder=0x41024
+        ///PokemonNamesOffset=0x1C21E
+        ///PokemonNamesLength=10
+        ///PokemonStatsOffset=0x383DE
+        ///MewStatsOffset=0x425B
+        ///WildPokemonTableOffset=0xCEEB
+        ///OldRodOffset=0xE252
+        ///GoodRodOffset=0xE27F
+        ///SuperRodTableOffset=0xE919
+        ///MapNameTableOffset=0x71313
+        ///MoveCount=165
+        ///MoveDataOffset=0x38000
+        ///MoveNamesOffset=0xB [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string gen1_offsets1 {
+            get {
+                return ResourceManager.GetString("gen1_offsets1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [Gold (U)]
         ///Game=AAUE
         ///Version=0
@@ -148,6 +249,36 @@ namespace RandomizerSharp.Properties {
         internal static string gen2_offsets {
             get {
                 return ResourceManager.GetString("gen2_offsets", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Gold (U)]
+        ///Game=AAUE
+        ///Version=0
+        ///NonJapanese=1
+        ///Type=GS
+        ///ExtraTableFile=gsc_english
+        ///BWXPTweak=gs_en_bwxp
+        ///PokemonNamesOffset=0x1B0B74
+        ///PokemonNamesLength=10
+        ///PokemonStatsOffset=0x51B0B
+        ///WildPokemonOffset=0x2AB35
+        ///FishingWildsOffset=0x92A52
+        ///HeadbuttWildsOffset=0xBA47C
+        ///HeadbuttTableSize=7
+        ///BCCWildsOffset=0x97BB8
+        ///FleeingDataOffset=0x3C551
+        ///MoveDataOffset=0x41AFE
+        ///MoveNamesOffset=0x1B1574
+        ///ItemNamesOffset=0x1B0000
+        ///PokemonMovesetsTableOffset=0x427BD
+        ///SupportsFourStartingMoves=0
+        ///StarterOffsets1=[0x1800D2,  [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string gen2_offsets1 {
+            get {
+                return ResourceManager.GetString("gen2_offsets1", resourceCulture);
             }
         }
         
@@ -184,6 +315,38 @@ namespace RandomizerSharp.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [Ruby (U)]
+        ///Game=AXVE
+        ///Version=0
+        ///Type=Ruby
+        ///TableFile=gba_english
+        ///FreeSpace=0x700000
+        ///PokemonNameLength=11
+        ///PokemonCount=411
+        ///PokemonStats=0x1FEC18
+        ///PokemonMovesets=0x207BC8
+        ///PokemonTMHMCompat=0x1FD0F0
+        ///PokemonEvolutions=0x203B68
+        ///StarterPokemon=0x3F76C4
+        ///StarterItems=0x821AA
+        ///TrainerData=0x1F04FC
+        ///TrainerEntrySize=40
+        ///TrainerCount=0x2B6
+        ///TrainerClassNames=0x1F0208
+        ///TrainerClassCount=58
+        ///TrainerClassNameLength=13
+        ///TrainerNameLength=12
+        ///DoublesTrainerClasses=[27, 42, 55, 56, 57]
+        ///ItemData=0x3C5564
+        ///ItemCou [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string gen3_offsets1 {
+            get {
+                return ResourceManager.GetString("gen3_offsets1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [Diamond (U)]
         ///Game=ADAE
         ///Type=DP
@@ -203,6 +366,29 @@ namespace RandomizerSharp.Properties {
         internal static string gen4_offsets {
             get {
                 return ResourceManager.GetString("gen4_offsets", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Diamond (U)]
+        ///Game=ADAE
+        ///Type=DP
+        ///PokemonStats=poketool/personal/personal.narc
+        ///PokemonMovesets=poketool/personal/wotbl.narc
+        ///PokemonEvolutions=poketool/personal/evo.narc
+        ///BabyPokemon=poketool/personal/pms.narc
+        ///TrainerData=poketool/trainer/trdata.narc
+        ///TrainerPokemon=poketool/trainer/trpoke.narc
+        ///MoveData=poketool/waza/waza_tbl.narc
+        ///WildPokemon=fielddata/encountdata/d_enc_data.narc
+        ///InGameTrades=fielddata/pokemon_trade/fld_trade.narc
+        ///StarterPokemonOvlNumber=64
+        ///StarterPokemonOffset=0x1B88
+        ///Scripts=field [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string gen4_offsets1 {
+            get {
+                return ResourceManager.GetString("gen4_offsets1", resourceCulture);
             }
         }
         
@@ -232,11 +418,46 @@ namespace RandomizerSharp.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [Black (U)]
+        ///Game=IRBO
+        ///Type=BW1
+        ///PokemonStats=a/0/1/6
+        ///PokemonMovesets=a/0/1/8
+        ///PokemonEvolutions=a/0/1/9
+        ///BabyPokemon=a/0/2/0
+        ///TrainerData=a/0/9/2
+        ///TrainerPokemon=a/0/9/3
+        ///MoveData=a/0/2/1
+        ///WildPokemon=a/1/2/6
+        ///Scripts=a/0/5/7
+        ///InGameTrades=a/1/6/5
+        ///TradesUnused=[1,3,7,8,9,10,11,12]
+        ///StarterOffsets1=[782:639, 782:644, 782:0x361, 782:0x5FD, 304:0xF9, 304:0x19C]
+        ///StarterOffsets2=[782:687, 782:692, 782:0x356, 782:0x5F2, 304:0x11C, 304:0x1C4]
+        ///StarterOffsets3=[782:716, 782:721, 782:0x338, 782:0x5D4, 304:0x12C [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string gen5_offsets1 {
+            get {
+                return ResourceManager.GetString("gen5_offsets1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] Generation4 {
             get {
                 object obj = ResourceManager.GetObject("Generation4", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] Generation41 {
+            get {
+                object obj = ResourceManager.GetObject("Generation41", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -254,9 +475,39 @@ namespace RandomizerSharp.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] Generation51 {
+            get {
+                object obj = ResourceManager.GetObject("Generation51", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] green_translation {
             get {
                 object obj = ResourceManager.GetObject("green_translation", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] green_translation1 {
+            get {
+                object obj = ResourceManager.GetObject("green_translation1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] gs_en_bwxp {
+            get {
+                object obj = ResourceManager.GetObject("gs_en_bwxp", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -274,9 +525,29 @@ namespace RandomizerSharp.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] gsc_english1 {
+            get {
+                object obj = ResourceManager.GetObject("gsc_english1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] gsc_espita {
             get {
                 object obj = ResourceManager.GetObject("gsc_espita", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] gsc_espita1 {
+            get {
+                object obj = ResourceManager.GetObject("gsc_espita1", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -294,9 +565,79 @@ namespace RandomizerSharp.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] gsc_freger1 {
+            get {
+                object obj = ResourceManager.GetObject("gsc_freger1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] hgss_instant_text {
+            get {
+                object obj = ResourceManager.GetObject("hgss_instant_text", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] plat_instant_text {
+            get {
+                object obj = ResourceManager.GetObject("plat_instant_text", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] rb_en_bwxp {
+            get {
+                object obj = ResourceManager.GetObject("rb_en_bwxp", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] rb_en_critrate {
+            get {
+                object obj = ResourceManager.GetObject("rb_en_critrate", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] rb_en_xaccnerf {
+            get {
+                object obj = ResourceManager.GetObject("rb_en_xaccnerf", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] rby_english {
             get {
                 object obj = ResourceManager.GetObject("rby_english", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] rby_english1 {
+            get {
+                object obj = ResourceManager.GetObject("rby_english1", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -314,9 +655,29 @@ namespace RandomizerSharp.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] rby_espita1 {
+            get {
+                object obj = ResourceManager.GetObject("rby_espita1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] rby_freger {
             get {
                 object obj = ResourceManager.GetObject("rby_freger", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] rby_freger1 {
+            get {
+                object obj = ResourceManager.GetObject("rby_freger1", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -334,9 +695,79 @@ namespace RandomizerSharp.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] realistic_gen1_english1 {
+            get {
+                object obj = ResourceManager.GetObject("realistic_gen1_english1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] vietcrystal {
             get {
                 object obj = ResourceManager.GetObject("vietcrystal", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] vietcrystal1 {
+            get {
+                object obj = ResourceManager.GetObject("vietcrystal1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] w1_instant_text {
+            get {
+                object obj = ResourceManager.GetObject("w1_instant_text", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] w2_instant_text {
+            get {
+                object obj = ResourceManager.GetObject("w2_instant_text", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] yellow_en_bwxp {
+            get {
+                object obj = ResourceManager.GetObject("yellow_en_bwxp", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] yellow_en_critrate {
+            get {
+                object obj = ResourceManager.GetObject("yellow_en_critrate", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] yellow_en_xaccnerf {
+            get {
+                object obj = ResourceManager.GetObject("yellow_en_xaccnerf", resourceCulture);
                 return ((byte[])(obj));
             }
         }

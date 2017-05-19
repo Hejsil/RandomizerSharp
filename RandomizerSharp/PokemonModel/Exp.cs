@@ -2,7 +2,7 @@
 {
     public static class Exp
     {
-        public enum Curve : byte
+        public enum Curve
         {
             Slow = 5,
             MediumSlow = 3,

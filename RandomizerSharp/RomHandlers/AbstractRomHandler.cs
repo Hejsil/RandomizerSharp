@@ -18,6 +18,7 @@ namespace RandomizerSharp.RomHandlers
         public Move[] AllMoves { get; protected set; } = Array<Move>.Empty;
         public Pokemon[] AllPokemons { get; protected set; } = Array<Pokemon>.Empty;
 
+
         public EncounterSet[] Encounters { get; protected set; } = Array<EncounterSet>.Empty;
 
 

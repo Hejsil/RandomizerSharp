@@ -99,7 +99,7 @@ namespace RandomizerSharp
             if (@in.Length < size) throw new IOException("Invalid size specified.");
 
             var namesData = FileFunctions.ReadFullyIntoBuffer(@in, size);
-            List<string> names = new List<string>();
+            var names = new List<string>();
 
             using (var stream = new MemoryStream(namesData))
             using (var reader = new StreamReader(stream))

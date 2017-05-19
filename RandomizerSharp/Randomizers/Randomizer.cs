@@ -10,69 +10,62 @@ namespace RandomizerSharp.Randomizers
 {
     public class Randomizer
     {
-        public StreamWriter LogStream { get; set; }
-        protected AbstractRomHandler RomHandler { get; }
-        protected Random Random { get; }
+        private readonly StreamWriter _logStream;
+        private readonly AbstractRomHandler _romHandler;
+        private readonly Random _random;
 
         public Randomizer(AbstractRomHandler romHandler, StreamWriter logStream)
         {
-            RomHandler = romHandler;
-            LogStream = logStream;
-            Random = new Random();
+            _romHandler = romHandler;
+            _logStream = logStream;
+            _random = new Random();
         }
 
         public Randomizer(AbstractRomHandler romHandler, StreamWriter logStream, int seed)
         {
-            RomHandler = romHandler;
-            LogStream = logStream;
-            Random = new Random(seed);
+            _romHandler = romHandler;
+            _logStream = logStream;
+            _random = new Random(seed);
         }
 
         public Pokemon RandomPokemon()
         {
-            var pokemons = RomHandler.ValidPokemons;
-            return pokemons[Random.Next(pokemons.Count)];
+            var pokemons = _romHandler.ValidPokemons;
+            return pokemons[_random.Next(pokemons.Count)];
         }
-        
+
         public Pokemon RandomNonLegendaryPokemon()
         {
-            var nonLegendaries = RomHandler.NonLegendaryPokemons;
-            return nonLegendaries[Random.Next(nonLegendaries.Length)];
+            var nonLegendaries = _romHandler.NonLegendaryPokemons;
+            return nonLegendaries[_random.Next(nonLegendaries.Length)];
         }
-        
+
         public Pokemon RandomLegendaryPokemon()
         {
-            var legendaries = RomHandler.LegendaryPokemons;
-            return legendaries[Random.Next(legendaries.Length)];
+            var legendaries = _romHandler.LegendaryPokemons;
+            return legendaries[_random.Next(legendaries.Length)];
         }
 
         public void RandomizeMovePowers()
         {
-            foreach (var mv in RomHandler.ValidMoves)
+            foreach (var mv in _romHandler.ValidMoves)
             {
-                if (mv.InternalId == Move.StruggleId || mv.Power < 10)
-                    continue;
+                if (mv.InternalId == Move.StruggleId || mv.Power < 10) continue;
 
                 //  "Generic" damaging move to randomize power
-                if (Random.Next(3) != 2)
-                    mv.Power = Random.Next(11) * 5 + 50;
-                else
-                    mv.Power = Random.Next(27) * 5 + 20;
+                if (_random.Next(3) != 2) mv.Power = _random.Next(11) * 5 + 50;
+                else mv.Power = _random.Next(27) * 5 + 20;
 
                 //  Tiny chance for massive power jumps
-                for (var i = 0; i < 2; i++)
-                    if (Random.Next(100) == 0)
-                        mv.Power += 50;
+                for (var i = 0; i < 2; i++) if (_random.Next(100) == 0) mv.Power += 50;
 
                 // ReSharper disable once CompareOfFloatsByEqualityOperator
-                if (mv.HitCount == 1)
-                    continue;
+                if (mv.HitCount == 1) continue;
 
                 //  Divide randomized power by average hit count, round to
                 //  nearest 5
                 mv.Power = (int) (Math.Round(mv.Power / (mv.HitCount / 5)) * 5);
-                if (mv.Power < 5)
-                    mv.Power = 5;
+                if (mv.Power < 5) mv.Power = 5;
             }
         }
 
@@ -87,12 +80,8 @@ namespace RandomizerSharp.Randomizers
             }
             else
             {
-                var allPokes = RomHandler.ValidPokemons;
-                foreach (var pk in allPokes)
-                {
-                    if (pk != null)
-                        RandomizeStatsWithinBst(pk);
-                }
+                var allPokes = _romHandler.ValidPokemons;
+                foreach (var pk in allPokes) { if (pk != null) RandomizeStatsWithinBst(pk); }
             }
 
             void RandomizeStatsWithinBst(Pokemon pokemon)
@@ -100,12 +89,12 @@ namespace RandomizerSharp.Randomizers
                 int baseStat;
                 double totW;
 
-                var hpW = Random.NextDouble();
-                var atkW = Random.NextDouble();
-                var defW = Random.NextDouble();
-                var spaW = Random.NextDouble();
-                var spdW = Random.NextDouble();
-                var speW = Random.NextDouble();
+                var hpW = _random.NextDouble();
+                var atkW = _random.NextDouble();
+                var defW = _random.NextDouble();
+                var spaW = _random.NextDouble();
+                var spdW = _random.NextDouble();
+                var speW = _random.NextDouble();
 
                 if (pokemon.Id == Pokemon.ShedinjaNumber)
                 {
@@ -117,18 +106,22 @@ namespace RandomizerSharp.Randomizers
                 {
                     baseStat = pokemon.Bst() - 70;
                     totW = hpW + atkW + defW + spaW + spdW + speW;
-                    pokemon.Hp = (int)Math.Max(1, Math.Round(hpW / totW * baseStat)) + 20;
+                    pokemon.Hp = (int) Math.Max(1, Math.Round(hpW / totW * baseStat)) + 20;
                 }
 
-                pokemon.Attack = (int)Math.Max(1, Math.Round(atkW / totW * baseStat)) + 10;
-                pokemon.Defense = (int)Math.Max(1, Math.Round(defW / totW * baseStat)) + 10;
-                pokemon.Spatk = (int)Math.Max(1, Math.Round(spaW / totW * baseStat)) + 10;
-                pokemon.Spdef = (int)Math.Max(1, Math.Round(spdW / totW * baseStat)) + 10;
-                pokemon.Speed = (int)Math.Max(1, Math.Round(speW / totW * baseStat)) + 10;
-                pokemon.Special = (int)Math.Ceiling((pokemon.Spatk + pokemon.Spdef) / 2.0f);
+                pokemon.Attack = (int) Math.Max(1, Math.Round(atkW / totW * baseStat)) + 10;
+                pokemon.Defense = (int) Math.Max(1, Math.Round(defW / totW * baseStat)) + 10;
+                pokemon.Spatk = (int) Math.Max(1, Math.Round(spaW / totW * baseStat)) + 10;
+                pokemon.Spdef = (int) Math.Max(1, Math.Round(spdW / totW * baseStat)) + 10;
+                pokemon.Speed = (int) Math.Max(1, Math.Round(speW / totW * baseStat)) + 10;
+                pokemon.Special = (int) Math.Ceiling((pokemon.Spatk + pokemon.Spdef) / 2.0f);
 
-                if (pokemon.Hp > 255 || pokemon.Attack > 255 || pokemon.Defense > 255 || pokemon.Spatk > 255 || pokemon.Spdef > 255 || pokemon.Speed > 255)
-                    RandomizeStatsWithinBst(pokemon);
+                if (pokemon.Hp > 255 ||
+                    pokemon.Attack > 255 ||
+                    pokemon.Defense > 255 ||
+                    pokemon.Spatk > 255 ||
+                    pokemon.Spdef > 255 ||
+                    pokemon.Speed > 255) RandomizeStatsWithinBst(pokemon);
             }
 
             void CopyRandomizedStatsUpEvolution(Pokemon evTo, Pokemon evolvesFrom, bool toMonIsFinalEvo)
@@ -136,13 +129,13 @@ namespace RandomizerSharp.Randomizers
                 double ourBst = evTo.Bst();
                 double theirBst = evolvesFrom.Bst();
                 var bstRatio = ourBst / theirBst;
-                evTo.Hp = (int)Math.Min(255, Math.Max(1, Math.Round(evolvesFrom.Hp * bstRatio)));
-                evTo.Attack = (int)Math.Min(255, Math.Max(1, Math.Round(evolvesFrom.Attack * bstRatio)));
-                evTo.Defense = (int)Math.Min(255, Math.Max(1, Math.Round(evolvesFrom.Defense * bstRatio)));
-                evTo.Speed = (int)Math.Min(255, Math.Max(1, Math.Round(evolvesFrom.Speed * bstRatio)));
-                evTo.Spatk = (int)Math.Min(255, Math.Max(1, Math.Round(evolvesFrom.Spatk * bstRatio)));
-                evTo.Spdef = (int)Math.Min(255, Math.Max(1, Math.Round(evolvesFrom.Spdef * bstRatio)));
-                evTo.Special = (int)Math.Ceiling((evTo.Spatk + evTo.Spdef) / 2.0f);
+                evTo.Hp = (int) Math.Min(255, Math.Max(1, Math.Round(evolvesFrom.Hp * bstRatio)));
+                evTo.Attack = (int) Math.Min(255, Math.Max(1, Math.Round(evolvesFrom.Attack * bstRatio)));
+                evTo.Defense = (int) Math.Min(255, Math.Max(1, Math.Round(evolvesFrom.Defense * bstRatio)));
+                evTo.Speed = (int) Math.Min(255, Math.Max(1, Math.Round(evolvesFrom.Speed * bstRatio)));
+                evTo.Spatk = (int) Math.Min(255, Math.Max(1, Math.Round(evolvesFrom.Spatk * bstRatio)));
+                evTo.Spdef = (int) Math.Min(255, Math.Max(1, Math.Round(evolvesFrom.Spdef * bstRatio)));
+                evTo.Special = (int) Math.Ceiling((evTo.Spatk + evTo.Spdef) / 2.0f);
             }
         }
 
@@ -151,15 +144,14 @@ namespace RandomizerSharp.Randomizers
             if (evolutionSanity)
             {
                 CopyUpEvolutionsHelper(
-                    pokemon => pokemon.ShuffleStats(Random),
+                    pokemon => pokemon.ShuffleStats(_random),
                     (evFrom, evTo, toMonIsFinalEvo) => evTo.CopyShuffledStatsUpEvolution(evFrom)
                 );
             }
             else
             {
-                var allPokes = RomHandler.ValidPokemons;
-                foreach (var pk in allPokes)
-                    pk?.ShuffleStats(Random);
+                var allPokes = _romHandler.ValidPokemons;
+                foreach (var pk in allPokes) pk?.ShuffleStats(_random);
             }
         }
 
@@ -167,22 +159,21 @@ namespace RandomizerSharp.Randomizers
         {
             //  Fully random is easy enough - randomize then worry about rival
             //  carrying starter at the end
-            foreach (var t in RomHandler.Trainers)
+            foreach (var t in _romHandler.Trainers)
             {
                 foreach (var tp in t.Pokemon)
                 {
                     if (levelModifier != 0)
-                        tp.Level = Math.Min(100, (int)Math.Round(tp.Level * (1 + levelModifier / 100.0)));
+                        tp.Level = Math.Min(100, (int) Math.Round(tp.Level * (1 + levelModifier / 100.0)));
                 }
             }
-
         }
 
-        public void RandomizeTrainerPokes(bool usePowerLevels, bool noLegendaries, bool noEarlyWonderGuard)
+        public void RandomizeTrainerPokes(bool usePowerLevels, bool noLegendaries, bool noEarlyWonderGuard, bool rivaleCarriesStarter)
         {
             //  Fully random is easy enough - randomize then worry about rival
             //  carrying starter at the end
-            foreach (var t in RomHandler.Trainers)
+            foreach (var t in _romHandler.Trainers)
             {
                 //if (t.Tag != null && t.Tag.Equals("IRIVAL"))
                 //    continue;
@@ -194,16 +185,175 @@ namespace RandomizerSharp.Randomizers
                     tp.ResetMoves = true;
                 }
             }
+
+            if (rivaleCarriesStarter)
+                RivalCarriesStarter();
         }
-        
-        private Pokemon PickReplacement(Pokemon current, bool usePowerLevels, Typing type, bool noLegendaries, bool wonderGuardAllowed)
+
+        public enum Encounters
         {
-            var pickFrom = RomHandler.ValidPokemons;
-            
+            CatchEmAll,
+            TypeThemed,
+            UsePowerLevel,
+        }
+
+        public void RandomEncounters(Encounters encounters, bool noLegendaries)
+        {
+            var currentEncounters = _romHandler.Encounters.ToList();
+            currentEncounters.Shuffle(_random);
+
+            var banned = _romHandler.BannedForWildEncounters;
+
+            if (encounters == Encounters.CatchEmAll)
+            {
+                // Clone, so we don't modify original
+                var allPokes = noLegendaries ? _romHandler.NonLegendaryPokemons.ToList() : _romHandler.ValidPokemons.ToList();
+                allPokes.RemoveAll(banned);
+
+                foreach (var area in currentEncounters)
+                {
+                    var pickablePokemon = allPokes;
+
+                    if (area.BannedPokemon.Count > 0)
+                    {
+                        // Clone, so we don't modify original
+                        pickablePokemon = allPokes.ToList();
+                        pickablePokemon.RemoveAll(area.BannedPokemon);
+                    }
+
+                    foreach (var enc in area.Encounters)
+                    {
+                        if (pickablePokemon.Count == 0)
+                        {
+                            // Clone, so we don't modify original
+                            var tempPickable = noLegendaries ? _romHandler.NonLegendaryPokemons.ToList() : _romHandler.ValidPokemons.ToList();
+                            tempPickable.RemoveAll(banned);
+                            tempPickable.RemoveAll(area.BannedPokemon);
+
+                            if (tempPickable.Count == 0)
+                                throw new NotImplementedException("ERROR: Couldn't replace a wild Pokemon!");
+                            
+                            enc.Pokemon = tempPickable[_random.Next(tempPickable.Count)];
+                        }
+                        else
+                        {
+                            var picked = _random.Next(pickablePokemon.Count);
+                            enc.Pokemon = pickablePokemon[picked];
+
+                            pickablePokemon.RemoveAt(picked);
+
+                            if (allPokes != pickablePokemon)
+                                allPokes.Remove(enc.Pokemon);
+
+                            if (allPokes.Count != 0)
+                                continue;
+
+                            if (noLegendaries)
+                                allPokes.AddRange(_romHandler.NonLegendaryPokemons);
+                            else
+                                allPokes.AddRange(_romHandler.ValidPokemons);
+
+                            allPokes.RemoveAll(banned);
+
+                            if (pickablePokemon == allPokes)
+                                continue;
+
+                            pickablePokemon.AddRange(allPokes);
+
+                            pickablePokemon.RemoveAll(area.BannedPokemon);
+                        }
+                    }
+                }
+            }
+            else if (encounters == Encounters.TypeThemed)
+            {
+                var cachedPokeLists = new SortedDictionary<Typing, IList<Pokemon>>();
+                foreach (var area in currentEncounters)
+                {
+                    IList<Pokemon> possiblePokemon = null;
+                    var iterLoops = 0;
+                    while (possiblePokemon == null && iterLoops < 10000)
+                    {
+                        var areaTheme = RandomType();
+                        if (!cachedPokeLists.ContainsKey(areaTheme))
+                        {
+                            IList<Pokemon> pType = PokemonOfType(areaTheme, noLegendaries);
+
+                            pType.RemoveAll(banned);
+                            cachedPokeLists[areaTheme] = pType;
+                        }
+
+                        possiblePokemon = cachedPokeLists[areaTheme];
+                        if (area.BannedPokemon.Count > 0)
+                        {
+                            possiblePokemon = possiblePokemon.ToList();
+                            possiblePokemon.RemoveAll(area.BannedPokemon);
+                        }
+                        if (possiblePokemon.Count == 0)
+                        {
+                            possiblePokemon = null;
+                        }
+                        iterLoops++;
+                    }
+                    if (possiblePokemon == null)
+                    {
+                        throw new NotImplementedException("Could not randomize an area in a reasonable amount of attempts.");
+                    }
+                    foreach (var enc in area.Encounters)
+                    {
+                        enc.Pokemon = possiblePokemon[_random.Next(possiblePokemon.Count)];
+                    }
+                }
+            }
+            else if (encounters == Encounters.UsePowerLevel)
+            {
+                var allowedPokes = noLegendaries ? _romHandler.NonLegendaryPokemons.ToList() : _romHandler.ValidPokemons.ToList();
+                allowedPokes.RemoveAll(banned);
+                
+                foreach (var area in currentEncounters)
+                {
+                    var localAllowed = allowedPokes;
+                    if (area.BannedPokemon.Count > 0)
+                    {
+                        localAllowed = allowedPokes.ToList();
+                        localAllowed.RemoveAll(area.BannedPokemon);
+                    }
+                    foreach (var enc in area.Encounters)
+                    {
+                        enc.Pokemon = PickWildPowerLvlReplacement(localAllowed, enc.Pokemon, false, null);
+                    }
+                }
+            }
+            else
+            {
+                foreach (var area in currentEncounters)
+                {
+                    foreach (var enc in area.Encounters)
+                    {
+                        enc.Pokemon = noLegendaries ? RandomNonLegendaryPokemon() : RandomPokemon();
+                        while (banned.Contains(enc.Pokemon) || area.BannedPokemon.Contains(enc.Pokemon))
+                        {
+                            enc.Pokemon = noLegendaries ? RandomNonLegendaryPokemon() : RandomPokemon();
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+        private Pokemon PickReplacement(
+            Pokemon current,
+            bool usePowerLevels,
+            Typing type,
+            bool noLegendaries,
+            bool wonderGuardAllowed)
+        {
+            var pickFrom = _romHandler.ValidPokemons;
+
             if (type != null)
                 pickFrom = pickFrom.Where(pk => pk.PrimaryType.Equals(type) || pk.SecondaryType.Equals(type)).ToArray();
-            if (noLegendaries)
-                pickFrom = pickFrom.Where(pk => !pk.Legendary).ToArray();
+            if (noLegendaries) pickFrom = pickFrom.Where(pk => !pk.Legendary).ToArray();
 
             if (usePowerLevels)
             {
@@ -219,15 +369,15 @@ namespace RandomizerSharp.Randomizers
                 {
                     foreach (var pk in pickFrom)
                     {
-                        if (pk == null)
-                            continue;
+                        if (pk == null) continue;
 
                         var hasWonderGuard = pk.Ability1 == GlobalConstants.WonderGuardIndex ||
-                                              pk.Ability2 == GlobalConstants.WonderGuardIndex ||
-                                              pk.Ability3 == GlobalConstants.WonderGuardIndex;
+                                             pk.Ability2 == GlobalConstants.WonderGuardIndex ||
+                                             pk.Ability3 == GlobalConstants.WonderGuardIndex;
 
-                        if (pk.BstForPowerLevels() >= minTarget && pk.BstForPowerLevels() <= maxTarget && (wonderGuardAllowed || hasWonderGuard))
-                            canPick.Add(pk);
+                        if (pk.BstForPowerLevels() >= minTarget &&
+                            pk.BstForPowerLevels() <= maxTarget &&
+                            (wonderGuardAllowed || hasWonderGuard)) canPick.Add(pk);
                     }
 
                     minTarget = minTarget - currentBst / 20;
@@ -235,23 +385,17 @@ namespace RandomizerSharp.Randomizers
                     expandRounds++;
                 }
 
-                return canPick[Random.Next(canPick.Count)];
+                return canPick[_random.Next(canPick.Count)];
             }
 
-            if (wonderGuardAllowed)
-            {
-                return pickFrom[Random.Next(pickFrom.Count)];
-            }
+            if (wonderGuardAllowed) { return pickFrom[_random.Next(pickFrom.Count)]; }
 
             {
-                var pk = pickFrom[Random.Next(pickFrom.Count)];
+                var pk = pickFrom[_random.Next(pickFrom.Count)];
 
                 while (pk.Ability1 == GlobalConstants.WonderGuardIndex ||
                        pk.Ability2 == GlobalConstants.WonderGuardIndex ||
-                       pk.Ability3 == GlobalConstants.WonderGuardIndex)
-                {
-                    pk = pickFrom[Random.Next(pickFrom.Count)];
-                }
+                       pk.Ability3 == GlobalConstants.WonderGuardIndex) { pk = pickFrom[_random.Next(pickFrom.Count)]; }
 
                 return pk;
             }
@@ -259,14 +403,12 @@ namespace RandomizerSharp.Randomizers
 
         private void CopyUpEvolutionsHelper(Action<Pokemon> bpAction, Action<Pokemon, Pokemon, bool> epAction)
         {
-            var allPokes = RomHandler.ValidPokemons;
-            foreach (var pk in allPokes)
-                if (pk != null)
-                    pk.TemporaryFlag = false;
+            var allPokes = _romHandler.ValidPokemons;
+            foreach (var pk in allPokes) if (pk != null) pk.TemporaryFlag = false;
 
             //  Get evolution data.
-            var dontCopyPokes = RomFunctions.GetBasicOrNoCopyPokemon(RomHandler);
-            var middleEvos = RomFunctions.GetMiddleEvolutions(RomHandler);
+            var dontCopyPokes = RomFunctions.GetBasicOrNoCopyPokemon(_romHandler);
+            var middleEvos = RomFunctions.GetMiddleEvolutions(_romHandler);
             foreach (var pk in dontCopyPokes)
             {
                 bpAction(pk);
@@ -275,8 +417,7 @@ namespace RandomizerSharp.Randomizers
 
             //  go "up" evolutions looking for pre-evos to do first
             foreach (var pk in allPokes)
-                if (pk != null
-                    && !pk.TemporaryFlag)
+                if (pk != null && !pk.TemporaryFlag)
                 {
                     //  Non-randomized pokes at this point must have
                     //  a linear chain of single evolutions down to
@@ -305,16 +446,15 @@ namespace RandomizerSharp.Randomizers
 
         public Typing RandomType()
         {
-            var t = Typing.RandomType(Random);
-            while (!RomHandler.TypeInGame(t))
-                t = Typing.RandomType(Random);
+            var t = Typing.RandomType(_random);
+            while (!_romHandler.TypeInGame(t)) t = Typing.RandomType(_random);
 
             return t;
         }
 
         public void RandomizePokemonTypes(bool evolutionSanity)
         {
-            var allPokes = RomHandler.ValidPokemons;
+            var allPokes = _romHandler.ValidPokemons;
             if (evolutionSanity)
             {
                 CopyUpEvolutionsHelper(
@@ -329,12 +469,10 @@ namespace RandomizerSharp.Randomizers
                         pkmn.PrimaryType = RandomType();
                         pkmn.SecondaryType = null;
 
-                        if (!(Random.NextDouble() < 0.5))
-                            continue;
+                        if (!(_random.NextDouble() < 0.5)) continue;
 
                         pkmn.SecondaryType = RandomType();
-                        while (pkmn.SecondaryType == pkmn.PrimaryType)
-                            pkmn.SecondaryType = RandomType();
+                        while (pkmn.SecondaryType == pkmn.PrimaryType) pkmn.SecondaryType = RandomType();
                     }
             }
 
@@ -346,11 +484,10 @@ namespace RandomizerSharp.Randomizers
                 if (evTo.SecondaryType == null)
                 {
                     var chance = toMonIsFinalEvo ? 0.25 : 0.15;
-                    if (Random.NextDouble() < chance)
+                    if (_random.NextDouble() < chance)
                     {
                         evTo.SecondaryType = RandomType();
-                        while (evTo.SecondaryType == evTo.PrimaryType)
-                            evTo.SecondaryType = RandomType();
+                        while (evTo.SecondaryType == evTo.PrimaryType) evTo.SecondaryType = RandomType();
                     }
                 }
             }
@@ -366,172 +503,26 @@ namespace RandomizerSharp.Randomizers
                 if (pokemon.EvolutionsFrom.Count == 1 &&
                     pokemon.EvolutionsFrom[0].CarryStats)
                 {
-                    if (Random.NextDouble() < 0.35)
+                    if (_random.NextDouble() < 0.35)
                     {
                         pokemon.SecondaryType = RandomType();
-                        while (pokemon.SecondaryType == pokemon.PrimaryType)
-                            pokemon.SecondaryType = RandomType();
+                        while (pokemon.SecondaryType == pokemon.PrimaryType) pokemon.SecondaryType = RandomType();
                     }
                 }
                 else
                 {
-                    if (Random.NextDouble() < 0.5)
+                    if (_random.NextDouble() < 0.5)
                     {
                         pokemon.SecondaryType = RandomType();
-                        while (pokemon.SecondaryType == pokemon.PrimaryType)
-                            pokemon.SecondaryType = RandomType();
+                        while (pokemon.SecondaryType == pokemon.PrimaryType) pokemon.SecondaryType = RandomType();
                     }
-                }
-            }
-        }
-
-        public void RandomEncounters(bool catchEmAll, bool typeThemed, bool usePowerLevels, bool noLegendaries)
-        {
-            //  New: randomize the order encounter sets are randomized in.
-            //  Leads to less predictable results for various modifiers.
-            //  Need to keep the original ordering around for saving though.
-            var scrambledEncounters = new List<EncounterSet>(RomHandler.Encounters);
-            scrambledEncounters.Shuffle(Random);
-
-            var banned = RomHandler.BannedForWildEncounters;
-            //  Assume EITHER catch em all OR type themed OR match strength for now
-            if (catchEmAll)
-            {
-                var allPokes = noLegendaries ? new List<Pokemon>(RomHandler.NonLegendaryPokemons) : new List<Pokemon>(RomHandler.ValidPokemons);
-
-                allPokes.RemoveAll(banned.Contains);
-                foreach (var area in scrambledEncounters)
-                {
-                    var pickablePokemon = allPokes;
-                    if (area.BannedPokemon.Count > 0)
-                    {
-                        pickablePokemon = new List<Pokemon>(allPokes);
-                        pickablePokemon.RemoveAll(area.BannedPokemon.Contains);
-                    }
-
-                    foreach (var enc in area.Encounters)
-                        //  Pick a random pokemon
-                        if (pickablePokemon.Count == 0)
-                        {
-                            //  Only banned pokes are left, ignore them and pick
-                            //  something else for now.
-                            var tempPickable = noLegendaries
-                                ? new List<Pokemon>(RomHandler.NonLegendaryPokemons)
-                                : new List<Pokemon>(RomHandler.ValidPokemons);
-
-                            tempPickable.RemoveAll(banned.Contains);
-                            tempPickable.RemoveAll(area.BannedPokemon.Contains);
-
-                            if (tempPickable.Count == 0)
-                                throw new NotImplementedException("ERROR: Couldn\'t replace a wild Pokemon!");
-
-                            var picked = Random.Next(tempPickable.Count);
-                            enc.Pokemon = tempPickable[picked];
-                        }
-                        else
-                        {
-                            //  Picked this Pokemon, remove it
-                            var picked = Random.Next(pickablePokemon.Count);
-                            enc.Pokemon = pickablePokemon[picked];
-                            pickablePokemon.RemoveAt(picked);
-                            if (allPokes != pickablePokemon)
-                                allPokes.Remove(enc.Pokemon);
-
-                            if (allPokes.Count == 0)
-                            {
-                                if (noLegendaries) allPokes.AddRange(RomHandler.NonLegendaryPokemons);
-                                else
-                                    allPokes.AddRange(RomHandler.ValidPokemons);
-                               
-
-                                allPokes.RemoveAll(banned.Contains);
-                                if (pickablePokemon != allPokes)
-                                {
-                                    pickablePokemon.AddRange(allPokes);
-                                    pickablePokemon.RemoveAll(area.BannedPokemon.Contains);
-                                }
-                            }
-                        }
-                }
-            }
-            else if (typeThemed)
-            {
-                var cachedPokeLists = new Dictionary<Typing, List<Pokemon>>();
-                foreach (var area in scrambledEncounters)
-                {
-                    List<Pokemon> possiblePokemon = null;
-                    var iterLoops = 0;
-                    while (possiblePokemon == null &&
-                           iterLoops < 10000)
-                    {
-                        var areaTheme = RandomType();
-                        if (!cachedPokeLists.ContainsKey(areaTheme))
-                        {
-                            var pType = PokemonOfType(areaTheme, noLegendaries);
-                            pType.RemoveAll(banned.Contains);
-                            cachedPokeLists[areaTheme] = pType;
-                        }
-
-                        possiblePokemon = cachedPokeLists[areaTheme];
-                        if (area.BannedPokemon.Count > 0)
-                        {
-                            possiblePokemon = new List<Pokemon>(possiblePokemon);
-                            possiblePokemon.RemoveAll(area.BannedPokemon.Contains);
-                        }
-
-                        if (possiblePokemon.Count == 0)
-                            possiblePokemon = null;
-
-                        iterLoops++;
-                    }
-
-                    if (possiblePokemon == null)
-                        throw new NotImplementedException(
-                            "Could not randomize an area in a reasonable amount of attempts.");
-
-                    foreach (var enc in area.Encounters)
-                        //  Pick a random themed pokemon
-                        enc.Pokemon = possiblePokemon[Random.Next(possiblePokemon.Count)];
-                }
-            }
-            else if (usePowerLevels)
-            {
-                var allowedPokes = noLegendaries
-                    ? new List<Pokemon>(RomHandler.NonLegendaryPokemons)
-                    : new List<Pokemon>(RomHandler.ValidPokemons);
-
-                allowedPokes.RemoveAll(banned.Contains);
-                foreach (var area in scrambledEncounters)
-                {
-                    var localAllowed = allowedPokes;
-                    if (area.BannedPokemon.Count > 0)
-                    {
-                        localAllowed = new List<Pokemon>(allowedPokes);
-                        localAllowed.RemoveAll(area.BannedPokemon.Contains);
-                    }
-
-                    foreach (var enc in area.Encounters)
-                        enc.Pokemon = PickWildPowerLvlReplacement(localAllowed, enc.Pokemon, false, null);
-                }
-            }
-            else
-            {
-                //  Entirely random
-                foreach (var area in scrambledEncounters)
-                foreach (var enc in area.Encounters)
-                {
-                    enc.Pokemon = noLegendaries ? RandomNonLegendaryPokemon() : RandomPokemon();
-
-                    while (banned.Contains(enc.Pokemon) ||
-                           area.BannedPokemon.Contains(enc.Pokemon))
-                        enc.Pokemon = noLegendaries ? RandomNonLegendaryPokemon() : RandomPokemon();
                 }
             }
         }
 
         private List<Pokemon> PokemonOfType(Typing type, bool noLegendaries)
         {
-            return RomHandler.ValidPokemons
+            return _romHandler.ValidPokemons
                 .Where(
                     pk => pk != null &&
                           (!noLegendaries || !pk.Legendary) &&
@@ -560,22 +551,20 @@ namespace RandomizerSharp.Randomizers
                         pk.BstForPowerLevels() <= maxTarget &&
                         (!banSamePokemon || !ReferenceEquals(pk, current)) &&
                         (usedUp == null || !usedUp.Contains(pk)) &&
-                        !canPick.Contains(pk))
-                        canPick.Add(pk);
+                        !canPick.Contains(pk)) canPick.Add(pk);
 
                 minTarget = minTarget - currentBst / 20;
                 maxTarget = maxTarget + currentBst / 20;
                 expandRounds++;
             }
 
-            return canPick[Random.Next(canPick.Count)];
+            return canPick[_random.Next(canPick.Count)];
         }
 
         public void RandomizeMoveTypes()
         {
-            foreach (var mv in RomHandler.ValidMoves)
-                if (mv.InternalId != Move.StruggleId && mv.Type != null)
-                    mv.Type = RandomType();
+            foreach (var mv in _romHandler.ValidMoves)
+                if (mv.InternalId != Move.StruggleId && mv.Type != null) mv.Type = RandomType();
         }
 
 
@@ -586,7 +575,7 @@ namespace RandomizerSharp.Randomizers
             bool noEarlyWonderGuard,
             int levelModifier)
         {
-            var currentTrainers = RomHandler.Trainers;
+            var currentTrainers = _romHandler.Trainers;
 
             //  Construct groupings for types
             //  Anything starting with GYM or ELITE or CHAMPION is a group
@@ -595,13 +584,11 @@ namespace RandomizerSharp.Randomizers
             foreach (var t in currentTrainers)
             {
                 if (t.Tag != null &&
-                    t.Tag.Equals("IRIVAL"))
-                    continue;
+                    t.Tag.Equals("IRIVAL")) continue;
 
                 var group = t.Tag ?? "";
 
-                if (group.Contains("-"))
-                    group = group.Substring(0, group.IndexOf('-'));
+                if (group.Contains("-")) group = group.Substring(0, group.IndexOf('-'));
 
                 if (group.StartsWith("GYM") ||
                     group.StartsWith("ELITE") ||
@@ -609,8 +596,7 @@ namespace RandomizerSharp.Randomizers
                     group.StartsWith("THEMED"))
                 {
                     //  Yep this is a group
-                    if (!groups.ContainsKey(group))
-                        groups[group] = new List<Trainer>();
+                    if (!groups.ContainsKey(group)) groups[group] = new List<Trainer>();
 
                     groups[group].Add(t);
                     assignedTrainers.Add(t);
@@ -618,8 +604,7 @@ namespace RandomizerSharp.Randomizers
                 else if (group.StartsWith("GIO"))
                 {
                     //  Giovanni has same grouping as his gym, gym 8
-                    if (!groups.ContainsKey("GYM8"))
-                        groups["GYM8"] = new List<Trainer>();
+                    if (!groups.ContainsKey("GYM8")) groups["GYM8"] = new List<Trainer>();
 
                     groups["GYM8"].Add(t);
                     assignedTrainers.Add(t);
@@ -636,26 +621,23 @@ namespace RandomizerSharp.Randomizers
             {
                 var trainersInGroup = groups[group];
                 //  Shuffle ordering within group to promote randomness
-                trainersInGroup.Shuffle(Random);
+                trainersInGroup.Shuffle(_random);
                 var typeForGroup = RandomType();
                 if (group.StartsWith("GYM"))
                 {
-                    while (usedGymTypes.Contains(typeForGroup))
-                        typeForGroup = RandomType();
+                    while (usedGymTypes.Contains(typeForGroup)) typeForGroup = RandomType();
 
                     usedGymTypes.Add(typeForGroup);
                 }
 
                 if (group.StartsWith("ELITE"))
                 {
-                    while (usedEliteTypes.Contains(typeForGroup))
-                        typeForGroup = RandomType();
+                    while (usedEliteTypes.Contains(typeForGroup)) typeForGroup = RandomType();
 
                     usedEliteTypes.Add(typeForGroup);
                 }
 
-                if (group.Equals("CHAMPION"))
-                    usedUberTypes.Add(typeForGroup);
+                if (group.Equals("CHAMPION")) usedUberTypes.Add(typeForGroup);
 
                 //  Themed groups just have a theme, no special criteria
                 foreach (var t in trainersInGroup)
@@ -670,7 +652,7 @@ namespace RandomizerSharp.Randomizers
                         wgAllowed);
                     tp.ResetMoves = true;
                     if (levelModifier != 0)
-                        tp.Level = Math.Min(100, (int)Math.Round(tp.Level * (1 + levelModifier / 100.0)));
+                        tp.Level = Math.Min(100, (int) Math.Round(tp.Level * (1 + levelModifier / 100.0)));
                 }
             }
 
@@ -678,13 +660,12 @@ namespace RandomizerSharp.Randomizers
             //  Leads to less predictable results for various modifiers.
             //  Need to keep the original ordering around for saving though.
             var scrambledTrainers = new List<Trainer>(currentTrainers);
-            scrambledTrainers.Shuffle(Random);
+            scrambledTrainers.Shuffle(_random);
             //  Give a type to each unassigned trainer
             foreach (var t in scrambledTrainers)
             {
                 if (t.Tag != null &&
-                    t.Tag.Equals("IRIVAL"))
-                    continue;
+                    t.Tag.Equals("IRIVAL")) continue;
 
                 if (!assignedTrainers.Contains(t))
                 {
@@ -693,8 +674,7 @@ namespace RandomizerSharp.Randomizers
                     if (t.Tag != null &&
                         t.Tag.Equals("UBER"))
                     {
-                        while (usedUberTypes.Contains(typeForTrainer))
-                            typeForTrainer = RandomType();
+                        while (usedUberTypes.Contains(typeForTrainer)) typeForTrainer = RandomType();
 
                         usedUberTypes.Add(typeForTrainer);
                     }
@@ -710,7 +690,7 @@ namespace RandomizerSharp.Randomizers
                             shedAllowed);
                         tp.ResetMoves = true;
                         if (levelModifier != 0)
-                            tp.Level = Math.Min(100, (int)Math.Round(tp.Level * (1 + levelModifier / 100.0)));
+                            tp.Level = Math.Min(100, (int) Math.Round(tp.Level * (1 + levelModifier / 100.0)));
                     }
                 }
             }
@@ -721,12 +701,12 @@ namespace RandomizerSharp.Randomizers
         {
             //  Build the full 1-to-1 map
             var translateMap = new Dictionary<Pokemon, Pokemon>();
-            var remainingLeft = RomHandler.ValidPokemons.ToList();
+            var remainingLeft = _romHandler.ValidPokemons.ToList();
             var remainingRight = noLegendaries
-                ? new List<Pokemon>(RomHandler.NonLegendaryPokemons)
-                : new List<Pokemon>(RomHandler.ValidPokemons);
+                ? new List<Pokemon>(_romHandler.NonLegendaryPokemons)
+                : new List<Pokemon>(_romHandler.ValidPokemons);
 
-            var banned = RomHandler.BannedForWildEncounters;
+            var banned = _romHandler.BannedForWildEncounters;
             //  Banned pokemon should be mapped to themselves
             foreach (var bannedPk in banned)
             {
@@ -739,7 +719,7 @@ namespace RandomizerSharp.Randomizers
             {
                 if (usePowerLevels)
                 {
-                    var pickedLeft = Random.Next(remainingLeft.Count);
+                    var pickedLeft = _random.Next(remainingLeft.Count);
                     var pickedLeftP = remainingLeft[pickedLeft];
                     remainingLeft.RemoveAt(pickedLeft);
 
@@ -752,8 +732,8 @@ namespace RandomizerSharp.Randomizers
                 }
                 else
                 {
-                    var pickedLeft = Random.Next(remainingLeft.Count);
-                    var pickedRight = Random.Next(remainingRight.Count);
+                    var pickedLeft = _random.Next(remainingLeft.Count);
+                    var pickedRight = _random.Next(remainingRight.Count);
                     var pickedLeftP = remainingLeft[pickedLeft];
                     var pickedRightP = remainingRight[pickedRight];
                     remainingLeft.RemoveAt(pickedLeft);
@@ -761,7 +741,7 @@ namespace RandomizerSharp.Randomizers
                            remainingRight.Count != 1)
                     {
                         //  Reroll for a different pokemon if at all possible
-                        pickedRight = Random.Next(remainingRight.Count);
+                        pickedRight = _random.Next(remainingRight.Count);
                         pickedRightP = remainingRight[pickedRight];
                     }
 
@@ -771,21 +751,18 @@ namespace RandomizerSharp.Randomizers
 
                 if (remainingRight.Count == 0)
                 {
-                    if (noLegendaries) remainingRight.AddRange(RomHandler.NonLegendaryPokemons);
-                    else
-                        remainingRight.AddRange(RomHandler.ValidPokemons);
-                    
+                    if (noLegendaries) remainingRight.AddRange(_romHandler.NonLegendaryPokemons);
+                    else remainingRight.AddRange(_romHandler.ValidPokemons);
+
                     remainingRight.RemoveAll(banned.Contains);
                 }
             }
 
             //  Map remaining to themselves just in case
-            var allPokes = RomHandler.ValidPokemons;
-            foreach (var poke in allPokes)
-                if (!translateMap.ContainsKey(poke))
-                    translateMap[poke] = poke;
+            var allPokes = _romHandler.ValidPokemons;
+            foreach (var poke in allPokes) if (!translateMap.ContainsKey(poke)) translateMap[poke] = poke;
 
-            foreach (var area in RomHandler.Encounters)
+            foreach (var area in _romHandler.Encounters)
             foreach (var enc in area.Encounters)
             {
                 //  Apply the map
@@ -794,8 +771,8 @@ namespace RandomizerSharp.Randomizers
                 {
                     //  Ignore the map and put a random non-banned poke
                     var tempPickable = noLegendaries
-                        ? new List<Pokemon>(RomHandler.NonLegendaryPokemons)
-                        : new List<Pokemon>(RomHandler.ValidPokemons);
+                        ? new List<Pokemon>(_romHandler.NonLegendaryPokemons)
+                        : new List<Pokemon>(_romHandler.ValidPokemons);
                     tempPickable.RemoveAll(banned.Contains);
                     tempPickable.RemoveAll(area.BannedPokemon.Contains);
                     if (tempPickable.Count == 0)
@@ -807,7 +784,7 @@ namespace RandomizerSharp.Randomizers
                     }
                     else
                     {
-                        var picked = Random.Next(tempPickable.Count);
+                        var picked = _random.Next(tempPickable.Count);
                         enc.Pokemon = tempPickable[picked];
                     }
                 }
@@ -821,17 +798,19 @@ namespace RandomizerSharp.Randomizers
             bool usePowerLevels,
             bool noLegendaries)
         {
-            var banned = RomHandler.BannedForWildEncounters;
+            var banned = _romHandler.BannedForWildEncounters;
             //  New: randomize the order encounter sets are randomized in.
             //  Leads to less predictable results for various modifiers.
             //  Need to keep the original ordering around for saving though.
-            var scrambledEncounters = new List<EncounterSet>(RomHandler.Encounters);
-            scrambledEncounters.Shuffle(Random);
+            var scrambledEncounters = new List<EncounterSet>(_romHandler.Encounters);
+            scrambledEncounters.Shuffle(_random);
 
             //  Assume EITHER catch em all OR type themed for now
             if (catchEmAll)
             {
-                var allPokes = noLegendaries ? new List<Pokemon>(RomHandler.NonLegendaryPokemons) : new List<Pokemon>(RomHandler.ValidPokemons);
+                var allPokes = noLegendaries
+                    ? new List<Pokemon>(_romHandler.NonLegendaryPokemons)
+                    : new List<Pokemon>(_romHandler.ValidPokemons);
                 allPokes.RemoveAll(banned.Contains);
                 foreach (var area in scrambledEncounters)
                 {
@@ -851,31 +830,30 @@ namespace RandomizerSharp.Randomizers
                         {
                             //  No more pickable pokes left, take a random one
                             var tempPickable = noLegendaries
-                                ? new List<Pokemon>(RomHandler.NonLegendaryPokemons)
-                                : new List<Pokemon>(RomHandler.ValidPokemons);
+                                ? new List<Pokemon>(_romHandler.NonLegendaryPokemons)
+                                : new List<Pokemon>(_romHandler.ValidPokemons);
 
                             tempPickable.RemoveAll(banned.Contains);
                             tempPickable.RemoveAll(area.BannedPokemon.Contains);
                             if (tempPickable.Count == 0)
                                 throw new NotImplementedException("ERROR: Couldn\'t replace a wild Pokemon!");
 
-                            var picked = Random.Next(tempPickable.Count);
+                            var picked = _random.Next(tempPickable.Count);
                             var pickedMn = tempPickable[picked];
                             areaMap[areaPk] = pickedMn;
                         }
                         else
                         {
-                            var picked = Random.Next(allPokes.Count);
+                            var picked = _random.Next(allPokes.Count);
                             var pickedMn = allPokes[picked];
                             areaMap[areaPk] = pickedMn;
                             pickablePokemon.Remove(pickedMn);
-                            if (allPokes != pickablePokemon)
-                                allPokes.Remove(pickedMn);
+                            if (allPokes != pickablePokemon) allPokes.Remove(pickedMn);
 
                             if (allPokes.Count == 0)
                             {
-                                if (noLegendaries) allPokes.AddRange(RomHandler.NonLegendaryPokemons);
-                                else allPokes.AddRange(RomHandler.ValidPokemons);
+                                if (noLegendaries) allPokes.AddRange(_romHandler.NonLegendaryPokemons);
+                                else allPokes.AddRange(_romHandler.ValidPokemons);
 
                                 allPokes.AddRange(banned);
                                 if (pickablePokemon != allPokes)
@@ -912,11 +890,9 @@ namespace RandomizerSharp.Randomizers
                         }
 
                         possiblePokemon = new List<Pokemon>(cachedPokeLists[areaTheme]);
-                        if (area.BannedPokemon.Count > 0)
-                            possiblePokemon.RemoveAll(area.BannedPokemon.Contains);
+                        if (area.BannedPokemon.Count > 0) possiblePokemon.RemoveAll(area.BannedPokemon.Contains);
 
-                        if (possiblePokemon.Count < inArea.Count)
-                            possiblePokemon = null;
+                        if (possiblePokemon.Count < inArea.Count) possiblePokemon = null;
 
                         iterLoops++;
                     }
@@ -929,7 +905,7 @@ namespace RandomizerSharp.Randomizers
                     var areaMap = new Dictionary<Pokemon, Pokemon>();
                     foreach (var areaPk in inArea)
                     {
-                        var picked = Random.Next(possiblePokemon.Count);
+                        var picked = _random.Next(possiblePokemon.Count);
                         var pickedMn = possiblePokemon[picked];
                         areaMap[areaPk] = pickedMn;
                         possiblePokemon.RemoveAt(picked);
@@ -943,8 +919,8 @@ namespace RandomizerSharp.Randomizers
             else if (usePowerLevels)
             {
                 var allowedPokes = noLegendaries
-                    ? new List<Pokemon>(RomHandler.NonLegendaryPokemons)
-                    : new List<Pokemon>(RomHandler.ValidPokemons);
+                    ? new List<Pokemon>(_romHandler.NonLegendaryPokemons)
+                    : new List<Pokemon>(_romHandler.ValidPokemons);
 
                 allowedPokes.RemoveAll(banned.Contains);
                 foreach (var area in scrambledEncounters)
@@ -1003,8 +979,7 @@ namespace RandomizerSharp.Randomizers
         private HashSet<Pokemon> PokemonInArea(EncounterSet area)
         {
             var inArea = new HashSet<Pokemon>();
-            foreach (var enc in area.Encounters)
-                inArea.Add(enc.Pokemon);
+            foreach (var enc in area.Encounters) inArea.Add(enc.Pokemon);
 
             return inArea;
         }
@@ -1016,21 +991,17 @@ namespace RandomizerSharp.Randomizers
             bool banNegativeAbilities)
         {
             //  Abilities don't exist in some games...
-            if (RomHandler.AbilitiesPerPokemon== 0)
-                return;
+            if (_romHandler.AbilitiesPerPokemon == 0) return;
 
-            var hasDwAbilities = RomHandler.AbilitiesPerPokemon== 3;
+            var hasDwAbilities = _romHandler.AbilitiesPerPokemon == 3;
             var bannedAbilities = new List<int>();
-            if (!allowWonderGuard)
-                bannedAbilities.Add(GlobalConstants.WonderGuardIndex);
+            if (!allowWonderGuard) bannedAbilities.Add(GlobalConstants.WonderGuardIndex);
 
-            if (banTrappingAbilities)
-                bannedAbilities.AddRange(GlobalConstants.BattleTrappingAbilities);
+            if (banTrappingAbilities) bannedAbilities.AddRange(GlobalConstants.BattleTrappingAbilities);
 
-            if (banNegativeAbilities)
-                bannedAbilities.AddRange(GlobalConstants.NegativeAbilities);
+            if (banNegativeAbilities) bannedAbilities.AddRange(GlobalConstants.NegativeAbilities);
 
-            var maxAbility = RomHandler.HighestAbilityIndex;
+            var maxAbility = _romHandler.HighestAbilityIndex;
             if (evolutionSanity)
             {
                 //  copy abilities straight up evolution lines
@@ -1046,7 +1017,7 @@ namespace RandomizerSharp.Randomizers
                             pokemon.Ability1 = PickRandomAbility(maxAbility, bannedAbilities);
 
                             // Second ability?
-                            pokemon.Ability2 = Random.NextDouble() < 0.5
+                            pokemon.Ability2 = _random.NextDouble() < 0.5
                                 ? PickRandomAbility(maxAbility, bannedAbilities, pokemon.Ability1)
                                 : 0;
 
@@ -1073,11 +1044,10 @@ namespace RandomizerSharp.Randomizers
             }
             else
             {
-                var allPokes = RomHandler.ValidPokemons;
+                var allPokes = _romHandler.ValidPokemons;
                 foreach (var pk in allPokes)
                 {
-                    if (pk == null)
-                        continue;
+                    if (pk == null) continue;
 
                     //  Don't remove WG if already in place.
                     if (pk.Ability1 != GlobalConstants.WonderGuardIndex &&
@@ -1087,7 +1057,7 @@ namespace RandomizerSharp.Randomizers
                         //  Pick first ability
                         pk.Ability1 = PickRandomAbility(maxAbility, bannedAbilities);
                         //  Second ability?
-                        pk.Ability2 = Random.NextDouble() < 0.5
+                        pk.Ability2 = _random.NextDouble() < 0.5
                             ? PickRandomAbility(maxAbility, bannedAbilities, pk.Ability1)
                             : 0;
 
@@ -1104,9 +1074,8 @@ namespace RandomizerSharp.Randomizers
             int newAbility;
             while (true)
             {
-                newAbility = Random.Next(maxAbility) + 1;
-                if (bannedAbilities.Contains(newAbility))
-                    continue;
+                newAbility = _random.Next(maxAbility) + 1;
+                if (bannedAbilities.Contains(newAbility)) continue;
 
                 var repeat = false;
                 foreach (var t in alreadySetAbilities)
@@ -1116,8 +1085,7 @@ namespace RandomizerSharp.Randomizers
                         break;
                     }
 
-                if (repeat)
-                    continue;
+                if (repeat) continue;
                 break;
             }
 
@@ -1126,20 +1094,21 @@ namespace RandomizerSharp.Randomizers
 
         public Pokemon Random2EvosPokemon()
         {
-            var twoEvoPokes = 
-                RomHandler.ValidPokemons
-                    .Where(pk => pk.EvolutionsTo.Count == 0 && 
-                                 pk.EvolutionsFrom.Any(ev => ev.To.EvolutionsFrom.Count > 0))
+            var twoEvoPokes =
+                _romHandler.ValidPokemons
+                    .Where(
+                        pk => pk.EvolutionsTo.Count == 0 &&
+                              pk.EvolutionsFrom.Any(ev => ev.To.EvolutionsFrom.Count > 0))
                     .ToList();
 
-            return twoEvoPokes[Random.Next(twoEvoPokes.Count)];
+            return twoEvoPokes[_random.Next(twoEvoPokes.Count)];
         }
 
 
         public void RivalCarriesStarter()
         {
-            RivalCarriesStarterUpdate(RomHandler.Trainers, "RIVAL", 1);
-            RivalCarriesStarterUpdate(RomHandler.Trainers, "FRIEND", 2);
+            RivalCarriesStarterUpdate(_romHandler.Trainers, "RIVAL", 1);
+            RivalCarriesStarterUpdate(_romHandler.Trainers, "FRIEND", 2);
         }
 
         private void RivalCarriesStarterUpdate(IEnumerable<Trainer> currentTrainers, string prefix, int pokemonOffset)
@@ -1148,16 +1117,15 @@ namespace RandomizerSharp.Randomizers
             //  Find the highest rival battle #
             var highestRivalNum = enumerable
                 .Where(t => t.Tag != null && t.Tag.StartsWith(prefix))
-                .Max(t => int.Parse(t.Tag.Substring(prefix.Length, t.Tag.IndexOf('-'))));
+                .Max(t => int.Parse(t.Tag.Substring(prefix.Length, t.Tag.IndexOf('-') - prefix.Length)));
 
-            if (highestRivalNum == 0)
-                return;
+            if (highestRivalNum == 0) return;
 
             //  Get the starters
             //  us 0 1 2 => them 0+n 1+n 2+n
-            var starters = RomHandler.Starters;
+            var starters = _romHandler.Starters;
             //  Yellow needs its own case, unfortunately.
-            if (RomHandler.IsYellow)
+            if (_romHandler.IsYellow)
             {
                 //  The rival's starter is index 1
                 var rivalStarter = starters[1];
@@ -1165,8 +1133,7 @@ namespace RandomizerSharp.Randomizers
                 //  Apply evolutions as appropriate
                 if (timesEvolves == 0)
                 {
-                    for (var j = 1; j <= 3; j++)
-                        ChangeStarterWithTag(enumerable, prefix + (j + "-0"), rivalStarter);
+                    for (var j = 1; j <= 3; j++) ChangeStarterWithTag(enumerable, prefix + (j + "-0"), rivalStarter);
 
                     for (var j = 4; j <= 7; j++)
                     for (var i = 0; i < 3; i++)
@@ -1174,8 +1141,7 @@ namespace RandomizerSharp.Randomizers
                 }
                 else if (timesEvolves == 1)
                 {
-                    for (var j = 1; j <= 3; j++)
-                        ChangeStarterWithTag(enumerable, prefix + (j + "-0"), rivalStarter);
+                    for (var j = 1; j <= 3; j++) ChangeStarterWithTag(enumerable, prefix + (j + "-0"), rivalStarter);
 
                     rivalStarter = PickRandomEvolutionOf(rivalStarter, false);
                     for (var j = 4; j <= 7; j++)
@@ -1189,8 +1155,7 @@ namespace RandomizerSharp.Randomizers
 
                     rivalStarter = PickRandomEvolutionOf(rivalStarter, true);
                     ChangeStarterWithTag(enumerable, prefix + "3-0", rivalStarter);
-                    for (var i = 0; i < 3; i++)
-                        ChangeStarterWithTag(enumerable, prefix + ("4-" + i), rivalStarter);
+                    for (var i = 0; i < 3; i++) ChangeStarterWithTag(enumerable, prefix + ("4-" + i), rivalStarter);
 
                     rivalStarter = PickRandomEvolutionOf(rivalStarter, false);
                     for (var j = 5; j <= 7; j++)
@@ -1220,8 +1185,7 @@ namespace RandomizerSharp.Randomizers
                         var j = 1;
                         for (; j <= highestRivalNum / 2; j++)
                         {
-                            if (GetLevelOfStarter(enumerable, prefix + (j + ("-" + i))) >= 30)
-                                break;
+                            if (GetLevelOfStarter(enumerable, prefix + (j + ("-" + i))) >= 30) break;
 
                             ChangeStarterWithTag(enumerable, prefix + (j + ("-" + i)), thisStarter);
                         }
@@ -1236,8 +1200,7 @@ namespace RandomizerSharp.Randomizers
                         var j = 1;
                         for (; j <= highestRivalNum; j++)
                         {
-                            if (GetLevelOfStarter(enumerable, prefix + (j + ("-" + i))) >= 16)
-                                break;
+                            if (GetLevelOfStarter(enumerable, prefix + (j + ("-" + i))) >= 16) break;
 
                             ChangeStarterWithTag(enumerable, prefix + (j + ("-" + i)), thisStarter);
                         }
@@ -1246,8 +1209,7 @@ namespace RandomizerSharp.Randomizers
 
                         for (; j <= highestRivalNum; j++)
                         {
-                            if (GetLevelOfStarter(enumerable, prefix + (j + ("-" + i))) >= 36)
-                                break;
+                            if (GetLevelOfStarter(enumerable, prefix + (j + ("-" + i))) >= 36) break;
 
                             ChangeStarterWithTag(enumerable, prefix + (j + ("-" + i)), thisStarter);
                         }
@@ -1264,34 +1226,31 @@ namespace RandomizerSharp.Randomizers
 
         public void ForceFullyEvolvedTrainerPokes(int minLevel)
         {
-            foreach (var t in RomHandler.Trainers)
+            foreach (var t in _romHandler.Trainers)
             foreach (var tp in t.Pokemon)
                 if (tp.Level >= minLevel)
                 {
                     var newPokemon = FullyEvolve(tp.Pokemon);
 
-                    if (ReferenceEquals(newPokemon, tp.Pokemon))
-                            continue;
+                    if (ReferenceEquals(newPokemon, tp.Pokemon)) continue;
 
                     tp.Pokemon = newPokemon;
                     tp.ResetMoves = true;
                 }
         }
-        
+
         public void RandomizeMovePPs()
         {
-            foreach (var mv in RomHandler.ValidMoves)
+            foreach (var mv in _romHandler.ValidMoves)
                 if (mv != null &&
                     mv.InternalId != 165)
-                    if (Random.Next(3) != 2)
-                        mv.Pp = Random.Next(3) * 5 + 15;
-                    else
-                        mv.Pp = Random.Next(8) * 5 + 5;
+                    if (_random.Next(3) != 2) mv.Pp = _random.Next(3) * 5 + 15;
+                    else mv.Pp = _random.Next(8) * 5 + 5;
         }
 
         public void RandomizeMoveAccuracies()
         {
-            foreach (var mv in RomHandler.ValidMoves)
+            foreach (var mv in _romHandler.ValidMoves)
                 if (mv != null &&
                     mv.InternalId != 165 &&
                     mv.Hitratio >= 5)
@@ -1300,9 +1259,8 @@ namespace RandomizerSharp.Randomizers
                         //  lowest tier (acc <= 50)
                         //  new accuracy = rand(20...50) inclusive
                         //  with a 10% chance to increase by 50%
-                        mv.Hitratio = Random.Next(7) * 5 + 20;
-                        if (Random.Next(10) == 0)
-                            mv.Hitratio = mv.Hitratio * 1 / (5 * 5);
+                        mv.Hitratio = _random.Next(7) * 5 + 20;
+                        if (_random.Next(10) == 0) mv.Hitratio = mv.Hitratio * 1 / (5 * 5);
                     }
                     else if (mv.Hitratio < 90)
                     {
@@ -1314,8 +1272,7 @@ namespace RandomizerSharp.Randomizers
                         mv.Hitratio = 100;
                         while (mv.Hitratio > 20)
                         {
-                            if (Random.Next(10) < 2)
-                                break;
+                            if (_random.Next(10) < 2) break;
 
                             mv.Hitratio -= 5;
                         }
@@ -1330,21 +1287,20 @@ namespace RandomizerSharp.Randomizers
                         mv.Hitratio = 100;
                         while (mv.Hitratio > 20)
                         {
-                            if (Random.Next(10) < 4)
-                                break;
+                            if (_random.Next(10) < 4) break;
 
                             mv.Hitratio -= 5;
                         }
                     }
         }
+
         public void RandomizeMoveCategory()
         {
-            if (!RomHandler.HasPhysicalSpecialSplit)
-                return;
+            if (!_romHandler.HasPhysicalSpecialSplit) return;
 
-            foreach (var mv in RomHandler.ValidMoves)
+            foreach (var mv in _romHandler.ValidMoves)
                 if (mv.InternalId != 165 && mv.Category != MoveCategory.Status)
-                     mv.Category = (MoveCategory)Random.Next(2);
+                    mv.Category = (MoveCategory) _random.Next(2);
         }
 
         private static readonly IReadOnlyDictionary<int, Typing> Gen5UpdateMoveType = new Dictionary<int, Typing>
@@ -1359,8 +1315,7 @@ namespace RandomizerSharp.Randomizers
             //  Move 44, Bite, becomes dark (but doesn't exist anyway)
             //  Curse => GHOST (gen2-4)
             { 174, Typing.Ghost },
-
-    };
+        };
 
         private static readonly IReadOnlyDictionary<int, int> Gen5UpdateMoveAccuracy = new Dictionary<int, int>
         {
@@ -1416,8 +1371,7 @@ namespace RandomizerSharp.Randomizers
             { 353, 100 },
             //  Magma Storm => 75% acc
             { 463, 75 },
-
-};
+        };
 
         private static readonly IReadOnlyDictionary<int, int> Gen5UpdateMovePower = new Dictionary<int, int>
         {
@@ -1481,7 +1435,6 @@ namespace RandomizerSharp.Randomizers
             { 387, 140 },
             //  Drain Punch => 10 pp, 75 pow
             { 409, 75 },
-
         };
 
         private static readonly IReadOnlyDictionary<int, int> Gen5UpdateMovePp = new Dictionary<int, int>
@@ -1514,33 +1467,27 @@ namespace RandomizerSharp.Randomizers
             { 254, 20 },
             //  Drain Punch => 10 pp, 75 pow
             { 409, 10 },
-
         };
 
         public void UpdateMovesToGen5()
         {
-            foreach (var move in RomHandler.ValidMoves)
+            foreach (var move in _romHandler.ValidMoves)
             {
                 var id = move.InternalId;
 
-                if (Gen5UpdateMoveType.TryGetValue(id, out var type))
-                    move.Type = type;
+                if (Gen5UpdateMoveType.TryGetValue(id, out var type)) move.Type = type;
 
                 if (Gen5UpdateMoveAccuracy.TryGetValue(id, out var accuracy))
-                    if (Math.Abs(move.Hitratio - accuracy) >= 1)
-                        move.Hitratio = accuracy;
+                    if (Math.Abs(move.Hitratio - accuracy) >= 1) move.Hitratio = accuracy;
 
-                if (Gen5UpdateMovePower.TryGetValue(id, out var power))
-                    move.Power = power;
+                if (Gen5UpdateMovePower.TryGetValue(id, out var power)) move.Power = power;
 
-                if (Gen5UpdateMovePp.TryGetValue(id, out var pp))
-                    move.Pp = pp;
+                if (Gen5UpdateMovePp.TryGetValue(id, out var pp)) move.Pp = pp;
             }
         }
 
         private static readonly IReadOnlyDictionary<int, int> Gen6UpdateMoveAccuracy = new Dictionary<int, int>
         {
-            
             //  Pin Missile 25 Power, 95% Accuracy
             { 42, 95 },
             //  Glare 100% Accuracy
@@ -1559,11 +1506,10 @@ namespace RandomizerSharp.Randomizers
             { 375, 100 },
             //  Gunk Shot 80% Accuracy
             { 441, 80 },
-    };
+        };
 
         private static readonly IReadOnlyDictionary<int, int> Gen6UpdateMovePower = new Dictionary<int, int>
         {
-            
             //  Vine Whip 25 PP, 45 Power
             { 22, 45 },
             //  Pin Missile 25 Power, 95% Accuracy
@@ -1661,11 +1607,10 @@ namespace RandomizerSharp.Randomizers
             { 542, 110 },
             //  Techno Blast 120 Power
             { 546, 120 },
-};
+        };
 
         private static readonly IReadOnlyDictionary<int, int> Gen6UpdateMovePp = new Dictionary<int, int>
         {
-
             //  gen 1
             //  Swords Dance 20 PP
             { 14, 20 },
@@ -1695,25 +1640,22 @@ namespace RandomizerSharp.Randomizers
             { 403, 15 },
             //  Sacred Sword 15 PP
             { 533, 15 },
-    };
+        };
 
         public void UpdateMovesToGen6()
         {
             UpdateMovesToGen5();
 
-            foreach (var move in RomHandler.ValidMoves)
+            foreach (var move in _romHandler.ValidMoves)
             {
                 var id = move.InternalId;
-                
+
                 if (Gen6UpdateMoveAccuracy.TryGetValue(id, out var accuracy))
-                    if (Math.Abs(move.Hitratio - accuracy) >= 1)
-                        move.Hitratio = accuracy;
+                    if (Math.Abs(move.Hitratio - accuracy) >= 1) move.Hitratio = accuracy;
 
-                if (Gen6UpdateMovePower.TryGetValue(id, out var power))
-                    move.Power = power;
+                if (Gen6UpdateMovePower.TryGetValue(id, out var power)) move.Power = power;
 
-                if (Gen6UpdateMovePp.TryGetValue(id, out var pp))
-                    move.Pp = pp;
+                if (Gen6UpdateMovePp.TryGetValue(id, out var pp)) move.Pp = pp;
             }
         }
 
@@ -1722,8 +1664,7 @@ namespace RandomizerSharp.Randomizers
             var seenMons = new HashSet<Pokemon> { pokemon };
             while (true)
             {
-                if (pokemon.EvolutionsFrom.Count == 0)
-                    break;
+                if (pokemon.EvolutionsFrom.Count == 0) break;
 
                 //  check for cyclic evolutions from what we've already seen
                 var cyclic = false;
@@ -1735,11 +1676,10 @@ namespace RandomizerSharp.Randomizers
                         break;
                     }
 
-                if (cyclic)
-                    break;
+                if (cyclic) break;
 
                 //  pick a random evolution to continue from
-                pokemon = pokemon.EvolutionsFrom[Random.Next(pokemon.EvolutionsFrom.Count)].To;
+                pokemon = pokemon.EvolutionsFrom[_random.Next(pokemon.EvolutionsFrom.Count)].To;
                 seenMons.Add(pokemon);
             }
 
@@ -1754,13 +1694,13 @@ namespace RandomizerSharp.Randomizers
             var candidates = new List<Pokemon>();
             foreach (var ev in basePokemon.EvolutionsFrom)
                 if (!mustEvolveItself ||
-                    ev.To.EvolutionsFrom.Count > 0)
-                    candidates.Add(ev.To);
+                    ev.To.EvolutionsFrom.Count > 0) candidates.Add(ev.To);
 
             if (candidates.Count == 0)
-                throw new NotImplementedException("Random evolution called on a Pokemon without any usable evolutions.");
+                throw new NotImplementedException(
+                    "Random evolution called on a Pokemon without any usable evolutions.");
 
-            return candidates[Random.Next(candidates.Count)];
+            return candidates[_random.Next(candidates.Count)];
         }
 
         private int GetLevelOfStarter(IEnumerable<Trainer> currentTrainers, string tag)
@@ -1780,8 +1720,7 @@ namespace RandomizerSharp.Randomizers
                     for (var i = 1; i < trainerPkmnCount; i++)
                     {
                         var levelBonus = i == trainerPkmnCount - 1 ? 2 : 0;
-                        if (t.Pokemon[i].Level + levelBonus > highestLevel)
-                            highestLevel = t.Pokemon[i].Level;
+                        if (t.Pokemon[i].Level + levelBonus > highestLevel) highestLevel = t.Pokemon[i].Level;
                     }
 
                     return highestLevel;
@@ -1794,8 +1733,7 @@ namespace RandomizerSharp.Randomizers
         {
             foreach (var t in currentTrainers)
             {
-                if (t.Tag == null || !t.Tag.Equals(tag))
-                    continue;
+                if (t.Tag == null || !t.Tag.Equals(tag)) continue;
 
                 //  Bingo
                 //  Change the highest level pokemon, not the last.
@@ -1807,8 +1745,7 @@ namespace RandomizerSharp.Randomizers
                 {
                     var levelBonus = i == trainerPkmnCount - 1 ? 2 : 0;
 
-                    if (t.Pokemon[i].Level + levelBonus > bestPoke.Level)
-                        bestPoke = t.Pokemon[i];
+                    if (t.Pokemon[i].Level + levelBonus > bestPoke.Level) bestPoke = t.Pokemon[i];
                 }
 
                 bestPoke.Pokemon = starter;
@@ -1823,10 +1760,8 @@ namespace RandomizerSharp.Randomizers
 
         private static int NumEvolutions(Pokemon pk, int depth, int maxInterested)
         {
-            if (pk.EvolutionsFrom.Count == 0)
-                return 0;
-            if (depth == maxInterested - 1)
-                return 1;
+            if (pk.EvolutionsFrom.Count == 0) return 0;
+            if (depth == maxInterested - 1) return 1;
             var maxEvos = 0;
             foreach (var ev in pk.EvolutionsFrom)
                 maxEvos = Math.Max(maxEvos, NumEvolutions(ev.To, depth + 1, maxInterested) + 1);
@@ -1842,10 +1777,8 @@ namespace RandomizerSharp.Randomizers
 
         private static int NumPreEvolutions(Pokemon pk, int depth, int maxInterested)
         {
-            if (pk.EvolutionsTo.Count == 0)
-                return 0;
-            if (depth == maxInterested - 1)
-                return 1;
+            if (pk.EvolutionsTo.Count == 0) return 0;
+            if (depth == maxInterested - 1) return 1;
             var maxPreEvos = 0;
 
             foreach (var ev in pk.EvolutionsTo)
@@ -1853,22 +1786,21 @@ namespace RandomizerSharp.Randomizers
 
             return maxPreEvos;
         }
+
         public void RandomizeEvolutions(bool similarStrength, bool sameType, bool limitToThreeStages, bool forceChange)
         {
-            var pokemonPool = new List<Pokemon>(RomHandler.ValidPokemons);
+            var pokemonPool = new List<Pokemon>(_romHandler.ValidPokemons);
             var stageLimit = limitToThreeStages ? 3 : 10;
 
             //  Cache old evolutions for data later
             var originalEvos = new Dictionary<Pokemon, List<Evolution>>();
-            foreach (var pk in pokemonPool)
-                originalEvos[pk] = new List<Evolution>(pk.EvolutionsFrom);
+            foreach (var pk in pokemonPool) originalEvos[pk] = new List<Evolution>(pk.EvolutionsFrom);
 
             var newEvoPairs = new HashSet<EvolutionPair>();
             var oldEvoPairs = new HashSet<EvolutionPair>();
             if (forceChange)
                 foreach (var pk in pokemonPool)
-                foreach (var ev in pk.EvolutionsFrom)
-                    oldEvoPairs.Add(new EvolutionPair(ev.From, ev.To));
+                foreach (var ev in pk.EvolutionsFrom) oldEvoPairs.Add(new EvolutionPair(ev.From, ev.To));
 
             var replacements = new List<Pokemon>();
             var loops = 0;
@@ -1884,7 +1816,7 @@ namespace RandomizerSharp.Randomizers
 
                 newEvoPairs.Clear();
                 //  Shuffle pokemon list so the results aren't overly predictable.
-                pokemonPool.Shuffle(Random);
+                pokemonPool.Shuffle(_random);
                 foreach (var fromPk in pokemonPool)
                 {
                     var oldEvos = originalEvos[fromPk];
@@ -1893,29 +1825,24 @@ namespace RandomizerSharp.Randomizers
                         //  Pick a Pokemon as replacement
                         replacements.Clear();
                         //  Step 1: base filters
-                        foreach (var pk in RomHandler.ValidPokemons)
+                        foreach (var pk in _romHandler.ValidPokemons)
                         {
                             //  Prevent evolving into oneself (mandatory)
-                            if (ReferenceEquals(pk, fromPk))
-                                continue;
+                            if (ReferenceEquals(pk, fromPk)) continue;
 
                             //  Force same EXP curve (mandatory)
-                            if (pk.GrowthCurve != fromPk.GrowthCurve)
-                                continue;
+                            if (pk.GrowthCurve != fromPk.GrowthCurve) continue;
 
                             var ep = new EvolutionPair(fromPk, pk);
                             //  Prevent split evos choosing the same Pokemon
                             //  (mandatory)
-                            if (newEvoPairs.Contains(ep))
-                                continue;
+                            if (newEvoPairs.Contains(ep)) continue;
 
                             //  Prevent evolving into old thing if flagged
-                            if (forceChange && oldEvoPairs.Contains(ep))
-                                continue;
+                            if (forceChange && oldEvoPairs.Contains(ep)) continue;
 
                             //  Prevent evolution that causes cycle (mandatory)
-                            if (EvoCycleCheck(fromPk, pk))
-                                continue;
+                            if (EvoCycleCheck(fromPk, pk)) continue;
 
                             //  Prevent evolution that exceeds stage limit
                             var tempEvo = new Evolution(fromPk, pk, false, EvolutionType.None, 0);
@@ -1942,8 +1869,7 @@ namespace RandomizerSharp.Randomizers
 
                             fromPk.EvolutionsFrom.Remove(tempEvo);
                             pk.EvolutionsTo.Remove(tempEvo);
-                            if (exceededLimit)
-                                continue;
+                            if (exceededLimit) continue;
 
                             //  Passes everything, add as a candidate.
                             replacements.Add(pk);
@@ -1968,8 +1894,7 @@ namespace RandomizerSharp.Randomizers
                                     pk.SecondaryType != null && pk.SecondaryType == fromPk.PrimaryType ||
                                     fromPk.SecondaryType != null &&
                                     pk.SecondaryType != null &&
-                                    pk.SecondaryType == fromPk.SecondaryType)
-                                    includeType.Add(pk);
+                                    pk.SecondaryType == fromPk.SecondaryType) includeType.Add(pk);
 
                             if (includeType.Count != 0)
                                 replacements.RemoveAll(pokemon => !includeType.Contains(pokemon));
@@ -1977,12 +1902,9 @@ namespace RandomizerSharp.Randomizers
 
                         //  Step 3: pick - by similar strength or otherwise
                         Pokemon picked;
-                        if (replacements.Count == 1)
-                            picked = replacements[0];
-                        else if (similarStrength)
-                            picked = PickEvoPowerLvlReplacement(replacements, ev.To);
-                        else
-                            picked = replacements[Random.Next(replacements.Count)];
+                        if (replacements.Count == 1) picked = replacements[0];
+                        else if (similarStrength) picked = PickEvoPowerLvlReplacement(replacements, ev.To);
+                        else picked = replacements[_random.Next(replacements.Count)];
 
                         //  Step 4: add it to the new evos pool
                         var newEvo = new Evolution(fromPk, picked, ev.CarryStats, ev.Type, ev.ExtraInfo);
@@ -1991,13 +1913,11 @@ namespace RandomizerSharp.Randomizers
                         newEvoPairs.Add(new EvolutionPair(fromPk, picked));
                     }
 
-                    if (hadError)
-                        break;
+                    if (hadError) break;
                 }
 
                 //  If no error, done and return
-                if (!hadError)
-                    return;
+                if (!hadError) return;
                 loops++;
             }
 
@@ -2015,7 +1935,7 @@ namespace RandomizerSharp.Randomizers
             @from.EvolutionsFrom.Remove(tempEvo);
             return recur;
         }
-        
+
         private bool IsCyclic(Pokemon pk, HashSet<Pokemon> visited, HashSet<Pokemon> recStack)
         {
             if (!visited.Contains(pk))
@@ -2024,10 +1944,8 @@ namespace RandomizerSharp.Randomizers
                 recStack.Add(pk);
                 foreach (var ev in pk.EvolutionsFrom)
                     if (!visited.Contains(ev.To) &&
-                        IsCyclic(ev.To, visited, recStack))
-                        return true;
-                    else if (recStack.Contains(ev.To))
-                        return true;
+                        IsCyclic(ev.To, visited, recStack)) return true;
+                    else if (recStack.Contains(ev.To)) return true;
             }
 
             recStack.Remove(pk);
@@ -2075,15 +1993,14 @@ namespace RandomizerSharp.Randomizers
                 foreach (var pk in pokemonPool)
                     if (pk.BstForPowerLevels() >= minTarget &&
                         pk.BstForPowerLevels() <= maxTarget &&
-                        !canPick.Contains(pk))
-                        canPick.Add(pk);
+                        !canPick.Contains(pk)) canPick.Add(pk);
 
                 minTarget = minTarget - currentBst / 20;
                 maxTarget = maxTarget + currentBst / 20;
                 expandRounds++;
             }
 
-            return canPick[Random.Next(canPick.Count)];
+            return canPick[_random.Next(canPick.Count)];
         }
 
         private class EvolutionPair
@@ -2111,35 +2028,18 @@ namespace RandomizerSharp.Randomizers
 
             public override bool Equals(object obj)
             {
-                if (this == obj)
-                    return true;
+                if (this == obj) return true;
 
-                if (obj == null)
-                    return false;
+                if (obj == null) return false;
 
-                if (GetType() != obj.GetType())
-                    return false;
+                if (GetType() != obj.GetType()) return false;
 
-                var other = (EvolutionPair)obj;
-                if (_from == null)
-                {
-                    if (other._from != null)
-                        return false;
-                }
-                else if (!_from.Equals(other._from))
-                {
-                    return false;
-                }
+                var other = (EvolutionPair) obj;
+                if (_from == null) { if (other._from != null) return false; }
+                else if (!_from.Equals(other._from)) { return false; }
 
-                if (_to == null)
-                {
-                    if (other._to != null)
-                        return false;
-                }
-                else if (!_to.Equals(other._to))
-                {
-                    return false;
-                }
+                if (_to == null) { if (other._to != null) return false; }
+                else if (!_to.Equals(other._to)) { return false; }
 
                 return true;
             }
@@ -2147,8 +2047,8 @@ namespace RandomizerSharp.Randomizers
 
         public void RemoveBrokenMoves()
         {
-            var allBanned = new HashSet<int>(RomHandler.GameBreakingMoves);
-            foreach (var pokemon in RomHandler.ValidPokemons)
+            var allBanned = new HashSet<int>(_romHandler.GameBreakingMoves);
+            foreach (var pokemon in _romHandler.ValidPokemons)
                 pokemon.MovesLearnt.RemoveAll(move => allBanned.Contains(move.Move));
         }
 
@@ -2159,18 +2059,18 @@ namespace RandomizerSharp.Randomizers
             double goodDamagingProbability)
         {
             //  Get current sets
-            var hms = RomHandler.HmMoves;
+            var hms = _romHandler.HmMoves;
 
-            var allBanned = new HashSet<int>(noBroken ? RomHandler.GameBreakingMoves: Enumerable.Empty<int>());
+            var allBanned = new HashSet<int>(noBroken ? _romHandler.GameBreakingMoves : Enumerable.Empty<int>());
             allBanned.UnionWith(hms);
-            allBanned.UnionWith(RomHandler.MovesBannedFromLevelup);
+            allBanned.UnionWith(_romHandler.MovesBannedFromLevelup);
 
             //  Build sets of moves
             var validMoves = new List<Move>();
             var validDamagingMoves = new List<Move>();
             var validTypeMoves = new Dictionary<Typing, List<Move>>();
             var validTypeDamagingMoves = new Dictionary<Typing, List<Move>>();
-            foreach (var mv in RomHandler.ValidMoves)
+            foreach (var mv in _romHandler.ValidMoves)
                 if (mv != null &&
                     !GlobalConstants.BannedRandomMoves[mv.Number] &&
                     !allBanned.Contains(mv.Number))
@@ -2178,8 +2078,7 @@ namespace RandomizerSharp.Randomizers
                     validMoves.Add(mv);
                     if (mv.Type != null)
                     {
-                        if (!validTypeMoves.ContainsKey(mv.Type))
-                            validTypeMoves[mv.Type] = new List<Move>();
+                        if (!validTypeMoves.ContainsKey(mv.Type)) validTypeMoves[mv.Type] = new List<Move>();
 
                         validTypeMoves[mv.Type].Add(mv);
                     }
@@ -2199,7 +2098,7 @@ namespace RandomizerSharp.Randomizers
                         }
                 }
 
-            foreach (var pokemon in RomHandler.ValidPokemons)
+            foreach (var pokemon in _romHandler.ValidPokemons)
             {
                 var learnt = new HashSet<int>();
                 var moves = pokemon.MovesLearnt;
@@ -2207,9 +2106,7 @@ namespace RandomizerSharp.Randomizers
                 if (forceFourStartingMoves)
                 {
                     var lv1Count = 0;
-                    foreach (var ml in moves)
-                        if (ml.Level == 1)
-                            lv1Count++;
+                    foreach (var ml in moves) if (ml.Level == 1) lv1Count++;
 
                     if (lv1Count < 4)
                         for (var i = 0; i < 4 - lv1Count; i++)
@@ -2227,32 +2124,29 @@ namespace RandomizerSharp.Randomizers
                 //  lv1index ends up as the index of the first non-lv1 move
                 var lv1Index = 0;
                 while (lv1Index < moves.Count &&
-                       moves[lv1Index].Level == 1)
-                    lv1Index++;
+                       moves[lv1Index].Level == 1) lv1Index++;
 
                 //  last lv1 move is 1 before lv1index
-                if (lv1Index != 0)
-                    lv1Index--;
+                if (lv1Index != 0) lv1Index--;
 
                 //  Replace moves as needed
                 for (var i = 0; i < moves.Count; i++)
                 {
                     //  should this move be forced damaging?
-                    var attemptDamaging = i == lv1Index || Random.NextDouble() < goodDamagingProbability;
+                    var attemptDamaging = i == lv1Index || _random.NextDouble() < goodDamagingProbability;
 
                     //  type themed?
                     Typing typeOfMove = null;
                     if (typeThemed)
                     {
-                        var picked = Random.NextDouble();
+                        var picked = _random.NextDouble();
                         if (pokemon.PrimaryType == Typing.Normal ||
                             pokemon.SecondaryType == Typing.Normal)
                         {
                             if (pokemon.SecondaryType == null)
                             {
                                 //  Pure NORMAL: 75% normal, 25% random
-                                if (picked < 0.75)
-                                    typeOfMove = Typing.Normal;
+                                if (picked < 0.75) typeOfMove = Typing.Normal;
 
                                 //  else random
                             }
@@ -2261,13 +2155,10 @@ namespace RandomizerSharp.Randomizers
                                 //  Find the other type
                                 //  Normal/OTHER: 30% normal, 55% other, 15% random
                                 var otherType = pokemon.PrimaryType;
-                                if (otherType == Typing.Normal)
-                                    otherType = pokemon.SecondaryType;
+                                if (otherType == Typing.Normal) otherType = pokemon.SecondaryType;
 
-                                if (picked < 0.3)
-                                    typeOfMove = Typing.Normal;
-                                else if (picked < 0.85)
-                                    typeOfMove = otherType;
+                                if (picked < 0.3) typeOfMove = Typing.Normal;
+                                else if (picked < 0.85) typeOfMove = otherType;
 
                                 //  else random
                             }
@@ -2276,22 +2167,17 @@ namespace RandomizerSharp.Randomizers
                         {
                             //  Primary/Secondary: 50% primary, 30% secondary, 5%
                             //  normal, 15% random
-                            if (picked < 0.5)
-                                typeOfMove = pokemon.PrimaryType;
-                            else if (picked < 0.8)
-                                typeOfMove = pokemon.SecondaryType;
-                            else if (picked < 0.85)
-                                typeOfMove = Typing.Normal;
+                            if (picked < 0.5) typeOfMove = pokemon.PrimaryType;
+                            else if (picked < 0.8) typeOfMove = pokemon.SecondaryType;
+                            else if (picked < 0.85) typeOfMove = Typing.Normal;
 
                             //  else random
                         }
                         else
                         {
                             //  Primary/None: 60% primary, 20% normal, 20% random
-                            if (picked < 0.6)
-                                typeOfMove = pokemon.PrimaryType;
-                            else if (picked < 0.8)
-                                typeOfMove = Typing.Normal;
+                            if (picked < 0.6) typeOfMove = pokemon.PrimaryType;
+                            else if (picked < 0.8) typeOfMove = Typing.Normal;
 
                             //  else random
                         }
@@ -2306,13 +2192,9 @@ namespace RandomizerSharp.Randomizers
                             if (validTypeDamagingMoves.ContainsKey(typeOfMove) &&
                                 CheckForUnusedMove(validTypeDamagingMoves[typeOfMove], learnt))
                                 pickList = validTypeDamagingMoves[typeOfMove];
-                            else if (CheckForUnusedMove(validDamagingMoves, learnt))
-                                pickList = validDamagingMoves;
+                            else if (CheckForUnusedMove(validDamagingMoves, learnt)) pickList = validDamagingMoves;
                         }
-                        else if (CheckForUnusedMove(validDamagingMoves, learnt))
-                        {
-                            pickList = validDamagingMoves;
-                        }
+                        else if (CheckForUnusedMove(validDamagingMoves, learnt)) { pickList = validDamagingMoves; }
                     }
                     else if (typeOfMove != null)
                     {
@@ -2322,14 +2204,12 @@ namespace RandomizerSharp.Randomizers
                     }
 
                     //  now pick a move until we get a valid one
-                    var mv = pickList[Random.Next(pickList.Count)];
-                    while (learnt.Contains(mv.Number))
-                        mv = pickList[Random.Next(pickList.Count)];
+                    var mv = pickList[_random.Next(pickList.Count)];
+                    while (learnt.Contains(mv.Number)) mv = pickList[_random.Next(pickList.Count)];
 
                     //  write it
                     moves[i].Move = mv.Number;
-                    if (i == lv1Index)
-                        moves[i].Level = 1;
+                    if (i == lv1Index) moves[i].Level = 1;
 
                     learnt.Add(mv.Number);
                 }
@@ -2337,9 +2217,7 @@ namespace RandomizerSharp.Randomizers
 
             bool CheckForUnusedMove(List<Move> potentialList, HashSet<int> alreadyUsed)
             {
-                foreach (var mv in potentialList)
-                    if (!alreadyUsed.Contains(mv.Number))
-                        return true;
+                foreach (var mv in potentialList) if (!alreadyUsed.Contains(mv.Number)) return true;
 
                 return false;
             }
@@ -2347,25 +2225,22 @@ namespace RandomizerSharp.Randomizers
 
         protected void ApplyCamelCaseNames()
         {
-            var pokes = RomHandler.ValidPokemons;
+            var pokes = _romHandler.ValidPokemons;
             foreach (var pkmn in pokes)
             {
-                if (pkmn == null)
-                    continue;
+                if (pkmn == null) continue;
 
                 pkmn.Name = RomFunctions.CamelCase(pkmn.Name);
             }
         }
 
 
-
         public void MinimumCatchRate(int rateNonLegendary, int rateLegendary)
         {
-            var pokes = RomHandler.ValidPokemons;
+            var pokes = _romHandler.ValidPokemons;
             foreach (var pkmn in pokes)
             {
-                if (pkmn == null)
-                    continue;
+                if (pkmn == null) continue;
 
                 var minCatchRate = pkmn.Legendary ? rateLegendary : rateNonLegendary;
 
@@ -2376,11 +2251,10 @@ namespace RandomizerSharp.Randomizers
 
         public void StandardizeExpCurves()
         {
-            var pokes = RomHandler.ValidPokemons;
+            var pokes = _romHandler.ValidPokemons;
             foreach (var pkmn in pokes)
             {
-                if (pkmn == null)
-                    continue;
+                if (pkmn == null) continue;
 
                 pkmn.GrowthCurve = pkmn.Legendary ? Exp.Curve.Slow : Exp.Curve.MediumFast;
             }
@@ -2388,7 +2262,7 @@ namespace RandomizerSharp.Randomizers
 
         public void CondenseLevelEvolutions(int maxLevel, int maxIntermediateLevel)
         {
-            var allPokemon = RomHandler.ValidPokemons;
+            var allPokemon = _romHandler.ValidPokemons;
             var changedEvos = new HashSet<Evolution>();
             //  search for level evolutions
             foreach (var pk in allPokemon)
@@ -2424,10 +2298,9 @@ namespace RandomizerSharp.Randomizers
         }
 
 
-
         public void OrderDamagingMovesByDamage()
         {
-            foreach (var pkmn in RomHandler.ValidPokemons)
+            foreach (var pkmn in _romHandler.ValidPokemons)
             {
                 var moves = pkmn.MovesLearnt;
                 //  Build up a list of damaging moves and their positions
@@ -2435,7 +2308,7 @@ namespace RandomizerSharp.Randomizers
                 var damagingMoves = new List<Move>();
                 for (var i = 0; i < moves.Count; i++)
                 {
-                    var mv = RomHandler.ValidMoves[moves[i].Move];
+                    var mv = _romHandler.ValidMoves[moves[i].Move];
                     if (mv.Power > 1)
                     {
                         //  considered a damaging move for this purpose
@@ -2445,15 +2318,13 @@ namespace RandomizerSharp.Randomizers
                 }
 
                 //  Ties should be sorted randomly, so shuffle the list first.
-                damagingMoves.Shuffle(Random);
+                damagingMoves.Shuffle(_random);
                 //  Sort the damaging moves by power
                 damagingMoves.Sort(
                     (m1, m2) =>
                     {
-                        if (m1.Power * m1.HitCount < m2.Power * m2.HitCount)
-                            return -1;
-                        if (m1.Power * m1.HitCount > m2.Power * m2.HitCount)
-                            return 1;
+                        if (m1.Power * m1.HitCount < m2.Power * m2.HitCount) return -1;
+                        if (m1.Power * m1.HitCount > m2.Power * m2.HitCount) return 1;
                         return 0;
                     });
 
@@ -2462,6 +2333,7 @@ namespace RandomizerSharp.Randomizers
                     moves[damagingMoveIndices[i]].Move = damagingMoves[i].Number;
             }
         }
+
         public void MetronomeOnlyMode()
         {
             var metronomeMl = new MoveLearnt
@@ -2469,7 +2341,7 @@ namespace RandomizerSharp.Randomizers
                 Level = 1,
                 Move = GlobalConstants.MetronomeMove
             };
-            foreach (var pkmn in RomHandler.ValidPokemons)
+            foreach (var pkmn in _romHandler.ValidPokemons)
             {
                 pkmn.MovesLearnt.Clear();
                 pkmn.MovesLearnt.Add(metronomeMl);
@@ -2477,30 +2349,26 @@ namespace RandomizerSharp.Randomizers
 
             //  trainers
             //  run this to remove all custom non-Metronome moves
-            foreach (var t in RomHandler.Trainers)
-            foreach (var tpk in t.Pokemon)
-                tpk.ResetMoves = true;
+            foreach (var t in _romHandler.Trainers) foreach (var tpk in t.Pokemon) tpk.ResetMoves = true;
 
             //  tms
-            var tmMoves = RomHandler.TmMoves;
-            for (var i = 0; i < tmMoves.Length; i++)
-                tmMoves[i] = GlobalConstants.MetronomeMove;
-            
+            var tmMoves = _romHandler.TmMoves;
+            for (var i = 0; i < tmMoves.Length; i++) tmMoves[i] = GlobalConstants.MetronomeMove;
+
             //  movetutors
-            if (RomHandler.HasMoveTutors)
+            if (_romHandler.HasMoveTutors)
             {
-                var mtMoves = RomHandler.MoveTutorMoves;
-                for (var i = 0; i < mtMoves.Length; i++)
-                    mtMoves[i] = GlobalConstants.MetronomeMove;
+                var mtMoves = _romHandler.MoveTutorMoves;
+                for (var i = 0; i < mtMoves.Length; i++) mtMoves[i] = GlobalConstants.MetronomeMove;
             }
 
             //  move tweaks
-            var metronome = RomHandler.ValidMoves[GlobalConstants.MetronomeMove];
+            var metronome = _romHandler.ValidMoves[GlobalConstants.MetronomeMove];
             metronome.Pp = 40;
-            var hms = RomHandler.HmMoves;
+            var hms = _romHandler.HmMoves;
             foreach (var hm in hms)
             {
-                var thisHm = RomHandler.ValidMoves[hm];
+                var thisHm = _romHandler.ValidMoves[hm];
                 thisHm.Pp = 0;
             }
         }
@@ -2508,12 +2376,12 @@ namespace RandomizerSharp.Randomizers
         public void RandomizeStaticPokemon(bool legendForLegend)
         {
             //  Load
-            var currentStaticPokemon = RomHandler.StaticPokemon;
-            var banned = RomHandler.BannedForStaticPokemon;
+            var currentStaticPokemon = _romHandler.StaticPokemon;
+            var banned = _romHandler.BannedForStaticPokemon;
             if (legendForLegend)
             {
-                var legendariesLeft = new List<Pokemon>(RomHandler.LegendaryPokemons);
-                var nonlegsLeft = new List<Pokemon>(RomHandler.NonLegendaryPokemons);
+                var legendariesLeft = new List<Pokemon>(_romHandler.LegendaryPokemons);
+                var nonlegsLeft = new List<Pokemon>(_romHandler.NonLegendaryPokemons);
                 legendariesLeft.RemoveAll(banned.Contains);
                 nonlegsLeft.RemoveAll(banned.Contains);
 
@@ -2521,24 +2389,24 @@ namespace RandomizerSharp.Randomizers
                 {
                     if (currentStaticPokemon[i].Legendary)
                     {
-                        var num = Random.Next(nonlegsLeft.Count);
+                        var num = _random.Next(legendariesLeft.Count);
                         currentStaticPokemon[i] = legendariesLeft[num];
                         legendariesLeft.RemoveAt(num);
 
                         if (legendariesLeft.Count == 0)
                         {
-                            legendariesLeft.AddRange(RomHandler.LegendaryPokemons);
+                            legendariesLeft.AddRange(_romHandler.LegendaryPokemons);
                             legendariesLeft.RemoveAll(banned.Contains);
                         }
                     }
                     else
                     {
-                        var num = Random.Next(nonlegsLeft.Count);
+                        var num = _random.Next(nonlegsLeft.Count);
                         currentStaticPokemon[i] = nonlegsLeft[num];
                         nonlegsLeft.RemoveAt(num);
                         if (nonlegsLeft.Count == 0)
                         {
-                            nonlegsLeft.AddRange(RomHandler.NonLegendaryPokemons);
+                            nonlegsLeft.AddRange(_romHandler.NonLegendaryPokemons);
                             nonlegsLeft.RemoveAll(banned.Contains);
                         }
                     }
@@ -2546,33 +2414,33 @@ namespace RandomizerSharp.Randomizers
             }
             else
             {
-                var pokemonLeft = new List<Pokemon>(RomHandler.ValidPokemons);
+                var pokemonLeft = new List<Pokemon>(_romHandler.ValidPokemons);
                 pokemonLeft.RemoveAll(banned.Contains);
                 for (var i = 0; i < currentStaticPokemon.Length; i++)
                 {
-                    var num = Random.Next(pokemonLeft.Count);
+                    var num = _random.Next(pokemonLeft.Count);
 
                     currentStaticPokemon[i] = pokemonLeft[num];
                     pokemonLeft.RemoveAt(num);
 
                     if (pokemonLeft.Count == 0)
                     {
-                        pokemonLeft.AddRange(RomHandler.ValidPokemons);
+                        pokemonLeft.AddRange(_romHandler.ValidPokemons);
                         pokemonLeft.RemoveAll(banned.Contains);
                     }
                 }
             }
         }
 
-        public void RandomizeTmMoves(bool noBroken, bool preserveField, double goodDamagingProbability)
+        public void RandomizeTmMoves(bool noBroken, bool preserveField, bool levelupTmMoveSanity, double goodDamagingProbability)
         {
             //  Pick some random TM moves.
-            var hms = RomHandler.HmMoves;
-            var oldTMs = RomHandler.TmMoves;
+            var hms = _romHandler.HmMoves;
+            var oldTMs = _romHandler.TmMoves;
 
-            var banned = new List<int>(noBroken ? RomHandler.GameBreakingMoves : Enumerable.Empty<int>());
+            var banned = new List<int>(noBroken ? _romHandler.GameBreakingMoves : Enumerable.Empty<int>());
             //  field moves?
-            var fieldMoves = RomHandler.FieldMoves;
+            var fieldMoves = _romHandler.FieldMoves;
             var preservedFieldMoveCount = 0;
             if (preserveField)
             {
@@ -2583,7 +2451,7 @@ namespace RandomizerSharp.Randomizers
             }
 
             //  Determine which moves are pickable
-            var usableMoves = new List<Move>(RomHandler.ValidMoves);
+            var usableMoves = new List<Move>(_romHandler.ValidMoves);
             usableMoves.RemoveAt(0);
             //  remove null entry
             var unusableMoves = new HashSet<Move>();
@@ -2591,11 +2459,9 @@ namespace RandomizerSharp.Randomizers
             foreach (var mv in usableMoves)
                 if (GlobalConstants.BannedRandomMoves[mv.Number] ||
                     hms.Contains(mv.Number) ||
-                    banned.Contains(mv.Number))
-                    unusableMoves.Add(mv);
+                    banned.Contains(mv.Number)) unusableMoves.Add(mv);
                 else if (GlobalConstants.BannedForDamagingMove[mv.Number] ||
-                         mv.Power < GlobalConstants.MinDamagingMovePower)
-                    unusableDamagingMoves.Add(mv);
+                         mv.Power < GlobalConstants.MinDamagingMovePower) unusableDamagingMoves.Add(mv);
 
             usableMoves.RemoveAll(unusableMoves.Contains);
             var usableDamagingMoves = new List<Move>(usableMoves);
@@ -2605,11 +2471,10 @@ namespace RandomizerSharp.Randomizers
             for (var i = 0; i < oldTMs.Length - preservedFieldMoveCount; i++)
             {
                 Move chosenMove;
-                if (Random.NextDouble() < goodDamagingProbability &&
+                if (_random.NextDouble() < goodDamagingProbability &&
                     usableDamagingMoves.Count > 0)
-                    chosenMove = usableDamagingMoves[Random.Next(usableDamagingMoves.Count)];
-                else
-                    chosenMove = usableMoves[Random.Next(usableMoves.Count)];
+                    chosenMove = usableDamagingMoves[_random.Next(usableDamagingMoves.Count)];
+                else chosenMove = usableMoves[_random.Next(usableMoves.Count)];
 
                 pickedMoves.Add(chosenMove.Number);
                 usableMoves.Remove(chosenMove);
@@ -2618,111 +2483,100 @@ namespace RandomizerSharp.Randomizers
 
             //  shuffle the picked moves because high goodDamagingProbability
             //  could bias them towards early numbers otherwise
-            pickedMoves.Shuffle(Random);
+            pickedMoves.Shuffle(_random);
             //  finally, distribute them as tms
             var pickedMoveIndex = 0;
 
             for (var i = 0; i < oldTMs.Length; i++)
             {
-                if (preserveField && fieldMoves.Contains(oldTMs[i]))
-                    continue;
+                if (preserveField && fieldMoves.Contains(oldTMs[i])) continue;
 
                 oldTMs[i] = pickedMoves[pickedMoveIndex++];
             }
+
+            if (levelupTmMoveSanity)
+            {
+                //  if a pokemon learns a move in its moveset
+                //  and there is a TM of that move, make sure
+                //  that TM can be learned.
+                var tmMoves = _romHandler.TmMoves;
+
+                foreach (var pokemon in _romHandler.ValidPokemons)
+                {
+                    var moveset = pokemon.MovesLearnt;
+                    var pkmnCompat = pokemon.TMHMCompatibility;
+                    foreach (var ml in moveset)
+                        if (tmMoves.Contains(ml.Move))
+                        {
+                            var tmIndex = Array.IndexOf(tmMoves, ml.Move);
+                            pkmnCompat[tmIndex + 1] = true;
+                        }
+                }
+            }
         }
-        public void RandomizeTmhmCompatibility(bool preferSameType)
+
+        public enum TmsHmsCompatibility
+        {
+            RandomPreferType,
+            CompletelyRandom,
+            Full
+        }
+
+        public void RandomizeTmhmCompatibility(TmsHmsCompatibility compatibility)
         {
             //  Get current compatibility
             //  new: increase HM chances if required early on
-            var requiredEarlyOn = RomHandler.EarlyRequiredHmMoves;
-            var tmHMs = new List<int>(RomHandler.TmMoves);
-            tmHMs.AddRange(RomHandler.HmMoves);
-            
-            foreach (var pkmn in RomHandler.ValidPokemons)
+            var requiredEarlyOn = _romHandler.EarlyRequiredHmMoves;
+            var tmHMs = new List<int>(_romHandler.TmMoves);
+            tmHMs.AddRange(_romHandler.HmMoves);
+
+            foreach (var pkmn in _romHandler.ValidPokemons)
             {
                 var flags = pkmn.TMHMCompatibility;
                 for (var i = 1; i <= tmHMs.Count; i++)
                 {
                     var move = tmHMs[i - 1];
-                    var mv = RomHandler.ValidMoves[move];
+                    var mv = _romHandler.ValidMoves[move];
                     var probability = 0.5;
-                    if (preferSameType)
+                    if (compatibility == TmsHmsCompatibility.RandomPreferType)
                         if (pkmn.PrimaryType.Equals(mv.Type) ||
-                            pkmn.SecondaryType != null && pkmn.SecondaryType.Equals(mv.Type))
-                            probability = 0.9;
+                            pkmn.SecondaryType != null && pkmn.SecondaryType.Equals(mv.Type)) probability = 0.9;
                         else if (mv.Type != null &&
-                                 mv.Type.Equals(Typing.Normal))
-                            probability = 0.5;
-                        else
-                            probability = 0.25;
+                                 mv.Type.Equals(Typing.Normal)) probability = 0.5;
+                        else probability = 0.25;
 
-                    if (requiredEarlyOn.Contains(move))
-                        probability = Math.Min(1, probability * 1.8);
+                    if (requiredEarlyOn.Contains(move)) probability = Math.Min(1, probability * 1.8);
 
-                    flags[i] = Random.NextDouble() < probability;
+                    flags[i] = _random.NextDouble() < probability;
                 }
             }
-        }
-        public void FullTmhmCompatibility()
-        {
-            foreach (var pokemon in RomHandler.ValidPokemons)
+
+            if (compatibility != TmsHmsCompatibility.Full)
+                return;
+            
+            var tmCount = _romHandler.TmMoves.Length;
+            foreach (var pokemon in _romHandler.ValidPokemons)
             {
                 var flags = pokemon.TMHMCompatibility;
-                for (var i = 1; i < flags.Length; i++)
-                    flags[i] = true;
-            }
-        }
-
-
-        public void EnsureTmCompatSanity()
-        {
-            //  if a pokemon learns a move in its moveset
-            //  and there is a TM of that move, make sure
-            //  that TM can be learned.
-            var tmMoves = RomHandler.TmMoves;
-
-            foreach (var pokemon in RomHandler.ValidPokemons)
-            {
-                var moveset = pokemon.MovesLearnt;
-                var pkmnCompat = pokemon.TMHMCompatibility;
-                foreach (var ml in moveset)
-                    if (tmMoves.Contains(ml.Move))
-                    {
-                        var tmIndex = Array.IndexOf(tmMoves, ml.Move);
-                        pkmnCompat[tmIndex + 1] = true;
-                    }
-            }
-        }
-
-
-
-        public void FullHmCompatibility()
-        {
-            var tmCount = RomHandler.TmMoves.Length;
-            foreach (var pokemon in RomHandler.ValidPokemons)
-            {
-                var flags = pokemon.TMHMCompatibility;
-                for (var i = tmCount + 1; i < flags.Length; i++)
-                    flags[i] = true;
+                for (var i = tmCount + 1; i < flags.Length; i++) flags[i] = true;
             }
         }
 
 
         public void RandomizeMoveTutorMoves(bool noBroken, bool preserveField, double goodDamagingProbability)
         {
-            if (!RomHandler.HasMoveTutors)
-                return;
+            if (!_romHandler.HasMoveTutors) return;
 
             //  Pick some random Move Tutor moves, excluding TMs.
-            var tms = RomHandler.TmMoves;
-            var oldMTs = RomHandler.MoveTutorMoves;
+            var tms = _romHandler.TmMoves;
+            var oldMTs = _romHandler.MoveTutorMoves;
             var mtCount = oldMTs.Length;
-            var hms = RomHandler.HmMoves;
+            var hms = _romHandler.HmMoves;
 
-            var banned = new List<int>(noBroken ? RomHandler.GameBreakingMoves : Enumerable.Empty<int>());
+            var banned = new List<int>(noBroken ? _romHandler.GameBreakingMoves : Enumerable.Empty<int>());
 
             //  field moves?
-            var fieldMoves = RomHandler.FieldMoves;
+            var fieldMoves = _romHandler.FieldMoves;
             var preservedFieldMoveCount = 0;
             if (preserveField)
             {
@@ -2733,7 +2587,7 @@ namespace RandomizerSharp.Randomizers
             }
 
             //  Determine which moves are pickable
-            var usableMoves = new List<Move>(RomHandler.ValidMoves);
+            var usableMoves = new List<Move>(_romHandler.ValidMoves);
             usableMoves.RemoveAt(0);
             //  remove null entry
             var unusableMoves = new HashSet<Move>();
@@ -2742,11 +2596,9 @@ namespace RandomizerSharp.Randomizers
                 if (GlobalConstants.BannedRandomMoves[mv.Number] ||
                     tms.Contains(mv.Number) ||
                     hms.Contains(mv.Number) ||
-                    banned.Contains(mv.Number))
-                    unusableMoves.Add(mv);
+                    banned.Contains(mv.Number)) unusableMoves.Add(mv);
                 else if (GlobalConstants.BannedForDamagingMove[mv.Number] ||
-                         mv.Power < GlobalConstants.MinDamagingMovePower)
-                    unusableDamagingMoves.Add(mv);
+                         mv.Power < GlobalConstants.MinDamagingMovePower) unusableDamagingMoves.Add(mv);
 
             usableMoves.RemoveAll(unusableMoves.Contains);
             var usableDamagingMoves = new List<Move>(usableMoves);
@@ -2758,11 +2610,10 @@ namespace RandomizerSharp.Randomizers
                 i++)
             {
                 Move chosenMove;
-                if (Random.NextDouble() < goodDamagingProbability &&
+                if (_random.NextDouble() < goodDamagingProbability &&
                     usableDamagingMoves.Count > 0)
-                    chosenMove = usableDamagingMoves[Random.Next(usableDamagingMoves.Count)];
-                else
-                    chosenMove = usableMoves[Random.Next(usableMoves.Count)];
+                    chosenMove = usableDamagingMoves[_random.Next(usableDamagingMoves.Count)];
+                else chosenMove = usableMoves[_random.Next(usableMoves.Count)];
 
                 pickedMoves.Add(chosenMove.Number);
                 usableMoves.Remove(chosenMove);
@@ -2771,13 +2622,12 @@ namespace RandomizerSharp.Randomizers
 
             //  shuffle the picked moves because high goodDamagingProbability
             //  could bias them towards early numbers otherwise
-            pickedMoves.Shuffle(Random);
+            pickedMoves.Shuffle(_random);
             //  finally, distribute them as tutors
             var pickedMoveIndex = 0;
             for (var i = 0; i < mtCount; i++)
             {
-                if (preserveField && fieldMoves.Contains(oldMTs[i]))
-                    continue;
+                if (preserveField && fieldMoves.Contains(oldMTs[i])) continue;
 
                 oldMTs[i] = pickedMoves[pickedMoveIndex++];
             }
@@ -2785,25 +2635,23 @@ namespace RandomizerSharp.Randomizers
 
         public void FullMoveTutorCompatibility()
         {
-            if (!RomHandler.HasMoveTutors)
-                return;
+            if (!_romHandler.HasMoveTutors) return;
 
-            var compat = RomHandler.MoveTutorCompatibility;
+            var compat = _romHandler.MoveTutorCompatibility;
             foreach (var compatEntry in compat)
             {
                 var flags = compatEntry.Value;
-                for (var i = 1; i < flags.Length; i++)
-                    flags[i] = true;
+                for (var i = 1; i < flags.Length; i++) flags[i] = true;
             }
         }
+
         public void RandomizeMoveTutorCompatibility(bool preferSameType)
         {
-            if (!RomHandler.HasMoveTutors)
-                return;
+            if (!_romHandler.HasMoveTutors) return;
 
             //  Get current compatibility
-            var compat = RomHandler.MoveTutorCompatibility;
-            var mts = RomHandler.MoveTutorMoves;
+            var compat = _romHandler.MoveTutorCompatibility;
+            var mts = _romHandler.MoveTutorMoves;
             foreach (var compatEntry in compat)
             {
                 var pkmn = compatEntry.Key;
@@ -2811,19 +2659,16 @@ namespace RandomizerSharp.Randomizers
                 for (var i = 1; i <= mts.Length; i++)
                 {
                     var move = mts[i - 1];
-                    var mv = RomHandler.ValidMoves[move];
+                    var mv = _romHandler.ValidMoves[move];
                     var probability = 0.5;
                     if (preferSameType)
                         if (pkmn.PrimaryType.Equals(mv.Type) ||
-                            pkmn.SecondaryType != null && pkmn.SecondaryType.Equals(mv.Type))
-                            probability = 0.9;
+                            pkmn.SecondaryType != null && pkmn.SecondaryType.Equals(mv.Type)) probability = 0.9;
                         else if (mv.Type != null &&
-                                 mv.Type.Equals(Typing.Normal))
-                            probability = 0.5;
-                        else
-                            probability = 0.25;
+                                 mv.Type.Equals(Typing.Normal)) probability = 0.5;
+                        else probability = 0.25;
 
-                    flags[i] = Random.NextDouble() < probability;
+                    flags[i] = _random.NextDouble() < probability;
                 }
             }
         }
@@ -2831,15 +2676,14 @@ namespace RandomizerSharp.Randomizers
 
         public void EnsureMoveTutorCompatSanity()
         {
-            if (!RomHandler.HasMoveTutors)
-                return;
+            if (!_romHandler.HasMoveTutors) return;
 
             //  if a pokemon learns a move in its moveset
             //  and there is a tutor of that move, make sure
             //  that tutor can be learned.
-            var compat = RomHandler.MoveTutorCompatibility;
-            var mtMoves = RomHandler.MoveTutorMoves;
-            foreach (var pkmn in RomHandler.ValidPokemons)
+            var compat = _romHandler.MoveTutorCompatibility;
+            var mtMoves = _romHandler.MoveTutorMoves;
+            foreach (var pkmn in _romHandler.ValidPokemons)
             {
                 var moveset = pkmn.MovesLearnt;
                 var pkmnCompat = compat[pkmn];
@@ -2851,10 +2695,10 @@ namespace RandomizerSharp.Randomizers
                     }
             }
         }
+
         public void RandomizeTrainerNames(CustomNamesSet customNames)
         {
-            if (!RomHandler.CanChangeTrainerText)
-                return;
+            if (!_romHandler.CanChangeTrainerText) return;
 
             //  index 0 = singles, 1 = doubles
             List<string>[] allTrainerNames = { new List<string>(), new List<string>() };
@@ -2867,14 +2711,11 @@ namespace RandomizerSharp.Randomizers
             //  Read name lists
             foreach (var trainername in customNames.TrainerNames)
             {
-                var len = RomHandler.InternalStringLength(trainername);
+                var len = _romHandler.InternalStringLength(trainername);
                 if (len <= 10)
                 {
                     allTrainerNames[0].Add(trainername);
-                    if (trainerNamesByLength[0].ContainsKey(len))
-                    {
-                        trainerNamesByLength[0][len].Add(trainername);
-                    }
+                    if (trainerNamesByLength[0].ContainsKey(len)) { trainerNamesByLength[0][len].Add(trainername); }
                     else
                     {
                         var namesOfThisLength = new List<string>
@@ -2888,14 +2729,11 @@ namespace RandomizerSharp.Randomizers
 
             foreach (var trainername in customNames.DoublesTrainerNames)
             {
-                var len = RomHandler.InternalStringLength(trainername);
+                var len = _romHandler.InternalStringLength(trainername);
                 if (len <= 10)
                 {
                     allTrainerNames[1].Add(trainername);
-                    if (trainerNamesByLength[1].ContainsKey(len))
-                    {
-                        trainerNamesByLength[1][len].Add(trainername);
-                    }
+                    if (trainerNamesByLength[1].ContainsKey(len)) { trainerNamesByLength[1][len].Add(trainername); }
                     else
                     {
                         var namesOfThisLength = new List<string> { trainername };
@@ -2905,19 +2743,18 @@ namespace RandomizerSharp.Randomizers
             }
 
             //  Get the current trainer names data
-            var currentTrainerNames = RomHandler.TrainerNames;
-            if (currentTrainerNames.Length == 0)
-                return;
+            var currentTrainerNames = _romHandler.TrainerNames;
+            if (currentTrainerNames.Length == 0) return;
 
-            var mode = RomHandler.TrainerNameMode;
-            var maxLength = RomHandler.MaxTrainerNameLength;
-            var totalMaxLength = RomHandler.MaxSumOfTrainerNameLengths;
+            var mode = _romHandler.TrainerNameMode;
+            var maxLength = _romHandler.MaxTrainerNameLength;
+            var totalMaxLength = _romHandler.MaxSumOfTrainerNameLengths;
             var success = false;
             var tries = 0;
             //  Init the translation map and new list
             var translation = new Dictionary<string, string>();
 
-            var tcNameLengths = RomHandler.TcNameLengthsByTrainer;
+            var tcNameLengths = _romHandler.TcNameLengthsByTrainer;
             //  loop until we successfully pick names that fit
             //  should always succeed first attempt except for gen2.
             while (!success &&
@@ -2937,15 +2774,14 @@ namespace RandomizerSharp.Randomizers
                     {
                         //  use an already picked translation
                         currentTrainerNames[i] = translation[trainerName];
-                        totalLength = totalLength + RomHandler.InternalStringLength(translation[trainerName]);
+                        totalLength = totalLength + _romHandler.InternalStringLength(translation[trainerName]);
                     }
                     else
                     {
                         var idx = trainerName.Contains("&") ? 1 : 0;
                         var pickFrom = allTrainerNames[idx];
-                        var intStrLen = RomHandler.InternalStringLength(trainerName);
-                        if (mode == TrainerNameMode.SameLength)
-                            pickFrom = trainerNamesByLength[idx][intStrLen];
+                        var intStrLen = _romHandler.InternalStringLength(trainerName);
+                        if (mode == TrainerNameMode.SameLength) pickFrom = trainerNamesByLength[idx][intStrLen];
 
                         var changeTo = trainerName;
                         var ctl = intStrLen;
@@ -2954,8 +2790,8 @@ namespace RandomizerSharp.Randomizers
                             intStrLen > 1)
                         {
                             var innerTries = 0;
-                            changeTo = pickFrom[Random.Next(pickFrom.Count)];
-                            ctl = RomHandler.InternalStringLength(changeTo);
+                            changeTo = pickFrom[_random.Next(pickFrom.Count)];
+                            ctl = _romHandler.InternalStringLength(changeTo);
                             while (mode == TrainerNameMode.MaxLength && ctl > maxLength ||
                                    mode == TrainerNameMode.MaxLengthWithClass &&
                                    ctl + tcNameLengths[i] > maxLength)
@@ -2968,8 +2804,8 @@ namespace RandomizerSharp.Randomizers
                                     break;
                                 }
 
-                                changeTo = pickFrom[Random.Next(pickFrom.Count)];
-                                ctl = RomHandler.InternalStringLength(changeTo);
+                                changeTo = pickFrom[_random.Next(pickFrom.Count)];
+                                ctl = _romHandler.InternalStringLength(changeTo);
                             }
                         }
 
@@ -2995,8 +2831,7 @@ namespace RandomizerSharp.Randomizers
 
         public void RandomizeTrainerClassNames(CustomNamesSet customNames)
         {
-            if (!RomHandler.CanChangeTrainerText)
-                return;
+            if (!_romHandler.CanChangeTrainerText) return;
 
             //  index 0 = singles, 1 = doubles
             List<string>[] allTrainerClasses = { new List<string>(), new List<string>() };
@@ -3006,46 +2841,36 @@ namespace RandomizerSharp.Randomizers
                 new Dictionary<int, List<string>>()
             };
 
+            AddAllClasses(trainerClassesByLength[0], allTrainerClasses[0], customNames.TrainerClasses);
+            AddAllClasses(trainerClassesByLength[0], allTrainerClasses[0], customNames.DoublesTrainerClasses);
 
-            //  Read names data
-            foreach (var trainerClassName in customNames.TrainerClasses)
+            void AddAllClasses(IDictionary<int, List<string>> classByLength, ICollection<string> classesByNothing, IEnumerable<string> trainerClasses)
             {
-                allTrainerClasses[0].Add(trainerClassName);
-                var len = RomHandler.InternalStringLength(trainerClassName);
-                if (trainerClassesByLength[0].ContainsKey(len))
-                {
-                    trainerClassesByLength[0][len].Add(trainerClassName);
-                }
-                else
-                {
-                    var namesOfThisLength = new List<string> { trainerClassName };
-                    trainerClassesByLength[0][len] = namesOfThisLength;
-                }
-            }
 
-            foreach (var trainerClassName in customNames.DoublesTrainerClasses)
-            {
-                allTrainerClasses[1].Add(trainerClassName);
-                var len = RomHandler.InternalStringLength(trainerClassName);
-                if (trainerClassesByLength[1].ContainsKey(len))
+                foreach (var trainerClassName in trainerClasses)
                 {
-                    trainerClassesByLength[1][len].Add(trainerClassName);
-                }
-                else
-                {
-                    var namesOfThisLength = new List<string> { trainerClassName };
-                    trainerClassesByLength[1][len] = namesOfThisLength;
+                    classesByNothing.Add(trainerClassName);
+                    var len = _romHandler.InternalStringLength(trainerClassName);
+                    if (classByLength.ContainsKey(len))
+                    {
+                        classByLength[len].Add(trainerClassName);
+                    }
+                    else
+                    {
+                        var namesOfThisLength = new List<string> { trainerClassName };
+                        classByLength[len] = namesOfThisLength;
+                    }
                 }
             }
 
             //  Get the current trainer names data
-            var currentClassNames = RomHandler.TrainerClassNames;
-            var mustBeSameLength = RomHandler.FixedTrainerClassNamesLength;
-            var maxLength = RomHandler.MaxTrainerClassNameLength;
+            var currentClassNames = _romHandler.TrainerClassNames;
+            var mustBeSameLength = _romHandler.FixedTrainerClassNamesLength;
+            var maxLength = _romHandler.MaxTrainerClassNameLength;
             //  Init the translation map and new list
             var translation = new Dictionary<string, string>();
             var numTrainerClasses = currentClassNames.Length;
-            var doublesClasses = RomHandler.DoublesTrainerClasses;
+            var doublesClasses = _romHandler.DoublesTrainerClasses;
             //  Start choosing
             for (var i = 0; i < numTrainerClasses; i++)
             {
@@ -3060,17 +2885,15 @@ namespace RandomizerSharp.Randomizers
                     var idx = doublesClasses.Contains(i) ? 1 : 0;
 
                     var pickFrom = allTrainerClasses[idx];
-                    var intStrLen = RomHandler.InternalStringLength(trainerClassName);
-                    if (mustBeSameLength)
-                        pickFrom = trainerClassesByLength[idx][intStrLen];
+                    var intStrLen = _romHandler.InternalStringLength(trainerClassName);
+                    if (mustBeSameLength) pickFrom = trainerClassesByLength[idx][intStrLen];
 
                     var changeTo = trainerClassName;
                     if (pickFrom != null &&
                         pickFrom.Count > 0)
                     {
-                        changeTo = pickFrom[Random.Next(pickFrom.Count)];
-                        while (changeTo.Length > maxLength)
-                            changeTo = pickFrom[Random.Next(pickFrom.Count)];
+                        changeTo = pickFrom[_random.Next(pickFrom.Count)];
+                        while (changeTo.Length > maxLength) changeTo = pickFrom[_random.Next(pickFrom.Count)];
                     }
 
                     translation[trainerClassName] = changeTo;
@@ -3081,16 +2904,15 @@ namespace RandomizerSharp.Randomizers
 
         public void RandomizeWildHeldItems(bool banBadItems)
         {
-            var pokemon = RomHandler.ValidPokemons;
-            var possibleItems = banBadItems ? RomHandler.NonBadItems: RomHandler.AllowedItems;
+            var pokemon = _romHandler.ValidPokemons;
+            var possibleItems = banBadItems ? _romHandler.NonBadItems : _romHandler.AllowedItems;
 
             foreach (var pk in pokemon)
             {
                 if (pk.GuaranteedHeldItem == -1 &&
                     pk.CommonHeldItem == -1 &&
                     pk.RareHeldItem == -1 &&
-                    pk.DarkGrassHeldItem == -1)
-                    return;
+                    pk.DarkGrassHeldItem == -1) return;
 
                 var canHaveDarkGrass = pk.DarkGrassHeldItem != -1;
                 if (pk.GuaranteedHeldItem != -1)
@@ -3099,27 +2921,27 @@ namespace RandomizerSharp.Randomizers
                     if (pk.GuaranteedHeldItem > 0)
                     {
                         //  Currently have a guaranteed item
-                        var decision = Random.NextDouble();
+                        var decision = _random.NextDouble();
                         if (decision < 0.9)
                         {
                             //  Stay as guaranteed
                             canHaveDarkGrass = false;
-                            pk.GuaranteedHeldItem = possibleItems.RandomItem(Random);
+                            pk.GuaranteedHeldItem = possibleItems.RandomItem(_random);
                         }
                         else
                         {
                             //  Change to 25% or 55% chance
                             pk.GuaranteedHeldItem = 0;
-                            pk.CommonHeldItem = possibleItems.RandomItem(Random);
-                            pk.RareHeldItem = possibleItems.RandomItem(Random);
+                            pk.CommonHeldItem = possibleItems.RandomItem(_random);
+                            pk.RareHeldItem = possibleItems.RandomItem(_random);
                             while (pk.RareHeldItem == pk.CommonHeldItem)
-                                pk.RareHeldItem = possibleItems.RandomItem(Random);
+                                pk.RareHeldItem = possibleItems.RandomItem(_random);
                         }
                     }
                     else
                     {
                         //  No guaranteed item atm
-                        var decision = Random.NextDouble();
+                        var decision = _random.NextDouble();
                         if (decision < 0.5)
                         {
                             //  No held item at all
@@ -3130,27 +2952,27 @@ namespace RandomizerSharp.Randomizers
                         {
                             //  Just a rare item
                             pk.CommonHeldItem = 0;
-                            pk.RareHeldItem = possibleItems.RandomItem(Random);
+                            pk.RareHeldItem = possibleItems.RandomItem(_random);
                         }
                         else if (decision < 0.8)
                         {
                             //  Just a common item
-                            pk.CommonHeldItem = possibleItems.RandomItem(Random);
+                            pk.CommonHeldItem = possibleItems.RandomItem(_random);
                             pk.RareHeldItem = 0;
                         }
                         else if (decision < 0.95)
                         {
                             //  Both a common and rare item
-                            pk.CommonHeldItem = possibleItems.RandomItem(Random);
-                            pk.RareHeldItem = possibleItems.RandomItem(Random);
+                            pk.CommonHeldItem = possibleItems.RandomItem(_random);
+                            pk.RareHeldItem = possibleItems.RandomItem(_random);
                             while (pk.RareHeldItem == pk.CommonHeldItem)
-                                pk.RareHeldItem = possibleItems.RandomItem(Random);
+                                pk.RareHeldItem = possibleItems.RandomItem(_random);
                         }
                         else
                         {
                             //  Guaranteed item
                             canHaveDarkGrass = false;
-                            pk.GuaranteedHeldItem = possibleItems.RandomItem(Random);
+                            pk.GuaranteedHeldItem = possibleItems.RandomItem(_random);
                             pk.CommonHeldItem = 0;
                             pk.RareHeldItem = 0;
                         }
@@ -3159,7 +2981,7 @@ namespace RandomizerSharp.Randomizers
                 else
                 {
                     //  Code for no guaranteed items
-                    var decision = Random.NextDouble();
+                    var decision = _random.NextDouble();
                     if (decision < 0.5)
                     {
                         //  No held item at all
@@ -3170,73 +2992,68 @@ namespace RandomizerSharp.Randomizers
                     {
                         //  Just a rare item
                         pk.CommonHeldItem = 0;
-                        pk.RareHeldItem = possibleItems.RandomItem(Random);
+                        pk.RareHeldItem = possibleItems.RandomItem(_random);
                     }
                     else if (decision < 0.8)
                     {
                         //  Just a common item
-                        pk.CommonHeldItem = possibleItems.RandomItem(Random);
+                        pk.CommonHeldItem = possibleItems.RandomItem(_random);
                         pk.RareHeldItem = 0;
                     }
                     else
                     {
                         //  Both a common and rare item
-                        pk.CommonHeldItem = possibleItems.RandomItem(Random);
-                        pk.RareHeldItem = possibleItems.RandomItem(Random);
-                        while (pk.RareHeldItem == pk.CommonHeldItem)
-                            pk.RareHeldItem = possibleItems.RandomItem(Random);
+                        pk.CommonHeldItem = possibleItems.RandomItem(_random);
+                        pk.RareHeldItem = possibleItems.RandomItem(_random);
+                        while (pk.RareHeldItem == pk.CommonHeldItem) pk.RareHeldItem = possibleItems.RandomItem(_random);
                     }
                 }
 
                 if (canHaveDarkGrass)
                 {
-                    var dgDecision = Random.NextDouble();
-                    pk.DarkGrassHeldItem = dgDecision < 0.5 ? possibleItems.RandomItem(Random) : 0;
+                    var dgDecision = _random.NextDouble();
+                    pk.DarkGrassHeldItem = dgDecision < 0.5 ? possibleItems.RandomItem(_random) : 0;
                 }
-                else if (pk.DarkGrassHeldItem != -1)
-                {
-                    pk.DarkGrassHeldItem = 0;
-                }
+                else if (pk.DarkGrassHeldItem != -1) { pk.DarkGrassHeldItem = 0; }
             }
         }
+
         public void RandomizeStarterHeldItems(bool banBadItems)
         {
-            var oldHeldItems = RomHandler.StarterHeldItems;
-            var possibleItems = banBadItems ? RomHandler.NonBadItems: RomHandler.AllowedItems;
+            var oldHeldItems = _romHandler.StarterHeldItems;
+            var possibleItems = banBadItems ? _romHandler.NonBadItems : _romHandler.AllowedItems;
 
-            for (var i = 0; i < oldHeldItems.Length; i++)
-                oldHeldItems[i]  = possibleItems.RandomItem(Random);
+            for (var i = 0; i < oldHeldItems.Length; i++) oldHeldItems[i] = possibleItems.RandomItem(_random);
         }
 
         public void ShuffleFieldItems()
         {
-            var currentItems = RomHandler.RegularFieldItems;
-            var currentTMs = RomHandler.CurrentFieldTMs;
-            currentItems.Shuffle(Random);
-            currentTMs.Shuffle(Random);
+            var currentItems = _romHandler.RegularFieldItems;
+            var currentTMs = _romHandler.CurrentFieldTMs;
+            currentItems.Shuffle(_random);
+            currentTMs.Shuffle(_random);
         }
 
         public void RandomizeFieldItems(bool banBadItems)
         {
-            var possibleItems = banBadItems ? RomHandler.NonBadItems: RomHandler.AllowedItems;
+            var possibleItems = banBadItems ? _romHandler.NonBadItems : _romHandler.AllowedItems;
 
-            var currentItems = RomHandler.RegularFieldItems;
-            var currentTMs = RomHandler.CurrentFieldTMs;
-            var requiredTMs = RomHandler.RequiredFieldTMs;
+            var currentItems = _romHandler.RegularFieldItems;
+            var currentTMs = _romHandler.CurrentFieldTMs;
+            var requiredTMs = _romHandler.RequiredFieldTMs;
             var fieldItemCount = currentItems.Length;
             var fieldTmCount = currentTMs.Length;
             var reqTmCount = requiredTMs.Length;
-            var totalTmCount = RomHandler.TmMoves.Length;
+            var totalTmCount = _romHandler.TmMoves.Length;
             var newItems = new List<int>();
             var newTMs = new List<int>();
-            for (var i = 0; i < fieldItemCount; i++)
-                newItems.Add(possibleItems.RandomNonTm(Random));
+            for (var i = 0; i < fieldItemCount; i++) newItems.Add(possibleItems.RandomNonTm(_random));
 
             newTMs.AddRange(requiredTMs);
             for (var i = reqTmCount; i < fieldTmCount; i++)
                 while (true)
                 {
-                    var tm = Random.Next(totalTmCount) + 1;
+                    var tm = _random.Next(totalTmCount) + 1;
                     if (!newTMs.Contains(tm))
                     {
                         newTMs.Add(tm);
@@ -3244,22 +3061,19 @@ namespace RandomizerSharp.Randomizers
                     }
                 }
 
-            newItems.Shuffle(Random);
-            newTMs.Shuffle(Random);
+            newItems.Shuffle(_random);
+            newTMs.Shuffle(_random);
 
-            for (var i = 0; i < newItems.Count; ++i)
-                currentItems[i] = newItems[i];
-            for (var i = 0; i < newTMs.Count; ++i)
-                currentTMs[i] = newTMs[i];
+            for (var i = 0; i < newItems.Count; ++i) currentItems[i] = newItems[i];
+            for (var i = 0; i < newTMs.Count; ++i) currentTMs[i] = newTMs[i];
         }
-
 
 
         public void RemoveTradeEvolutions(bool changeMoveEvos)
         {
             Log("--Removing Trade Evolutions--");
             var extraEvolutions = new HashSet<Evolution>();
-            foreach (var pkmn in RomHandler.ValidPokemons)
+            foreach (var pkmn in _romHandler.ValidPokemons)
                 if (pkmn != null)
                 {
                     extraEvolutions.Clear();
@@ -3276,8 +3090,7 @@ namespace RandomizerSharp.Randomizers
                                     levelLearntAt = ml.Level;
                                     break;
                                 }
-                            if (levelLearntAt == 1)
-                                levelLearntAt = 45;
+                            if (levelLearntAt == 1) levelLearntAt = 45;
                             // change to pure level evo
                             evo.Type = EvolutionType.Level;
                             evo.ExtraInfo = levelLearntAt;
@@ -3304,18 +3117,25 @@ namespace RandomizerSharp.Randomizers
                                 evo.Type = EvolutionType.Stone;
                                 evo.ExtraInfo = Gen5Constants.WaterStoneIndex; // water
                                 // stone
-                                LogEvoChangeStone(evo.From.Name, evo.To.Name, RomHandler.ItemNames[Gen5Constants.WaterStoneIndex]);
+                                LogEvoChangeStone(
+                                    evo.From.Name,
+                                    evo.To.Name,
+                                    _romHandler.ItemNames[Gen5Constants.WaterStoneIndex]);
                             }
                             else
                             {
-                                LogEvoChangeLevelWithItem(evo.From.Name, evo.To.Name, RomHandler.ItemNames[item]);
+                                LogEvoChangeLevelWithItem(evo.From.Name, evo.To.Name, _romHandler.ItemNames[item]);
                                 // Replace, for this entry, w/
                                 // Level up w/ Held Item at Day
                                 evo.Type = EvolutionType.LevelItemDay;
                                 // now add an extra evo for
                                 // Level up w/ Held Item at Night
-                                var extraEntry = new Evolution(evo.From, evo.To, true,
-                                    EvolutionType.LevelItemNight, item);
+                                var extraEntry = new Evolution(
+                                    evo.From,
+                                    evo.To,
+                                    true,
+                                    EvolutionType.LevelItemNight,
+                                    item);
                                 extraEvolutions.Add(extraEntry);
                             }
                         }
@@ -3329,10 +3149,13 @@ namespace RandomizerSharp.Randomizers
                             evo.ExtraInfo = evo.From.Id == Gen5Constants.KarrablastIndex
                                 ? Gen5Constants.ShelmetIndex
                                 : Gen5Constants.KarrablastIndex;
-                            LogEvoChangeLevelWithPkmn(evo.From.Name, evo.To.Name,
-                                RomHandler.ValidPokemons[evo.From.Id == Gen5Constants.KarrablastIndex
-                                    ? Gen5Constants.ShelmetIndex
-                                    : Gen5Constants.KarrablastIndex].Name);
+                            LogEvoChangeLevelWithPkmn(
+                                evo.From.Name,
+                                evo.To.Name,
+                                _romHandler.ValidPokemons[evo.From.Id == Gen5Constants.KarrablastIndex
+                                        ? Gen5Constants.ShelmetIndex
+                                        : Gen5Constants.KarrablastIndex]
+                                    .Name);
                         }
                     }
 
@@ -3345,34 +3168,134 @@ namespace RandomizerSharp.Randomizers
             LogBlankLine();
         }
 
-        protected void Log(string log)
+        public void RandomizeStarters(bool withTwoEvos)
         {
-            LogStream?.WriteLine(log);
+            // Randomise
+            _logStream.WriteLine("--Random 2-Evolution Starters--");
+            var starterCount = 3;
+
+            if (_romHandler.IsYellow)
+                starterCount = 2;
+
+            _romHandler.Starters.Populate(null);
+            
+            for (var i = 0; i < starterCount; i++)
+            {
+                Pokemon pkmn;
+                IList<Pokemon> selectFrom = _romHandler.ValidPokemons;
+
+                if (withTwoEvos)
+                {
+                    selectFrom = selectFrom
+                        .Where(pk => pk.EvolutionsTo.Count == 0 && pk.EvolutionsFrom.Count > 0)
+                        .Where(pk => pk.EvolutionsFrom.Any(ev => ev.To.EvolutionsFrom.Count > 0))
+                        .ToArray();
+                }
+                
+                do
+                {
+                    pkmn = selectFrom[_random.Next(selectFrom.Count)];
+                } while (_romHandler.Starters.Contains(pkmn));
+
+                _romHandler.Starters[i] = pkmn;
+
+                _logStream.WriteLine("Set starter {0} to {1}", i + 1, pkmn.Name);
+            }
+
+            _logStream.WriteLine();
+        }
+        
+        public void RandomizeIngameTrades(bool randomizeRequest, bool randomStats, bool randomItem)
+        {
+
+            // Process nicknames
+            var nicknames = new List<string>();
+            
+
+            // get old trades
+            var trades = _romHandler.IngameTrades;
+            var usedRequests = new List<Pokemon>();
+            var usedGivens = new List<Pokemon>();
+            var possibleItems = _romHandler.AllowedItems;
+
+            foreach (var trade in trades)
+            {
+                // pick new given pokemon
+                var oldgiven = trade.GivenPokemon;
+                Pokemon given;
+
+                
+                do {
+                    given = RandomPokemon();
+                } while (usedGivens.Contains(given));
+
+                usedGivens.Add(given);
+                trade.GivenPokemon = given;
+
+                // requested pokemon?
+                if (oldgiven == trade.RequestedPokemon)
+                {
+                    // preserve trades for the same pokemon
+                    trade.RequestedPokemon = given;
+                }
+                else if (randomizeRequest)
+                {
+                    Pokemon request;
+                    
+                    do {
+                        request = RandomPokemon();
+                    } while (usedRequests.Contains(request) || Equals(request, given));
+
+                    usedRequests.Add(request);
+                    trade.RequestedPokemon = request;
+                }
+
+                if (randomStats)
+                {
+                    var maxIv = _romHandler.HasDVs ? 16 : 32;
+
+                    for (var i = 0; i < trade.Ivs.Length; i++)
+                    {
+                        trade.Ivs[i] = _random.Next(maxIv);
+                    }
+                }
+
+                if (randomItem)
+                {
+                    trade.Item = possibleItems.RandomItem(_random);
+                }
+            }
+        }
+
+
+    protected void Log(string log)
+        {
+            _logStream?.WriteLine(log);
         }
 
         protected void LogBlankLine()
         {
-            LogStream?.WriteLine();
+            _logStream?.WriteLine();
         }
 
         protected void LogEvoChangeLevel(string pkFrom, string pkTo, int level)
         {
-            LogStream?.WriteLine("Made {0} evolve into {1} at level {2}", pkFrom, pkTo, level);
+            _logStream?.WriteLine("Made {0} evolve into {1} at level {2}", pkFrom, pkTo, level);
         }
 
         protected void LogEvoChangeLevelWithItem(string pkFrom, string pkTo, string itemName)
         {
-            LogStream?.WriteLine("Made {0} evolve into {1} by leveling up holding {2}", pkFrom, pkTo, itemName);
+            _logStream?.WriteLine("Made {0} evolve into {1} by leveling up holding {2}", pkFrom, pkTo, itemName);
         }
 
         protected void LogEvoChangeStone(string pkFrom, string pkTo, string itemName)
         {
-            LogStream?.WriteLine("Made {0} evolve into {1} using a {2}", pkFrom, pkTo, itemName);
+            _logStream?.WriteLine("Made {0} evolve into {1} using a {2}", pkFrom, pkTo, itemName);
         }
 
         protected void LogEvoChangeLevelWithPkmn(string pkFrom, string pkTo, string otherRequired)
         {
-            LogStream?.WriteLine(
+            _logStream?.WriteLine(
                 "Made {0} evolve into {1} by leveling up with {2} in the party",
                 pkFrom,
                 pkTo,
