@@ -11,21 +11,16 @@ namespace RandomizerSharp.Randomizers
     {
         private readonly Gen5RomHandler _gen5Rom;
         private readonly Random _random;
-        private readonly StreamWriter _log;
 
         // ReSharper disable once SuggestBaseTypeForParameter
-        public Gen5Randomizer(Gen5RomHandler romHandler, StreamWriter log)
-        {
-            _gen5Rom = romHandler;
-            _log = log;
-            _random = new Random();
-        }
+        public Gen5Randomizer(Gen5RomHandler romHandler)
+            : this(romHandler, (int) DateTime.Now.Ticks)
+        { }
 
         // ReSharper disable once SuggestBaseTypeForParameter
-        public Gen5Randomizer(Gen5RomHandler romHandler, StreamWriter log, int seed)
+        public Gen5Randomizer(Gen5RomHandler romHandler, int seed)
         {
             _gen5Rom = romHandler;
-            _log = log;
             _random = new Random(seed);
         }
 

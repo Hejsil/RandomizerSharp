@@ -94,6 +94,7 @@
     </Compile>
     <Compile Include="Randomizers\Gen5Randomizer.cs" />
     <Compile Include="Randomizers\Randomizer.cs" />
+    <Compile Include="Randomizers\RomUtilities.cs" />
     <Compile Include="RomFunctions.cs" />
     <Compile Include="RomHandlers\AbstractDSRomHandler.cs" />
     <Compile Include="RomHandlers\AbstractRomHandler.cs" />
