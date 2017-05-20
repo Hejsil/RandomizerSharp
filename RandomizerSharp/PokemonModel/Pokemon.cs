@@ -92,7 +92,7 @@ namespace RandomizerSharp.PokemonModel
         public List<MoveLearnt> MovesLearnt { get; } = new List<MoveLearnt>();
 
         // ReSharper disable once InconsistentNaming
-        public bool[] TMHMCompatibility { get; set; } = Array<bool>.Empty;
+        public bool[] TMHMCompatibility { get; set; } = Array.Empty<bool>();
 
         public Pokemon(int id)
         {

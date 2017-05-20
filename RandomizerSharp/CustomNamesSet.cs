@@ -26,7 +26,7 @@ namespace RandomizerSharp
             _pokemonNicknames = ReadNamesBlock(data);
         }
 
-        public byte[] Bytes
+        public IReadOnlyList<byte> Bytes
         {
             get
             {

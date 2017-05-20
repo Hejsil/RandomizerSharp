@@ -15,54 +15,54 @@ namespace RandomizerSharp.Constants
 
         public const int TripleKickIndex = 167;
 
-        public static readonly bool[] BannedRandomMoves = new bool[560], BannedForDamagingMove = new bool[560];
+        public static IReadOnlyList<bool> BannedRandomMoves { get; }
+        public static IReadOnlyList<bool> BannedForDamagingMove { get; }
+        
+        public static IReadOnlyList<int> NormalMultihitMoves { get; } = new [] { 292, 140, 198, 331, 4, 3, 31, 154, 333, 42, 350, 131, 541 };
 
-        /* @formatter:off */
-        public static readonly IList<int> NormalMultihitMoves =
-                new List<int> {292, 140, 198, 331, 4, 3, 31, 154, 333, 42, 350, 131, 541}
-            ; // Tail Slap -  Spike Cannon -  Rock Blast -  Pin Missile -  Icicle Spear -  Fury Swipes -  Fury Attack -  DoubleSlap -  Comet Punch -  Bullet Seed -  Bone Rush -  Barrage -  Arm Thrust
+        public static readonly IReadOnlyList<int> DoubleHitMoves = new [] {155, 458, 24, 530, 544, 41}; // Twineedle -  Gear Grind -  Dual Chop -  Double Kick -  Double Hit -  Bonemerang
+        
+        public static IReadOnlyList<int> BattleTrappingAbilities { get; } = new [] { 23, 42, 71 };
 
-        public static readonly IList<int> DoubleHitMoves = new List<int> {155, 458, 24, 530, 544, 41}
-            ; // Twineedle -  Gear Grind -  Dual Chop -  Double Kick -  Double Hit -  Bonemerang
-
-
-        /* @formatter:on */
-
-        public static readonly IList<int> BattleTrappingAbilities = new List<int> {23, 42, 71};
-
-        public static readonly IList<int> NegativeAbilities = new List<int> {129, 112, 54, 59, 161};
+        public static IReadOnlyList<int> NegativeAbilities { get; } = new [] { 129, 112, 54, 59, 161 };
 
         static GlobalConstants()
         {
-            BannedRandomMoves[144] = true; // Transform, glitched in RBY
-            BannedRandomMoves[165] = true; // Struggle, self explanatory
+            var bannedRandomMoves = new bool[560];
+            var bannedForDamagingMove = new bool[560];
 
-            BannedForDamagingMove[120] = true; // SelfDestruct
-            BannedForDamagingMove[138] = true; // Dream Eater
-            BannedForDamagingMove[153] = true; // Explosion
-            BannedForDamagingMove[173] = true; // Snore
-            BannedForDamagingMove[206] = true; // False Swipe
-            BannedForDamagingMove[248] = true; // Future Sight
-            BannedForDamagingMove[252] = true; // Fake Out
-            BannedForDamagingMove[264] = true; // Focus Punch
-            BannedForDamagingMove[353] = true; // Doom Desire
-            BannedForDamagingMove[364] = true; // Feint
-            BannedForDamagingMove[387] = true; // Last Resort
-            BannedForDamagingMove[389] = true; // Sucker Punch
+            bannedRandomMoves[144] = true; // Transform, glitched in RBY
+            bannedRandomMoves[165] = true; // Struggle, self explanatory
+
+            bannedForDamagingMove[120] = true; // SelfDestruct
+            bannedForDamagingMove[138] = true; // Dream Eater
+            bannedForDamagingMove[153] = true; // Explosion
+            bannedForDamagingMove[173] = true; // Snore
+            bannedForDamagingMove[206] = true; // False Swipe
+            bannedForDamagingMove[248] = true; // Future Sight
+            bannedForDamagingMove[252] = true; // Fake Out
+            bannedForDamagingMove[264] = true; // Focus Punch
+            bannedForDamagingMove[353] = true; // Doom Desire
+            bannedForDamagingMove[364] = true; // Feint
+            bannedForDamagingMove[387] = true; // Last Resort
+            bannedForDamagingMove[389] = true; // Sucker Punch
 
             // new 160
-            BannedForDamagingMove[132] = true; // Constrict, overly weak
-            BannedForDamagingMove[99] = true; // Rage, lock-in in gen1
-            BannedForDamagingMove[205] = true; // Rollout, lock-in
-            BannedForDamagingMove[301] = true; // Ice Ball, Rollout clone
+            bannedForDamagingMove[132] = true; // Constrict, overly weak
+            bannedForDamagingMove[99] = true; // Rage, lock-in in gen1
+            bannedForDamagingMove[205] = true; // Rollout, lock-in
+            bannedForDamagingMove[301] = true; // Ice Ball, Rollout clone
 
             // make sure these cant roll
-            BannedForDamagingMove[39] = true; // Sonicboom
-            BannedForDamagingMove[82] = true; // Dragon Rage
-            BannedForDamagingMove[32] = true; // Horn Drill
-            BannedForDamagingMove[12] = true; // Guillotine
-            BannedForDamagingMove[90] = true; // Fissure
-            BannedForDamagingMove[329] = true; // Sheer Cold
+            bannedForDamagingMove[39] = true; // Sonicboom
+            bannedForDamagingMove[82] = true; // Dragon Rage
+            bannedForDamagingMove[32] = true; // Horn Drill
+            bannedForDamagingMove[12] = true; // Guillotine
+            bannedForDamagingMove[90] = true; // Fissure
+            bannedForDamagingMove[329] = true; // Sheer Cold
+
+            BannedRandomMoves = bannedRandomMoves;
+            BannedForDamagingMove = bannedForDamagingMove;
         }
     }
 }

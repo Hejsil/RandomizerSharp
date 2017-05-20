@@ -4,11 +4,6 @@ using System.Linq;
 
 namespace RandomizerSharp
 {
-    public static class Array<T>
-    {
-        public static readonly T[] Empty = new T[0];
-    }
-
     public static class SliceExtensions
     {
         public static ArraySlice<T> Slice<T>(this IEnumerable<T> enu)

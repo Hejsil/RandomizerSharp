@@ -137,23 +137,15 @@ namespace RandomizerSharp
                 return (SearchForFirst(rom, offset, searchNeedle) + 5) & ~3;
             }
         }
+        
+        public static List<int> Search(IList<byte> haystack, IList<byte> needle, int beginOffset = 0) => Search(haystack, beginOffset, haystack.Count, needle);
 
-        public static List<int> Search(byte[] haystack, byte[] needle)
-        {
-            return Search(haystack, 0, haystack.Length, needle);
-        }
-
-        public static List<int> Search(byte[] haystack, int beginOffset, byte[] needle)
-        {
-            return Search(haystack, beginOffset, haystack.Length, needle);
-        }
-
-        public static List<int> Search(byte[] haystack, int beginOffset, int endOffset, byte[] needle)
+        public static List<int> Search(IList<byte> haystack, int beginOffset, int endOffset, IList<byte> needle)
         {
             var currentMatchStart = beginOffset;
             var currentCharacterPosition = 0;
             var docSize = endOffset;
-            var needleSize = needle.Length;
+            var needleSize = needle.Count;
             var toFillTable = BuildKmpSearchTable(needle);
             var results = new List<int>();
 
@@ -204,14 +196,14 @@ namespace RandomizerSharp
             return -1;
         }
 
-        private static int[] BuildKmpSearchTable(byte[] needle)
+        private static int[] BuildKmpSearchTable(IList<byte> needle)
         {
-            var stable = new int[needle.Length];
+            var stable = new int[needle.Count];
             var pos = 2;
             var j = 0;
             stable[0] = -1;
             stable[1] = 0;
-            while (pos < needle.Length)
+            while (pos < needle.Count)
                 if (needle[pos - 1] == needle[j])
                 {
                     stable[pos] = j + 1;

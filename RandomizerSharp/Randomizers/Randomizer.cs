@@ -37,13 +37,13 @@ namespace RandomizerSharp.Randomizers
         public Pokemon RandomNonLegendaryPokemon()
         {
             var nonLegendaries = _romHandler.NonLegendaryPokemons;
-            return nonLegendaries[_random.Next(nonLegendaries.Length)];
+            return nonLegendaries[_random.Next(nonLegendaries.Count)];
         }
 
         public Pokemon RandomLegendaryPokemon()
         {
             var legendaries = _romHandler.LegendaryPokemons;
-            return legendaries[_random.Next(legendaries.Length)];
+            return legendaries[_random.Next(legendaries.Count)];
         }
 
         public void RandomizeMovePowers()
@@ -707,6 +707,7 @@ namespace RandomizerSharp.Randomizers
                 : new List<Pokemon>(_romHandler.ValidPokemons);
 
             var banned = _romHandler.BannedForWildEncounters;
+
             //  Banned pokemon should be mapped to themselves
             foreach (var bannedPk in banned)
             {
@@ -1128,7 +1129,7 @@ namespace RandomizerSharp.Randomizers
             if (_romHandler.IsYellow)
             {
                 //  The rival's starter is index 1
-                var rivalStarter = starters[1];
+                var rivalStarter = starters[1].Pokemon;
                 var timesEvolves = NumEvolutions(rivalStarter, 2);
                 //  Apply evolutions as appropriate
                 if (timesEvolves == 0)
@@ -1171,7 +1172,7 @@ namespace RandomizerSharp.Randomizers
                 {
                     //  Rival's starters are pokemonOffset over from each of ours
                     var starterToUse = (i + pokemonOffset) % 3;
-                    var thisStarter = starters[starterToUse];
+                    var thisStarter = starters[starterToUse].Pokemon;
                     var timesEvolves = NumEvolutions(thisStarter, 2);
                     //  If a fully evolved pokemon, use throughout
                     //  Otherwise split by evolutions as appropriate
@@ -2864,7 +2865,7 @@ namespace RandomizerSharp.Randomizers
             }
 
             //  Get the current trainer names data
-            var currentClassNames = _romHandler.TrainerClassNames;
+            var currentClassNames = _romHandler.TrainerClassNames.ToArray();
             var mustBeSameLength = _romHandler.FixedTrainerClassNamesLength;
             var maxLength = _romHandler.MaxTrainerClassNameLength;
             //  Init the translation map and new list
@@ -3020,10 +3021,10 @@ namespace RandomizerSharp.Randomizers
 
         public void RandomizeStarterHeldItems(bool banBadItems)
         {
-            var oldHeldItems = _romHandler.StarterHeldItems;
+            var oldHeldItems = _romHandler.Starters;
             var possibleItems = banBadItems ? _romHandler.NonBadItems : _romHandler.AllowedItems;
 
-            for (var i = 0; i < oldHeldItems.Length; i++) oldHeldItems[i] = possibleItems.RandomItem(_random);
+            for (var i = 0; i < oldHeldItems.Count; i++) oldHeldItems[i].HeldItem = possibleItems.RandomItem(_random);
         }
 
         public void ShuffleFieldItems()
@@ -3043,7 +3044,7 @@ namespace RandomizerSharp.Randomizers
             var requiredTMs = _romHandler.RequiredFieldTMs;
             var fieldItemCount = currentItems.Length;
             var fieldTmCount = currentTMs.Length;
-            var reqTmCount = requiredTMs.Length;
+            var reqTmCount = requiredTMs.Count;
             var totalTmCount = _romHandler.TmMoves.Length;
             var newItems = new List<int>();
             var newTMs = new List<int>();
@@ -3177,12 +3178,13 @@ namespace RandomizerSharp.Randomizers
             if (_romHandler.IsYellow)
                 starterCount = 2;
 
-            _romHandler.Starters.Populate(null);
-            
+            foreach (var starter in _romHandler.Starters)
+                starter.Pokemon = null;
+
             for (var i = 0; i < starterCount; i++)
             {
                 Pokemon pkmn;
-                IList<Pokemon> selectFrom = _romHandler.ValidPokemons;
+                var selectFrom = _romHandler.ValidPokemons;
 
                 if (withTwoEvos)
                 {
@@ -3195,9 +3197,9 @@ namespace RandomizerSharp.Randomizers
                 do
                 {
                     pkmn = selectFrom[_random.Next(selectFrom.Count)];
-                } while (_romHandler.Starters.Contains(pkmn));
+                } while (_romHandler.Starters.Any(p => pkmn.Equals(p.Pokemon) .Equals(pkmn)));
 
-                _romHandler.Starters[i] = pkmn;
+                _romHandler.Starters[i].Pokemon = pkmn;
 
                 _logStream.WriteLine("Set starter {0} to {1}", i + 1, pkmn.Name);
             }

@@ -6,7 +6,7 @@ namespace RandomizerSharp.NDS
 {
     public class NdsFile
     {
-        public byte[] Data { get; private set; } = Array<byte>.Empty;
+        public byte[] Data { get; private set; } = Array.Empty<byte>();
         public string ExtFilename { get; set; }
         public int FileId { get; set; }
         public string FullPath { get; set; }

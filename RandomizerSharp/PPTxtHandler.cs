@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using RandomizerSharp.Properties;
@@ -200,10 +201,9 @@ namespace RandomizerSharp
             return Regex.Replace(@string, pattern, match => replacements[match.Groups[1].Value]);
         }
 
-        public static ArraySlice<byte> SaveEntry(ArraySlice<byte> originalData, ArraySlice<string> text)
+        public static ArraySlice<byte> SaveEntry(ArraySlice<byte> originalData, IEnumerable<string> text)
         {
-            for (var sn = 0; sn < text.Count; sn++)
-                text[sn] = BulkReplace(text[sn], TextToPokePattern, TextToPoke);
+            var newText = text.Select(t => BulkReplace(t, TextToPokePattern, TextToPoke)).ToArray();
 
             ReadTexts(originalData);
 
@@ -219,13 +219,13 @@ namespace RandomizerSharp
             sizeSections[0] = ReadInt(ds, 4);
             pos += 12;
 
-            if (text.Count < numEntries)
+            if (newText.Length < numEntries)
             {
                 Console.Error.WriteLine("Can't do anything due to too few lines");
                 return originalData;
             }
 
-            var newEntry = MakeSection(text, numEntries);
+            var newEntry = MakeSection(newText, numEntries);
             for (var z = 0; z < numSections; z++)
             {
                 sectionOffset[z] = ReadInt(ds, pos);

@@ -32,7 +32,7 @@ namespace RandomizerSharp.Randomizers
         public void RandomizeHiddenHollowPokemon()
         {
             var allowedUnovaPokemon = Gen5Constants.Bw2HiddenHollowUnovaPokemon;
-            var randomSize = Gen5Constants.NonUnovaPokemonCount + allowedUnovaPokemon.Length;
+            var randomSize = Gen5Constants.NonUnovaPokemonCount + allowedUnovaPokemon.Count;
 
             foreach (var hollow in _gen5Rom.HiddenHollows)
             {

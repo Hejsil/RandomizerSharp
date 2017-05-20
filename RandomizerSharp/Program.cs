@@ -25,7 +25,7 @@ namespace RandomizerSharp
             randomizer.RandomizeMoveTutorMoves(true, false, 1.0);
             randomizer.RandomizeMoveTutorCompatibility(true);
             randomizer.RandomizeFieldItems(true);
-            
+
             gen5Randomizer.ApplyFastestText();
             gen5Randomizer.RandomizeHiddenHollowPokemon();
 

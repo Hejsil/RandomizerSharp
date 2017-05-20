@@ -206,7 +206,7 @@ namespace RandomizerSharp.NDS
         
         public void SaveTo(string filename)
         {
-            using (var fNew = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+            using (var fNew = new FileStream(filename, FileMode.Create, FileAccess.ReadWrite))
             {
                 var headersize = ReadFromFile(BaseRom, 0x84, 4);
 

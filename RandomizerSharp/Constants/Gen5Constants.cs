@@ -87,7 +87,7 @@ namespace RandomizerSharp.Constants
 
         public const int LuckyEggIndex = 0xE7;
 
-        public static readonly byte[] Bw1NewStarterScript =
+        public static readonly IReadOnlyList<byte> Bw1NewStarterScript = new byte[]
         {
             0x24,
             0x00,
@@ -107,7 +107,7 @@ namespace RandomizerSharp.Constants
             0x00
         };
 
-        public static readonly byte[] Bw2NewStarterScript =
+        public static readonly IReadOnlyList<byte> Bw2NewStarterScript = new byte[]
         {
             0x28,
             0x00,
@@ -125,9 +125,9 @@ namespace RandomizerSharp.Constants
             0x00
         };
 
-        public static readonly int[] EncountersOfEachType = { 12, 12, 12, 5, 5, 5, 5 };
+        public static readonly IReadOnlyList<int> EncountersOfEachType = new [] { 12, 12, 12, 5, 5, 5, 5 };
 
-        public static readonly string[] EncounterTypeNames =
+        public static readonly IReadOnlyList<string> EncounterTypeNames = new []
         {
             "Grass/Cave",
             "Doubles Grass",
@@ -138,9 +138,9 @@ namespace RandomizerSharp.Constants
             "Fishing Spots"
         };
 
-        public static readonly int[] HabitatClassificationOfEachType = { 0, 0, 0, 1, 1, 2, 2 };
+        public static readonly IReadOnlyList<int> HabitatClassificationOfEachType = new [] { 0, 0, 0, 1, 1, 2, 2 };
 
-        public static readonly int[] Bw2HiddenHollowUnovaPokemon =
+        public static readonly IReadOnlyList<int> Bw2HiddenHollowUnovaPokemon = new []
         {
             505,
             507,
@@ -197,14 +197,14 @@ namespace RandomizerSharp.Constants
             632
         };
 
-        public static readonly MoveCategory[] MoveCategoryIndices =
+        public static readonly IReadOnlyList<MoveCategory> MoveCategoryIndices = new []
         {
             MoveCategory.Status,
             MoveCategory.Physical,
             MoveCategory.Special
         };
 
-        public static readonly ArraySlice<Typing> TypeTable = new[]
+        public static readonly IReadOnlyList<Typing> TypeTable = new []
         {
             Typing.Normal,
             Typing.Fighting,
@@ -225,7 +225,7 @@ namespace RandomizerSharp.Constants
             Typing.Dark
         };
 
-        public static readonly ArraySlice<int> Bw1RequiredFieldTMs = new[]
+        public static readonly IReadOnlyList<int> Bw1RequiredFieldTMs = new[]
         {
             2,
             3,
@@ -267,7 +267,7 @@ namespace RandomizerSharp.Constants
             93
         };
 
-        public static readonly ArraySlice<int> Bw2RequiredFieldTMs = new[]
+        public static readonly IReadOnlyList<int> Bw2RequiredFieldTMs = new[]
         {
             1,
             2,
@@ -310,12 +310,12 @@ namespace RandomizerSharp.Constants
             93
         };
 
-        public static readonly ArraySlice<int> Bw1EarlyRequiredHmMoves = new[] { 15 };
-        public static readonly ArraySlice<int> Bw2EarlyRequiredHmMoves = new int[0];
-        public static readonly ArraySlice<int> FieldMoves = new[] { 15, 19, 57, 70, 148, 91, 100, 127, 230, 291 };
+        public static readonly IReadOnlyList<int> Bw1EarlyRequiredHmMoves = new[] { 15 };
+        public static readonly IReadOnlyList<int> Bw2EarlyRequiredHmMoves = new int[0];
+        public static readonly IReadOnlyList<int> FieldMoves = new[] { 15, 19, 57, 70, 148, 91, 100, 127, 230, 291 };
 
         // ReSharper disable once UnusedMember.Local
-        private static readonly int[][] HabitatListEntries =
+        private static readonly IReadOnlyList<IReadOnlyList<int>> HabitatListEntries = new[]
         {
             new[] { 104, 105 }, // Route 4
             new[] { 124 }, // Route 15
@@ -377,7 +377,7 @@ namespace RandomizerSharp.Constants
             new[] { 20, 21, 22 } // Chargestone Cave
         };
 
-        public static readonly ArraySlice<int> WildFileToAreaMap = new[]
+        public static readonly IReadOnlyList<int> WildFileToAreaMap = new[]
         {
             2,
             4,
@@ -589,7 +589,7 @@ namespace RandomizerSharp.Constants
         }
 
         /* @formatter:on */
-        public static void TagTrainersBw(ArraySlice<Trainer> trs)
+        public static void TagTrainersBw(IList<Trainer> trs)
         {
             // We use different Gym IDs to cheat the system for the 3 n00bs
             // Chili, Cress, and Cilan
@@ -658,7 +658,7 @@ namespace RandomizerSharp.Constants
             TagRivalBw(trs, "FRIEND6", 0x252);
         }
 
-        public static void TagTrainersBw2(ArraySlice<Trainer> trs)
+        public static void TagTrainersBw2(IList<Trainer> trs)
         {
             // Use GYM9/10/11 for the retired Chili/Cress/Cilan.
             // Lenora doesn't have a team, or she'd be 12.

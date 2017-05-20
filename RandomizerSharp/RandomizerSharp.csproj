@@ -83,6 +83,7 @@
     <Compile Include="Constants\Gen5Constants.cs" />
     <Compile Include="PokemonModel\MoveCategory.cs" />
     <Compile Include="PokemonModel\Pokemon.cs" />
+    <Compile Include="PokemonModel\StarterPokemon.cs" />
     <Compile Include="PokemonModel\Trainer.cs" />
     <Compile Include="PokemonModel\TrainerPokemon.cs" />
     <Compile Include="PPTxtHandler.cs" />
