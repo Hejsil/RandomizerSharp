@@ -10,67 +10,13 @@ namespace RandomizerSharp.NDS
     {
         private byte[] _bytes;
 
-        public List<string> Filenames { get; } = new List<string>();
-        public List<ArraySlice<byte>> Files { get; } = new List<ArraySlice<byte>>();
-        public bool HasFilenames { get; }
-
-        public NarcArchive()
-        {
-        }
-
-        public NarcArchive(byte[] data)
-        {
-            _bytes = data;
-            var frames = ReadNitroFrames(data);
-
-            if (!frames.ContainsKey("FATB") || !frames.ContainsKey("FNTB") || !frames.ContainsKey("FIMG"))
-                throw new IOException("Not a valid narc file");
-
-            var fatbframe = frames["FATB"];
-            var fimgframe = frames["FIMG"];
-            var fileCount = ReadLong(fatbframe, 0);
-
-            for (var i = 0; i < fileCount; i++)
-            {
-                var startOffset = ReadLong(fatbframe, 4 + i * 8);
-                var endOffset = ReadLong(fatbframe, 8 + i * 8);
-                var length = endOffset - startOffset;
-
-                Files.Add(fimgframe.Slice(length, startOffset));
-            }
-
-            var fntbframe = frames["FNTB"];
-            var unk1 = ReadLong(fntbframe, 0);
-
-            if (unk1 == 8)
-            {
-                var offset = 8;
-                HasFilenames = true;
-
-                for (var i = 0; i < fileCount; i++)
-                {
-                    var fnLength = fntbframe[offset] & 0xFF;
-                    offset++;
-
-                    var array = new byte[fntbframe.Length];
-                    fntbframe.CopyTo(array, 0);
-                    Filenames.Add(Encoding.ASCII.GetString(array, offset, fnLength));
-                }
-            }
-            else
-            {
-                HasFilenames = false;
-
-                for (var i = 0; i < fileCount; i++) Filenames.Add(null);
-            }
-        }
-
 
         public virtual byte[] Bytes
         {
             get
             {
-                if (_bytes != null) return _bytes;
+                if (_bytes != null)
+                    return _bytes;
 
                 var offset = 0;
 
@@ -160,6 +106,62 @@ namespace RandomizerSharp.NDS
             }
         }
 
+        public List<string> Filenames { get; } = new List<string>();
+        public List<ArraySlice<byte>> Files { get; } = new List<ArraySlice<byte>>();
+        public bool HasFilenames { get; }
+
+        public NarcArchive()
+        {
+        }
+
+        public NarcArchive(byte[] data)
+        {
+            _bytes = data;
+            var frames = ReadNitroFrames(data);
+
+            if (!frames.ContainsKey("FATB") || !frames.ContainsKey("FNTB") || !frames.ContainsKey("FIMG"))
+                throw new IOException("Not a valid narc file");
+
+            var fatbframe = frames["FATB"];
+            var fimgframe = frames["FIMG"];
+            var fileCount = ReadLong(fatbframe, 0);
+
+            for (var i = 0; i < fileCount; i++)
+            {
+                var startOffset = ReadLong(fatbframe, 4 + i * 8);
+                var endOffset = ReadLong(fatbframe, 8 + i * 8);
+                var length = endOffset - startOffset;
+
+                Files.Add(fimgframe.Slice(length, startOffset));
+            }
+
+            var fntbframe = frames["FNTB"];
+            var unk1 = ReadLong(fntbframe, 0);
+
+            if (unk1 == 8)
+            {
+                var offset = 8;
+                HasFilenames = true;
+
+                for (var i = 0; i < fileCount; i++)
+                {
+                    var fnLength = fntbframe[offset] & 0xFF;
+                    offset++;
+
+                    var array = new byte[fntbframe.Length];
+                    fntbframe.CopyTo(array, 0);
+                    Filenames.Add(Encoding.ASCII.GetString(array, offset, fnLength));
+                }
+            }
+            else
+            {
+                HasFilenames = false;
+
+                for (var i = 0; i < fileCount; i++)
+                    Filenames.Add(null);
+            }
+        }
+
         private static Dictionary<string, ArraySlice<byte>> ReadNitroFrames(ArraySlice<byte> data)
         {
             var frameCount = ReadWord(data, 0x0E);
@@ -174,25 +176,20 @@ namespace RandomizerSharp.NDS
 
                 if (i == frameCount - 1 && offset + frameSize < data.Length)
                     frameSize = data.Length - offset;
-                
+
                 frames[magicS] = data.Slice(frameSize - 8, offset + 8);
                 offset += frameSize;
             }
             return frames;
         }
 
-        private static int ReadWord(IList<byte> data, int offset)
-        {
-            return (data[offset] & 0xFF) | ((data[offset + 1] & 0xFF) << 8);
-        }
+        private static int ReadWord(IList<byte> data, int offset) => (data[offset] & 0xFF) |
+                                                                     ((data[offset + 1] & 0xFF) << 8);
 
-        private static int ReadLong(IList<byte> data, int offset)
-        {
-            return (data[offset] & 0xFF) |
-                   ((data[offset + 1] & 0xFF) << 8) |
-                   ((data[offset + 2] & 0xFF) << 16) |
-                   ((data[offset + 3] & 0xFF) << 24);
-        }
+        private static int ReadLong(IList<byte> data, int offset) => (data[offset] & 0xFF) |
+                                                                     ((data[offset + 1] & 0xFF) << 8) |
+                                                                     ((data[offset + 2] & 0xFF) << 16) |
+                                                                     ((data[offset + 3] & 0xFF) << 24);
 
         private static void WriteWord(IList<byte> data, int offset, int value)
         {

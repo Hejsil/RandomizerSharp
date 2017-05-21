@@ -25,17 +25,17 @@
 
     public class Encounter
     {
-        public int Level;
-        public int MaxLevel;
-        public Pokemon Pokemon;
+        public int Level { get; set; }
+        public int MaxLevel { get; set; }
+        public Pokemon Pokemon1 { get; set; }
 
         public override string ToString()
         {
-            if (Pokemon == null)
+            if (Pokemon1 == null)
                 return "ERROR";
             if (MaxLevel == 0)
-                return Pokemon.Name + " Lv" + Level;
-            return Pokemon.Name + " Lvs " + Level + "-" + MaxLevel;
+                return Pokemon1.Name + " Lv" + Level;
+            return Pokemon1.Name + " Lvs " + Level + "-" + MaxLevel;
         }
     }
 }

@@ -28,16 +28,13 @@ namespace RandomizerSharp.PokemonModel
 
     public class EncounterSet
     {
-        public ISet<Pokemon> BannedPokemon = new HashSet<Pokemon>();
-        public string DisplayName;
-        public Encounter[] Encounters;
-        public int Offset;
+        public ISet<Pokemon> BannedPokemon { get; } = new HashSet<Pokemon>();
+        public string DisplayName { get; set; }
+        public Encounter[] Encounters { get; set; }
+        public int Offset { get; set; }
 
-        public int Rate;
+        public int Rate { get; set; }
 
-        public override string ToString()
-        {
-            return "Encounter [Rate = " + Rate + ", Encounters = " + Encounters + "]";
-        }
+        public override string ToString() => $"Encounter [Rate = {Rate}, EncountersRandomization = {Encounters}]";
     }
 }

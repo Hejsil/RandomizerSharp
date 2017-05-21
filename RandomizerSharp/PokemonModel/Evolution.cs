@@ -2,25 +2,24 @@
 
 namespace RandomizerSharp.PokemonModel
 {
-    public class Evolution : IComparable<Evolution>
+    public class Evolution : IComparable<Evolution>, IEquatable<Evolution>
     {
-        public bool CarryStats;
-        public int ExtraInfo;
-
-        public Pokemon From;
-        public Pokemon To;
-        public EvolutionType Type;
+        public Pokemon From { get; }
+        public Pokemon To { get; }
+        public bool CarryStats { get; set; }
+        public int ExtraInfo { get; set; }
+        public EvolutionType Type1 { get; set; }
 
         public Evolution(Pokemon from, Pokemon to, bool carryStats, EvolutionType type, int extra)
         {
             From = from;
             To = to;
             CarryStats = carryStats;
-            Type = type;
+            Type1 = type;
             ExtraInfo = extra;
         }
 
-        public virtual int CompareTo(Evolution o)
+        public int CompareTo(Evolution o)
         {
             if (From.Id < o.From.Id)
                 return -1;
@@ -30,11 +29,10 @@ namespace RandomizerSharp.PokemonModel
                 return -1;
             if (To.Id > o.To.Id)
                 return 1;
-            if (Type.Ordinal() < o.Type.Ordinal())
+            if (Type1.Ordinal() < o.Type1.Ordinal())
                 return -1;
-            if (Type.Ordinal() > o.Type.Ordinal())
-                return 1;
-            return 0;
+
+            return Type1.Ordinal() > o.Type1.Ordinal() ? 1 : 0;
         }
 
         public override int GetHashCode()
@@ -48,26 +46,24 @@ namespace RandomizerSharp.PokemonModel
             result = prime * result + To.Id;
 
             // ReSharper disable once NonReadonlyMemberInGetHashCode
-            result = prime * result + Type.Ordinal();
+            result = prime * result + Type1.Ordinal();
             return result;
         }
 
-        public override bool Equals(object obj)
+        public bool Equals(Evolution evo)
         {
-            if (this == obj)
+            if (ReferenceEquals(this, evo))
                 return true;
-            if (obj == null)
+            if (evo == null)
                 return false;
-            if (GetType() != obj.GetType())
+            if (!Equals(From, evo.From))
                 return false;
-            var other = (Evolution) obj;
-            if (From != other.From)
+            if (!Equals(To, evo.To))
                 return false;
-            if (To != other.To)
-                return false;
-            if (Type != other.Type)
-                return false;
-            return true;
+
+            return Type1 == evo.Type1;
         }
+
+        public override bool Equals(object obj) => Equals(obj as Evolution);
     }
 }

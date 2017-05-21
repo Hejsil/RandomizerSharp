@@ -14,6 +14,7 @@ namespace RandomizerSharp
             var allPokes = baseRom.ValidPokemons;
             ISet<Pokemon> dontCopyPokes = new SortedSet<Pokemon>();
             foreach (var pkmn in allPokes)
+            {
                 if (pkmn != null)
                     if (pkmn.EvolutionsTo.Count != 1)
                     {
@@ -25,6 +26,7 @@ namespace RandomizerSharp
                         if (!onlyEvo.CarryStats)
                             dontCopyPokes.Add(pkmn);
                     }
+            }
             return dontCopyPokes;
         }
 
@@ -74,11 +76,13 @@ namespace RandomizerSharp
                     break;
                 var alreadyKnownMove = false;
                 for (var i = 0; i < moveCount; i++)
+                {
                     if (curMoves[i] == ml.Move)
                     {
                         alreadyKnownMove = true;
                         break;
                     }
+                }
                 if (!alreadyKnownMove)
                     if (moveCount == 4)
                     {
@@ -115,10 +119,12 @@ namespace RandomizerSharp
             return new string(@string);
         }
 
-        public static int FreeSpaceFinder(byte[] rom, byte freeSpace, int amount, int offset)
-        {
-            return FreeSpaceFinder(rom, freeSpace, amount, offset, true);
-        }
+        public static int FreeSpaceFinder(byte[] rom, byte freeSpace, int amount, int offset) => FreeSpaceFinder(
+            rom,
+            freeSpace,
+            amount,
+            offset,
+            true);
 
         public static int FreeSpaceFinder(byte[] rom, byte freeSpace, int amount, int offset, bool longAligned)
         {
@@ -137,8 +143,12 @@ namespace RandomizerSharp
                 return (SearchForFirst(rom, offset, searchNeedle) + 5) & ~3;
             }
         }
-        
-        public static List<int> Search(IList<byte> haystack, IList<byte> needle, int beginOffset = 0) => Search(haystack, beginOffset, haystack.Count, needle);
+
+        public static List<int> Search(IList<byte> haystack, IList<byte> needle, int beginOffset = 0) => Search(
+            haystack,
+            beginOffset,
+            haystack.Count,
+            needle);
 
         public static List<int> Search(IList<byte> haystack, int beginOffset, int endOffset, IList<byte> needle)
         {
@@ -164,9 +174,11 @@ namespace RandomizerSharp
                 }
                 else
                 {
-                    currentMatchStart = currentMatchStart + currentCharacterPosition -
+                    currentMatchStart = currentMatchStart +
+                                        currentCharacterPosition -
                                         toFillTable[currentCharacterPosition];
-                    currentCharacterPosition = toFillTable[currentCharacterPosition] > -1 ? toFillTable[currentCharacterPosition] : 0;
+                    currentCharacterPosition = toFillTable[currentCharacterPosition] > -1
+                        ? toFillTable[currentCharacterPosition] : 0;
                 }
             }
 
@@ -181,6 +193,7 @@ namespace RandomizerSharp
             var needleSize = needle.Length;
             var toFillTable = BuildKmpSearchTable(needle);
             while (currentMatchStart + currentCharacterPosition < docSize)
+            {
                 if (needle[currentCharacterPosition] == haystack[currentCharacterPosition + currentMatchStart])
                 {
                     currentCharacterPosition = currentCharacterPosition + 1;
@@ -189,10 +202,13 @@ namespace RandomizerSharp
                 }
                 else
                 {
-                    currentMatchStart = currentMatchStart + currentCharacterPosition -
+                    currentMatchStart = currentMatchStart +
+                                        currentCharacterPosition -
                                         toFillTable[currentCharacterPosition];
-                    currentCharacterPosition = toFillTable[currentCharacterPosition] > -1 ? toFillTable[currentCharacterPosition] : 0;
+                    currentCharacterPosition = toFillTable[currentCharacterPosition] > -1
+                        ? toFillTable[currentCharacterPosition] : 0;
                 }
+            }
             return -1;
         }
 
@@ -204,6 +220,7 @@ namespace RandomizerSharp
             stable[0] = -1;
             stable[1] = 0;
             while (pos < needle.Count)
+            {
                 if (needle[pos - 1] == needle[j])
                 {
                     stable[pos] = j + 1;
@@ -219,11 +236,15 @@ namespace RandomizerSharp
                     stable[pos] = 0;
                     pos++;
                 }
+            }
             return stable;
         }
 
-        public static string RewriteDescriptionForNewLineSize(string moveDesc, string newline, int lineSize,
-            IStringSizeDeterminer ssd)
+        public static string RewriteDescriptionForNewLineSize(
+            string moveDesc,
+            string newline,
+            int lineSize,
+            Func<string, int> ssd)
         {
             moveDesc = moveDesc.Replace("-" + newline, "").Replace(newline, " ");
             moveDesc = moveDesc.Replace("Sp. Atk", "Sp__Atk");
@@ -240,7 +261,7 @@ namespace RandomizerSharp
             {
                 words[i] = words[i].Replace("SP__", "SP. ");
                 words[i] = words[i].Replace("Sp__", "Sp. ");
-                var reqLength = ssd.LengthFor(words[i]);
+                var reqLength = ssd(words[i]);
                 if (currLineWc > 0)
                     reqLength++;
                 if (currLineCc + reqLength <= lineSize)
@@ -263,7 +284,7 @@ namespace RandomizerSharp
                     }
                     thisLine.Append(words[i]);
                     currLineWc = 1;
-                    currLineCc = ssd.LengthFor(words[i]);
+                    currLineCc = ssd(words[i]);
                 }
             }
 
@@ -278,8 +299,14 @@ namespace RandomizerSharp
             return fullDesc.ToString();
         }
 
-        public static string FormatTextWithReplacements(string text, IDictionary<string, string> replacements,
-            string newline, string extraline, string newpara, int maxLineLength, IStringSizeDeterminer ssd)
+        public static string FormatTextWithReplacements(
+            string text,
+            IDictionary<string, string> replacements,
+            string newline,
+            string extraline,
+            string newpara,
+            int maxLineLength,
+            Func<string, int> ssd)
         {
             var endsWithPara = false;
             if (text.EndsWith(newpara, StringComparison.Ordinal))
@@ -317,12 +344,16 @@ namespace RandomizerSharp
                 var currLineLastChar = (char) 0;
                 foreach (var t in words)
                 {
-                    var reqLength = ssd.LengthFor(t);
+                    var reqLength = ssd(t);
                     if (currLineWc > 0)
                         reqLength++;
-                    if (currLineCc + reqLength > maxLineLength || currLineCc >= sentenceNewLineSize &&
-                        (currLineLastChar == '.' || currLineLastChar == '?' || currLineLastChar == '!' ||
-                         currLineLastChar == '…' || currLineLastChar == ','))
+                    if (currLineCc + reqLength > maxLineLength ||
+                        currLineCc >= sentenceNewLineSize &&
+                        (currLineLastChar == '.' ||
+                         currLineLastChar == '?' ||
+                         currLineLastChar == '!' ||
+                         currLineLastChar == '…' ||
+                         currLineLastChar == ','))
                     {
                         if (currLineWc > 0)
                         {
@@ -336,7 +367,7 @@ namespace RandomizerSharp
                         }
                         thisLine.Append(t);
                         currLineWc = 1;
-                        currLineCc = ssd.LengthFor(t);
+                        currLineCc = ssd(t);
                         if (t.Length == 0)
                             currLineLastChar = (char) 0;
                         else
@@ -376,19 +407,6 @@ namespace RandomizerSharp
                 finalResult.Append(newpara);
 
             return finalResult.ToString();
-        }
-
-        public interface IStringSizeDeterminer
-        {
-            int LengthFor(string encodedText);
-        }
-
-        public class StringLengthSd : IStringSizeDeterminer
-        {
-            public virtual int LengthFor(string encodedText)
-            {
-                return encodedText.Length;
-            }
         }
     }
 }

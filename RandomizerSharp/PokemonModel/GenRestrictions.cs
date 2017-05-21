@@ -2,12 +2,22 @@
 {
     public class GenRestrictions
     {
-        public bool AllowGen1, AllowGen2, AllowGen3, AllowGen4, AllowGen5;
+        public bool AllowGen1 { get; }
+        public bool AllowGen2 { get; set; }
+        public bool AllowGen3 { get; set; }
+        public bool AllowGen4 { get; set; }
+        public bool AllowGen5 { get; set; }
 
-        public bool AssocG1G2, AssocG1G4;
-        public bool AssocG2G1, AssocG2G3, AssocG2G4;
-        public bool AssocG3G2, AssocG3G4;
-        public bool AssocG4G1, AssocG4G2, AssocG4G3;
+        public bool AssocG1G2 { get; set; }
+        public bool AssocG1G4 { get; set; }
+        public bool AssocG2G1 { get; set; }
+        public bool AssocG2G3 { get; set; }
+        public bool AssocG2G4 { get; set; }
+        public bool AssocG3G2 { get; set; }
+        public bool AssocG3G4 { get; set; }
+        public bool AssocG4G1 { get; set; }
+        public bool AssocG4G2 { get; set; }
+        public bool AssocG4G3 { get; set; }
 
         public GenRestrictions()
         {
@@ -36,16 +46,24 @@
             AssocG4G3 = (state & 16384) > 0;
         }
 
-        public virtual bool NothingSelected()
-        {
-            return !AllowGen1 && !AllowGen2 && !AllowGen3 && !AllowGen4 && !AllowGen5;
-        }
+        public virtual bool NothingSelected() => !AllowGen1 && !AllowGen2 && !AllowGen3 && !AllowGen4 && !AllowGen5;
 
-        public virtual int ToInt()
-        {
-            return MakeIntSelected(AllowGen1, AllowGen2, AllowGen3, AllowGen4, AllowGen5, AssocG1G2, AssocG1G4,
-                AssocG2G1, AssocG2G3, AssocG2G4, AssocG3G2, AssocG3G4, AssocG4G1, AssocG4G2, AssocG4G3);
-        }
+        public virtual int ToInt() => MakeIntSelected(
+            AllowGen1,
+            AllowGen2,
+            AllowGen3,
+            AllowGen4,
+            AllowGen5,
+            AssocG1G2,
+            AssocG1G4,
+            AssocG2G1,
+            AssocG2G3,
+            AssocG2G4,
+            AssocG3G2,
+            AssocG3G4,
+            AssocG4G1,
+            AssocG4G2,
+            AssocG4G3);
 
         public virtual void LimitToGen(int generation)
         {

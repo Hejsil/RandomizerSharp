@@ -15,7 +15,7 @@ namespace RandomizerSharp.RomHandlers
 {
     public class Gen5RomHandler : AbstractDsRomHandler
     {
-        public static List<RomEntry> Roms = new List<RomEntry>();
+        private static readonly ICollection<RomEntry> Roms = new List<RomEntry>();
         private readonly NarcArchive _driftveilNarc;
         private readonly NarcArchive _encounterNarc;
         private readonly NarcArchive _evoNarc;
@@ -32,6 +32,8 @@ namespace RandomizerSharp.RomHandlers
 
         private readonly NarcArchive _pokeNarc;
         private readonly NarcArchive _pokespritesNarc;
+
+        private readonly RomEntry _romEntry;
         private readonly NarcArchive _scriptNarc;
         private readonly NarcArchive _storyTextNarc;
         private readonly NarcArchive _stringsNarc;
@@ -39,6 +41,12 @@ namespace RandomizerSharp.RomHandlers
         private readonly string[] _tradeStrings;
 
         private readonly Dictionary<int, string> _wildDictionaryNames = new Dictionary<int, string>();
+
+        public byte[] Arm9 { get; }
+
+        public IEnumerable<HiddenHollow> HiddenHollows => _hiddenHollows.Values;
+
+        private bool IsBw2 => Game == Game.Black2 || Game == Game.White2;
 
         static Gen5RomHandler()
         {
@@ -48,45 +56,45 @@ namespace RandomizerSharp.RomHandlers
         public Gen5RomHandler(string filename)
             : base(filename)
         {
-            REntry = EntryFor(BaseRom.Code);
+            _romEntry = EntryFor(BaseRom.Code);
             Arm9 = ReadArm9();
 
-            if (REntry.Name.StartsWith("Black 2"))
+            if (_romEntry.Name.StartsWith("Black 2"))
                 Game = Game.Black2;
-            else if (REntry.Name.StartsWith("White 2"))
+            else if (_romEntry.Name.StartsWith("White 2"))
                 Game = Game.White2;
-            else if (REntry.Name.StartsWith("Black"))
+            else if (_romEntry.Name.StartsWith("Black"))
                 Game = Game.Black;
-            else if (REntry.Name.StartsWith("White"))
+            else if (_romEntry.Name.StartsWith("White"))
                 Game = Game.White;
             else
-                throw new ArgumentException();
+                throw new ArgumentOutOfRangeException(nameof(_romEntry.Name), _romEntry.Name, null);
 
-            _stringsNarc = ReadNarc(REntry.GetString("TextStrings"));
-            _storyTextNarc = ReadNarc(REntry.GetString("TextStory"));
-            _scriptNarc = ReadNarc(REntry.GetString("Scripts"));
-            _pokeNarc = ReadNarc(REntry.GetString("PokemonStats"));
-            _moveNarc = ReadNarc(REntry.GetString("MoveData"));
-            _tradeNarc = ReadNarc(REntry.GetString("InGameTrades"));
-            _evoNarc = ReadNarc(REntry.GetString("PokemonEvolutions"));
-            _movesLearntNarc = ReadNarc(REntry.GetString("PokemonMovesets"));
-            _encounterNarc = ReadNarc(REntry.GetString("WildPokemon"));
-            _pokespritesNarc = ReadNarc(REntry.GetString("PokemonGraphics"));
+            _stringsNarc = ReadNarc(_romEntry.GetString("TextStrings"));
+            _storyTextNarc = ReadNarc(_romEntry.GetString("TextStory"));
+            _scriptNarc = ReadNarc(_romEntry.GetString("Scripts"));
+            _pokeNarc = ReadNarc(_romEntry.GetString("PokemonStats"));
+            _moveNarc = ReadNarc(_romEntry.GetString("MoveData"));
+            _tradeNarc = ReadNarc(_romEntry.GetString("InGameTrades"));
+            _evoNarc = ReadNarc(_romEntry.GetString("PokemonEvolutions"));
+            _movesLearntNarc = ReadNarc(_romEntry.GetString("PokemonMovesets"));
+            _encounterNarc = ReadNarc(_romEntry.GetString("WildPokemon"));
+            _pokespritesNarc = ReadNarc(_romEntry.GetString("PokemonGraphics"));
 
-            if (IsBW2)
+            if (IsBw2)
             {
-                _hhNarc = ReadNarc(REntry.GetString("HiddenHollows"));
-                _driftveilNarc = ReadNarc(REntry.GetString("DriftveilPokemon"));
+                _hhNarc = ReadNarc(_romEntry.GetString("HiddenHollows"));
+                _driftveilNarc = ReadNarc(_romEntry.GetString("DriftveilPokemon"));
             }
 
-            _mtFile = ReadOverlay(REntry.GetInt("MoveTutorOvlNumber"));
+            _mtFile = ReadOverlay(_romEntry.GetInt("MoveTutorOvlNumber"));
 
-            AbilityNames = GetStrings(false, REntry.GetInt("AbilityNamesTextOffset"));
-            ItemNames = GetStrings(false, REntry.GetInt("ItemNamesTextOffset"));
-            TrainerClassNames = GetStrings(false, REntry.GetInt("TrainerClassesTextOffset"));
-            _tradeStrings = GetStrings(false, REntry.GetInt("IngameTradesTextOffset"));
-            _mnames = GetStrings(false, REntry.GetInt("TrainerMugshotsTextOffset"));
-            _pokeNames = GetStrings(false, REntry.GetInt("PokemonNamesTextOffset"));
+            AbilityNames = GetStrings(false, _romEntry.GetInt("AbilityNamesTextOffset"));
+            ItemNames = GetStrings(false, _romEntry.GetInt("ItemNamesTextOffset"));
+            TrainerClassNames = GetStrings(false, _romEntry.GetInt("TrainerClassesTextOffset"));
+            _tradeStrings = GetStrings(false, _romEntry.GetInt("IngameTradesTextOffset"));
+            _mnames = GetStrings(false, _romEntry.GetInt("TrainerMugshotsTextOffset"));
+            _pokeNames = GetStrings(false, _romEntry.GetInt("PokemonNamesTextOffset"));
 
             CanChangeTrainerText = true;
             FixedTrainerClassNamesLength = false;
@@ -104,7 +112,7 @@ namespace RandomizerSharp.RomHandlers
             AllowedItems = Gen5Constants.AllowedItems;
             NonBadItems = Gen5Constants.NonBadItems;
 
-            CanChangeStaticPokemon = REntry.StaticPokemonSupport;
+            CanChangeStaticPokemon = _romEntry.StaticPokemonSupport;
 
             LoadPokemon();
             LoadStaticPokemon();
@@ -124,19 +132,11 @@ namespace RandomizerSharp.RomHandlers
             LoadMoveTutorCompatibility();
 
             LoadIngameTrades();
-            
+
             LoadDoublesTrainerClasses();
             LoadTrainerNames();
             LoadTrainers();
         }
-
-        private bool IsBW2 => Game == Game.Black2 || Game == Game.White2;
-
-        public byte[] Arm9 { get; }
-
-        public IEnumerable<HiddenHollow> HiddenHollows => _hiddenHollows.Values;
-
-        public RomEntry REntry { get; }
 
         private static void LoadRomInfo()
         {
@@ -209,31 +209,23 @@ namespace RandomizerSharp.RomHandlers
                                 var offs = new int[offsets.Length];
                                 var files = new int[offsets.Length];
                                 var c = 0;
-                                foreach (var off in
-                                    offsets)
+
+                                foreach (var off in offsets)
                                 {
                                     var parts = Regex.Split(off, "\\:");
                                     files[c] = ParseRiInt(parts[0]);
                                     offs[c++] = ParseRiInt(parts[1]);
                                 }
-                                var sp = new Gen5StaticPokemon
-                                {
-                                    Files = files,
-                                    Offsets = offs
-                                };
-                                current.Pokemon.Add(sp);
+
+                                current.Pokemon.Add(new Gen5StaticPokemon(files, offs));
                             }
                             else
                             {
                                 var parts = Regex.Split(r[1], "\\:");
                                 var files = ParseRiInt(parts[0]);
                                 var offs = ParseRiInt(parts[1]);
-                                var sp = new Gen5StaticPokemon
-                                {
-                                    Files = new[] { files },
-                                    Offsets = new[] { offs }
-                                };
-                                current.Pokemon.Add(sp);
+
+                                current.Pokemon.Add(new Gen5StaticPokemon(new[] { files }, new[] { offs }));
                             }
                         }
                         else if (r[0].Equals("StaticPokemonSupport"))
@@ -345,7 +337,7 @@ namespace RandomizerSharp.RomHandlers
                     PrimaryType = Gen5Constants.TypeTable[stats[Gen5Constants.BsPrimaryTypeOffset] & 0xFF],
                     SecondaryType = Gen5Constants.TypeTable[stats[Gen5Constants.BsSecondaryTypeOffset] & 0xFF],
                     CatchRate = stats[Gen5Constants.BsCatchRateOffset] & 0xFF,
-                    GrowthCurve = Exp.FromByte(stats[Gen5Constants.BsGrowthCurveOffset]),
+                    GrowthExpCurve = Exp.FromByte(stats[Gen5Constants.BsGrowthCurveOffset]),
                     Ability1 = stats[Gen5Constants.BsAbility1Offset] & 0xFF,
                     Ability2 = stats[Gen5Constants.BsAbility2Offset] & 0xFF,
                     Ability3 = stats[Gen5Constants.BsAbility3Offset] & 0xFF
@@ -413,7 +405,7 @@ namespace RandomizerSharp.RomHandlers
 
         private void LoadMoves()
         {
-            var moveNames = GetStrings(false, REntry.GetInt("MoveNamesTextOffset"));
+            var moveNames = GetStrings(false, _romEntry.GetInt("MoveNamesTextOffset"));
             var allMoves = new Move[moveNames.Length];
 
             for (var i = 0; i < allMoves.Length; i++)
@@ -448,11 +440,11 @@ namespace RandomizerSharp.RomHandlers
         {
             WriteArm9(Arm9);
 
-            SetStrings(false, REntry.GetInt("TrainerClassesTextOffset"), TrainerClassNames);
+            SetStrings(false, _romEntry.GetInt("TrainerClassesTextOffset"), TrainerClassNames);
 
-            WriteNarc(REntry.GetString("TextStrings"), _stringsNarc);
-            WriteNarc(REntry.GetString("TextStory"), _storyTextNarc);
-            WriteNarc(REntry.GetString("Scripts"), _scriptNarc);
+            WriteNarc(_romEntry.GetString("TextStrings"), _stringsNarc);
+            WriteNarc(_romEntry.GetString("TextStory"), _storyTextNarc);
+            WriteNarc(_romEntry.GetString("Scripts"), _scriptNarc);
 
             SaveTrainerNames();
             SaveIngameTrades();
@@ -491,7 +483,7 @@ namespace RandomizerSharp.RomHandlers
                 data[5] = (byte) AllMoves[i].Pp;
             }
 
-            WriteNarc(REntry.GetString("MoveData"), _moveNarc);
+            WriteNarc(_romEntry.GetString("MoveData"), _moveNarc);
         }
 
         private void SavePokemon()
@@ -516,7 +508,7 @@ namespace RandomizerSharp.RomHandlers
                     data[Gen5Constants.BsSecondaryTypeOffset] = Gen5Constants.TypeToByte(pokemon.SecondaryType);
 
                 data[Gen5Constants.BsCatchRateOffset] = (byte) pokemon.CatchRate;
-                data[Gen5Constants.BsGrowthCurveOffset] = pokemon.GrowthCurve.ToByte();
+                data[Gen5Constants.BsGrowthCurveOffset] = pokemon.GrowthExpCurve.ToByte();
 
                 data[Gen5Constants.BsAbility1Offset] = (byte) pokemon.Ability1;
                 data[Gen5Constants.BsAbility2Offset] = (byte) pokemon.Ability2;
@@ -562,9 +554,9 @@ namespace RandomizerSharp.RomHandlers
             }
 
 
-            SetStrings(false, REntry.GetInt("PokemonNamesTextOffset"), _pokeNames);
-            WriteNarc(REntry.GetString("PokemonStats"), _pokeNarc);
-            WriteNarc(REntry.GetString("PokemonMovesets"), _movesLearntNarc);
+            SetStrings(false, _romEntry.GetInt("PokemonNamesTextOffset"), _pokeNames);
+            WriteNarc(_romEntry.GetString("PokemonStats"), _pokeNarc);
+            WriteNarc(_romEntry.GetString("PokemonMovesets"), _movesLearntNarc);
             SaveEvolutions();
         }
 
@@ -575,7 +567,7 @@ namespace RandomizerSharp.RomHandlers
 
             for (var i = 0; i < starters.Length; i++)
             {
-                var thisStarter = REntry.OffsetArrayEntries["StarterOffsets" + (i + 1)];
+                var thisStarter = _romEntry.OffsetArrayEntries["StarterOffsets" + (i + 1)];
                 starters[i] = new StarterPokemon
                 {
                     Pokemon = AllPokemons[ReadWord(_scriptNarc.Files[thisStarter[0].Entry], thisStarter[0].Offset)]
@@ -590,72 +582,28 @@ namespace RandomizerSharp.RomHandlers
             if (Starters.Count != 3)
                 return;
 
-            var scriptNARC = _scriptNarc;
             for (var i = 0; i < 3; i++)
             {
-                var thisStarter = REntry.OffsetArrayEntries["StarterOffsets" + (i + 1)];
+                var thisStarter = _romEntry.OffsetArrayEntries["StarterOffsets" + (i + 1)];
                 foreach (var entry in thisStarter)
-                    WriteWord(scriptNARC.Files[entry.Entry], entry.Offset, Starters[i].Pokemon.Id);
+                    WriteWord(_scriptNarc.Files[entry.Entry], entry.Offset, Starters[i].Pokemon.Id);
             }
 
             // GIVE ME BACK MY PURRLOIN
-            if (IsBW2)
-            {
-                var newScript = Gen5Constants.Bw2NewStarterScript;
-                var oldFile = scriptNARC.Files[REntry.GetInt("PokedexGivenFileOffset")];
-                var newFile = new byte[oldFile.Length + newScript.Count];
-                var offset = Find(oldFile, Gen5Constants.Bw2StarterScriptMagic);
-                if (offset > 0)
-                {
-                    Array.Copy(oldFile, 0, newFile, 0, oldFile.Length);
-                    Array.Copy(newScript.ToArray(), 0, newFile, oldFile.Length, newScript.Count);
-
-                    if (REntry.Code[3] == 'J')
-                        newFile[oldFile.Length + 0x6] -= 4;
-
-                    newFile[offset++] = 0x1E;
-                    newFile[offset++] = 0x0;
-                    WriteRelativePointer(newFile, offset, oldFile.Length);
-                    scriptNARC.Files[REntry.GetInt("PokedexGivenFileOffset")] = newFile;
-                }
-            }
-            else
-            {
-                var newScript = Gen5Constants.Bw1NewStarterScript;
-
-                var oldFile = scriptNARC.Files[REntry.GetInt("PokedexGivenFileOffset")];
-                var newFile = new byte[oldFile.Length + newScript.Count];
-                var offset = Find(oldFile, Gen5Constants.Bw1StarterScriptMagic);
-
-                if (offset > 0)
-                {
-                    Array.Copy(oldFile, 0, newFile, 0, oldFile.Length);
-                    Array.Copy(newScript.ToArray(), 0, newFile, oldFile.Length, newScript.Count);
-                    if (REntry.Code[3] == 'J')
-                    {
-                        newFile[oldFile.Length + 0x4] -= 4;
-                        newFile[oldFile.Length + 0x8] -= 4;
-                    }
-
-                    newFile[offset++] = 0x04;
-                    newFile[offset++] = 0x0;
-                    WriteRelativePointer(newFile, offset, oldFile.Length);
-                    scriptNARC.Files[REntry.GetInt("PokedexGivenFileOffset")] = newFile;
-                }
-            }
+            ApplyStarterScript(IsBw2 ? Gen5Constants.Bw2NewStarterScript : Gen5Constants.Bw1NewStarterScript);
 
             // Starter sprites
-            var starterNARC = ReadNarc(REntry.GetString("StarterGraphics"));
-            var pokespritesNARC = ReadNarc(REntry.GetString("PokemonGraphics"));
-            ReplaceStarterFiles(starterNARC, pokespritesNARC, 0, Starters[0].Pokemon.Id);
-            ReplaceStarterFiles(starterNARC, pokespritesNARC, 1, Starters[1].Pokemon.Id);
-            ReplaceStarterFiles(starterNARC, pokespritesNARC, 2, Starters[2].Pokemon.Id);
-            WriteNarc(REntry.GetString("StarterGraphics"), starterNARC);
+            var starterNarc = ReadNarc(_romEntry.GetString("StarterGraphics"));
+            var pokespritesNarc = ReadNarc(_romEntry.GetString("PokemonGraphics"));
+            ReplaceStarterFiles(starterNarc, pokespritesNarc, 0, Starters[0].Pokemon.Id);
+            ReplaceStarterFiles(starterNarc, pokespritesNarc, 1, Starters[1].Pokemon.Id);
+            ReplaceStarterFiles(starterNarc, pokespritesNarc, 2, Starters[2].Pokemon.Id);
+            WriteNarc(_romEntry.GetString("StarterGraphics"), starterNarc);
 
             // Fix text depending on version
-            if (!IsBW2)
+            if (!IsBw2)
             {
-                IList<string> yourHouseStrings = GetStrings(true, REntry.GetInt("StarterLocationTextOffset"));
+                IList<string> yourHouseStrings = GetStrings(true, _romEntry.GetInt("StarterLocationTextOffset"));
                 for (var i = 0; i < 3; i++)
                 {
                     yourHouseStrings[Gen5Constants.Bw1StarterTextOffset - i] =
@@ -668,11 +616,11 @@ namespace RandomizerSharp.RomHandlers
                     "It's decided. You'll be my opponent...\\xFFFEin our first Pok\\x00E9mon battle!\\xF000\\xBE01\\x0000\\xFFFELet's see what you can do, \\xFFFEmy Pok\\x00E9mon!\\xF000\\xBE01\\x0000";
 
                 // rewrite
-                SetStrings(true, REntry.GetInt("StarterLocationTextOffset"), yourHouseStrings);
+                SetStrings(true, _romEntry.GetInt("StarterLocationTextOffset"), yourHouseStrings);
             }
             else
             {
-                IList<string> starterTownStrings = GetStrings(true, REntry.GetInt("StarterLocationTextOffset"));
+                IList<string> starterTownStrings = GetStrings(true, _romEntry.GetInt("StarterLocationTextOffset"));
                 for (var i = 0; i < 3; i++)
                 {
                     starterTownStrings[Gen5Constants.Bw2StarterTextOffset - i] =
@@ -684,8 +632,31 @@ namespace RandomizerSharp.RomHandlers
                     "\\xF000\\x0100\\x0001\\x0001: Let's see how good\\xFFFEa Trainer you are!\\xF000\\xBE01\\x0000\\xFFFEI'll use my Pok\\x00E9mon\\xFFFEthat I raised from an Egg!\\xF000\\xBE01\\x0000";
 
                 // rewrite
-                SetStrings(true, REntry.GetInt("StarterLocationTextOffset"), starterTownStrings);
+                SetStrings(true, _romEntry.GetInt("StarterLocationTextOffset"), starterTownStrings);
             }
+        }
+
+        private void ApplyStarterScript(IReadOnlyCollection<byte> newScript)
+        {
+            var oldFile = _scriptNarc.Files[_romEntry.GetInt("PokedexGivenFileOffset")];
+            var newFile = new byte[oldFile.Length + newScript.Count];
+            var offset = Find(oldFile, Gen5Constants.Bw1StarterScriptMagic);
+
+            if (offset <= 0)
+                return;
+
+            Array.Copy(oldFile, 0, newFile, 0, oldFile.Length);
+            Array.Copy(newScript.ToArray(), 0, newFile, oldFile.Length, newScript.Count);
+            if (_romEntry.Code[3] == 'J')
+            {
+                newFile[oldFile.Length + 0x4] -= 4;
+                newFile[oldFile.Length + 0x8] -= 4;
+            }
+
+            newFile[offset++] = 0x04;
+            newFile[offset++] = 0x0;
+            WriteRelativePointer(newFile, offset, oldFile.Length);
+            _scriptNarc.Files[_romEntry.GetInt("PokedexGivenFileOffset")] = newFile;
         }
 
 
@@ -707,8 +678,8 @@ namespace RandomizerSharp.RomHandlers
         private void LoadEncounters()
         {
             // LoadWildDictionaryNames
-            var mapHeaderData = ReadNarc(REntry.GetString("MapTableFile")).Files[0];
-            var allDictionaryNames = GetStrings(false, REntry.GetInt("MapNamesTextOffset"));
+            var mapHeaderData = ReadNarc(_romEntry.GetString("MapTableFile")).Files[0];
+            var allDictionaryNames = GetStrings(false, _romEntry.GetInt("MapNamesTextOffset"));
             var numDictionaryHeaders = mapHeaderData.Length / 48;
             for (var map = 0; map < numDictionaryHeaders; map++)
             {
@@ -716,7 +687,7 @@ namespace RandomizerSharp.RomHandlers
                 var mapNameIndex = mapHeaderData[baseOffset + 26] & 0xFF;
                 var mapName1 = allDictionaryNames[mapNameIndex];
 
-                if (IsBW2)
+                if (IsBw2)
                 {
                     var wildSet = mapHeaderData[baseOffset + 20] & 0xFF;
                     if (wildSet != 255)
@@ -790,7 +761,7 @@ namespace RandomizerSharp.RomHandlers
 
                         var enc1 = new Encounter
                         {
-                            Pokemon = AllPokemons[offset1 + offset2],
+                            Pokemon1 = AllPokemons[offset1 + offset2],
                             Level = data[offset + 2 + i * 4] & 0xFF,
                             MaxLevel = data[offset + 3 + i * 4] & 0xFF
                         };
@@ -818,10 +789,10 @@ namespace RandomizerSharp.RomHandlers
             }
 
             // Habitat List / Area Data?
-            if (!IsBW2)
+            if (!IsBw2)
                 return;
 
-            var areaNarc = ReadNarc(REntry.GetString("PokemonAreaData"));
+            var areaNarc = ReadNarc(_romEntry.GetString("PokemonAreaData"));
             var newFiles = new byte[Gen5Constants.PokemonCount][];
             for (var i = 0; i < Gen5Constants.PokemonCount; i++)
             {
@@ -867,8 +838,8 @@ namespace RandomizerSharp.RomHandlers
             }
 
             // Save
-            WriteNarc(REntry.GetString("PokemonAreaData"), areaNarc);
-            WriteNarc(REntry.GetString("WildPokemon"), _encounterNarc);
+            WriteNarc(_romEntry.GetString("PokemonAreaData"), areaNarc);
+            WriteNarc(_romEntry.GetString("WildPokemon"), _encounterNarc);
 
 
             void ParseAreaData(ArraySlice<byte> entry, int startOffset, byte[][] areaData, int season, int fileNumber)
@@ -889,14 +860,14 @@ namespace RandomizerSharp.RomHandlers
 
                             // Route 4?
                             if (areaIndex == Gen5Constants.Bw2Route4AreaIndex)
-                                if (fileNumber == Gen5Constants.B2Route4EncounterFile && REntry.Code[2] == 'D')
+                                if (fileNumber == Gen5Constants.B2Route4EncounterFile && _romEntry.Code[2] == 'D')
                                     areaIndex = -1; // wrong version
-                                else if (fileNumber == Gen5Constants.W2Route4EncounterFile && REntry.Code[2] == 'E')
+                                else if (fileNumber == Gen5Constants.W2Route4EncounterFile && _romEntry.Code[2] == 'E')
                                     areaIndex = -1; // wrong version
 
                             // Victory Road?
                             if (areaIndex == Gen5Constants.Bw2VictoryRoadAreaIndex)
-                                if (REntry.Code[2] == 'D')
+                                if (_romEntry.Code[2] == 'D')
                                 {
                                     // White 2
                                     if (fileNumber == Gen5Constants.B2VrExclusiveRoom1 ||
@@ -913,7 +884,7 @@ namespace RandomizerSharp.RomHandlers
 
                             // Reversal Mountain?
                             if (areaIndex == Gen5Constants.Bw2ReversalMountainAreaIndex)
-                                if (REntry.Code[2] == 'D')
+                                if (_romEntry.Code[2] == 'D')
                                 {
                                     // White 2
                                     if (fileNumber >= Gen5Constants.B2ReversalMountainStart &&
@@ -954,7 +925,7 @@ namespace RandomizerSharp.RomHandlers
                         for (var j = 0; j < amounts[i]; j++)
                         {
                             var enc = area.Encounters[j];
-                            WriteWord(entry, startOffset + offset + j * 4, enc.Pokemon.Id);
+                            WriteWord(entry, startOffset + offset + j * 4, enc.Pokemon1.Id);
                             entry[startOffset + offset + j * 4 + 2] = (byte) enc.Level;
                             entry[startOffset + offset + j * 4 + 3] = (byte) enc.MaxLevel;
                         }
@@ -1004,8 +975,8 @@ namespace RandomizerSharp.RomHandlers
         {
             var allTrainers = new List<Trainer>();
 
-            var trainers = ReadNarc(REntry.GetString("TrainerData"));
-            var trpokes = ReadNarc(REntry.GetString("TrainerPokemon"));
+            var trainers = ReadNarc(_romEntry.GetString("TrainerData"));
+            var trpokes = ReadNarc(_romEntry.GetString("TrainerPokemon"));
             var trainernum = trainers.Files.Count;
             var tclasses = TrainerClassNames;
             var tnames = TrainerNames;
@@ -1077,7 +1048,7 @@ namespace RandomizerSharp.RomHandlers
                 allTrainers.Add(tr);
             }
 
-            if (!IsBW2)
+            if (!IsBw2)
             {
                 Gen5Constants.TagTrainersBw(allTrainers);
                 Trainers = allTrainers;
@@ -1122,8 +1093,8 @@ namespace RandomizerSharp.RomHandlers
         {
             using (var allTrainers = Trainers.GetEnumerator())
             {
-                var trainers = ReadNarc(REntry.GetString("TrainerData"));
-                var trpokes = ReadNarc(REntry.GetString("TrainerPokemon"));
+                var trainers = ReadNarc(_romEntry.GetString("TrainerData"));
+                var trpokes = ReadNarc(_romEntry.GetString("TrainerPokemon"));
 
                 var trainernum = trainers.Files.Count;
                 for (var i = 1; i < trainernum; i++)
@@ -1179,8 +1150,8 @@ namespace RandomizerSharp.RomHandlers
                     }
                 }
 
-                WriteNarc(REntry.GetString("TrainerData"), trainers);
-                WriteNarc(REntry.GetString("TrainerPokemon"), trpokes);
+                WriteNarc(_romEntry.GetString("TrainerData"), trainers);
+                WriteNarc(_romEntry.GetString("TrainerPokemon"), trpokes);
 
                 // Deal with PWT
                 if (_driftveilNarc == null)
@@ -1219,24 +1190,24 @@ namespace RandomizerSharp.RomHandlers
                     }
                 }
 
-                WriteNarc(REntry.GetString("DriftveilPokemon"), _driftveilNarc);
+                WriteNarc(_romEntry.GetString("DriftveilPokemon"), _driftveilNarc);
             }
         }
 
 
         private void LoadStaticPokemon()
         {
-            if (!REntry.StaticPokemonSupport)
+            if (!_romEntry.StaticPokemonSupport)
             {
                 StaticPokemon = Array.Empty<Pokemon>();
                 return;
             }
 
-            StaticPokemon = new Pokemon[REntry.Pokemon.Count];
+            StaticPokemon = new Pokemon[_romEntry.Pokemon.Count];
 
             for (var i = 0; i < StaticPokemon.Length; i++)
             {
-                var staticPokemon = REntry.Pokemon[i];
+                var staticPokemon = _romEntry.Pokemon[i];
                 StaticPokemon[i] = staticPokemon.GetPokemon(this, _scriptNarc);
             }
         }
@@ -1244,9 +1215,9 @@ namespace RandomizerSharp.RomHandlers
         private void LoadMiscTweaksAvailable()
         {
             var available = 0;
-            if (IsBW2)
+            if (IsBw2)
                 available |= MiscTweak.RandomizeHiddenHollows.Value;
-            if (REntry.TweakFiles["FastestTextTweak"] != null)
+            if (_romEntry.TweakFiles["FastestTextTweak"] != null)
                 available |= MiscTweak.FastestText.Value;
 
             available |= MiscTweak.BanLuckyEgg.Value;
@@ -1256,7 +1227,7 @@ namespace RandomizerSharp.RomHandlers
 
         public bool GenericIpsPatch(ArraySlice<byte> data, string ctName)
         {
-            var patchName = REntry.TweakFiles[ctName];
+            var patchName = _romEntry.TweakFiles[ctName];
             if (patchName == null)
                 return false;
 
@@ -1286,7 +1257,7 @@ namespace RandomizerSharp.RomHandlers
                 TmMoves[i + Gen5Constants.TmBlockOneCount] = ReadWord(Arm9, offset + i * 2);
 
 
-            RequiredFieldTMs = IsBW2 ? Gen5Constants.Bw2RequiredFieldTMs : Gen5Constants.Bw1RequiredFieldTMs;
+            RequiredFieldTMs = IsBw2 ? Gen5Constants.Bw2RequiredFieldTMs : Gen5Constants.Bw1RequiredFieldTMs;
         }
 
         private void SaveTmMoves()
@@ -1307,8 +1278,8 @@ namespace RandomizerSharp.RomHandlers
                 WriteWord(Arm9, offset + i * 2, TmMoves[i + Gen5Constants.TmBlockOneCount]);
 
             // Update TM item descriptions
-            var itemDescriptions = GetStrings(false, REntry.GetInt("ItemDescriptionsTextOffset"));
-            var moveDescriptions = GetStrings(false, REntry.GetInt("MoveDescriptionsTextOffset"));
+            var itemDescriptions = GetStrings(false, _romEntry.GetInt("ItemDescriptionsTextOffset"));
+            var moveDescriptions = GetStrings(false, _romEntry.GetInt("MoveDescriptionsTextOffset"));
             // TM01 is item 328 and so on
             for (var i = 0; i < Gen5Constants.TmBlockOneCount; i++)
                 itemDescriptions[i + Gen5Constants.TmBlockOneOffset] = moveDescriptions[TmMoves[i]];
@@ -1319,10 +1290,10 @@ namespace RandomizerSharp.RomHandlers
                     moveDescriptions[TmMoves[i + Gen5Constants.TmBlockOneCount]];
             }
             // Save the new item descriptions
-            SetStrings(false, REntry.GetInt("ItemDescriptionsTextOffset"), itemDescriptions);
+            SetStrings(false, _romEntry.GetInt("ItemDescriptionsTextOffset"), itemDescriptions);
 
             // Palettes
-            var baseOfPalettes = IsBW2 ? Gen5Constants.Bw2ItemPalettesPrefix : Gen5Constants.Bw1ItemPalettesPrefix;
+            var baseOfPalettes = IsBw2 ? Gen5Constants.Bw2ItemPalettesPrefix : Gen5Constants.Bw1ItemPalettesPrefix;
 
             var offsPals = Find(Arm9, baseOfPalettes);
             if (offsPals > 0)
@@ -1361,7 +1332,8 @@ namespace RandomizerSharp.RomHandlers
                 hmMoves[i] = ReadWord(Arm9, offset + i * 2);
 
             HmMoves = hmMoves;
-            EarlyRequiredHmMoves =  IsBW2 ? Gen5Constants.Bw2EarlyRequiredHmMoves : Gen5Constants.Bw1EarlyRequiredHmMoves;
+            EarlyRequiredHmMoves = IsBw2 ? Gen5Constants.Bw2EarlyRequiredHmMoves
+                : Gen5Constants.Bw1EarlyRequiredHmMoves;
         }
 
 
@@ -1373,7 +1345,7 @@ namespace RandomizerSharp.RomHandlers
                 return;
             }
 
-            var baseOffset = REntry.GetInt("MoveTutorDataOffset");
+            var baseOffset = _romEntry.GetInt("MoveTutorDataOffset");
 
             MoveTutorMoves = new int[Gen5Constants.Bw2MoveTutorCount];
 
@@ -1385,7 +1357,7 @@ namespace RandomizerSharp.RomHandlers
         {
             if (!HasMoveTutors)
                 return;
-            var baseOffset = REntry.GetInt("MoveTutorDataOffset");
+            var baseOffset = _romEntry.GetInt("MoveTutorDataOffset");
             var amount = Gen5Constants.Bw2MoveTutorCount;
             var bytesPer = Gen5Constants.Bw2MoveTutorBytesPerEntry;
             if (MoveTutorMoves.Length != amount)
@@ -1394,7 +1366,7 @@ namespace RandomizerSharp.RomHandlers
             for (var i = 0; i < amount; i++)
                 WriteWord(_mtFile, baseOffset + i * bytesPer, MoveTutorMoves[i]);
 
-            WriteOverlay(REntry.GetInt("MoveTutorOvlNumber"), _mtFile);
+            WriteOverlay(_romEntry.GetInt("MoveTutorOvlNumber"), _mtFile);
         }
 
 
@@ -1428,7 +1400,7 @@ namespace RandomizerSharp.RomHandlers
                 MoveTutorCompatibility[pkmn] = flags;
             }
 
-            HasMoveTutors = IsBW2;
+            HasMoveTutors = IsBw2;
         }
 
         private void SaveMoveTutorCompatibility()
@@ -1542,7 +1514,7 @@ namespace RandomizerSharp.RomHandlers
                 var evosWritten = 0;
                 foreach (var evo in pk.EvolutionsFrom)
                 {
-                    WriteWord(evoEntry, evosWritten * 6, evo.Type.ToIndex(5));
+                    WriteWord(evoEntry, evosWritten * 6, evo.Type1.ToIndex(5));
                     WriteWord(evoEntry, evosWritten * 6 + 2, evo.ExtraInfo);
                     WriteWord(evoEntry, evosWritten * 6 + 4, evo.To.Id);
                     evosWritten++;
@@ -1557,14 +1529,14 @@ namespace RandomizerSharp.RomHandlers
                     evosWritten++;
                 }
             }
-            WriteNarc(REntry.GetString("PokemonEvolutions"), _evoNarc);
+            WriteNarc(_romEntry.GetString("PokemonEvolutions"), _evoNarc);
         }
 
 
         private void LoadTrainerNames()
         {
             // blank one
-            var tnames = GetStrings(false, REntry.GetInt("TrainerNamesTextOffset")).SliceFrom(1);
+            var tnames = GetStrings(false, _romEntry.GetInt("TrainerNamesTextOffset")).SliceFrom(1);
 
             // Tack the mugshot names on the end
 
@@ -1592,21 +1564,21 @@ namespace RandomizerSharp.RomHandlers
                 _mnames[i] = replacement;
             }
             // Save back mugshot names
-            SetStrings(false, REntry.GetInt("TrainerMugshotsTextOffset"), _mnames);
+            SetStrings(false, _romEntry.GetInt("TrainerMugshotsTextOffset"), _mnames);
 
             // Now save the rest of trainer names
-            var tnames = GetStrings(false, REntry.GetInt("TrainerNamesTextOffset"));
+            var tnames = GetStrings(false, _romEntry.GetInt("TrainerNamesTextOffset"));
 
             for (var i = 1; i < tnames.Length; i++)
                 tnames[i] = TrainerNames[i - 1];
 
-            SetStrings(false, REntry.GetInt("TrainerNamesTextOffset"), tnames);
+            SetStrings(false, _romEntry.GetInt("TrainerNamesTextOffset"), tnames);
         }
 
 
         private void LoadDoublesTrainerClasses()
         {
-            var doublesClasses = REntry.ArrayEntries["DoublesTrainerClasses"];
+            var doublesClasses = _romEntry.ArrayEntries["DoublesTrainerClasses"];
 
             var doublesTrainerClasses = new int[doublesClasses.Length];
 
@@ -1633,145 +1605,113 @@ namespace RandomizerSharp.RomHandlers
         private void LoadFiledItems()
         {
             var fieldItems = new List<int>();
-            // normal items
-            var scriptFileNormal = REntry.GetInt("ItemBallsScriptOffset");
-            var scriptFileHidden = REntry.GetInt("HiddenItemsScriptOffset");
-            var skipTable = REntry.ArrayEntries["ItemBallsSkip"];
-            var skipTableH = REntry.ArrayEntries["HiddenItemsSkip"];
-            var setVarNormal = Gen5Constants.NormalItemSetVarCommand;
-            var setVarHidden = Gen5Constants.HiddenItemSetVarCommand;
-            var itemScripts = _scriptNarc.Files[scriptFileNormal];
-            var offset = 0;
-            var skipTableOffset = 0;
-            while (true)
-            {
-                var part1 = ReadWord(itemScripts, offset);
-                if (part1 == Gen5Constants.ScriptListTerminator)
-                    break;
-                var offsetInFile = ReadRelativePointer(itemScripts, offset);
-                offset += 4;
-                if (offsetInFile > itemScripts.Length)
-                    break;
-                if (skipTableOffset < skipTable.Length &&
-                    skipTable[skipTableOffset] == offset / 4 - 1)
-                {
-                    skipTableOffset++;
-                    continue;
-                }
-                var command = ReadWord(itemScripts, offsetInFile + 2);
-                var variable = ReadWord(itemScripts, offsetInFile + 4);
-                if (command == setVarNormal &&
-                    variable == Gen5Constants.NormalItemVarSet)
-                {
-                    var item = ReadWord(itemScripts, offsetInFile + 6);
-                    fieldItems.Add(item);
-                }
-            }
 
-            // hidden items
-            var hitemScripts = _scriptNarc.Files[scriptFileHidden];
-            offset = 0;
-            skipTableOffset = 0;
-            while (true)
+            fieldItems.AddRange(
+                Load(
+                    _scriptNarc.Files[_romEntry.GetInt("ItemBallsScriptOffset")], 
+                    _romEntry.ArrayEntries["ItemBallsSkip"], 
+                    Gen5Constants.NormalItemSetVarCommand
+                )
+            );
+
+            fieldItems.AddRange(
+                Load(
+                    _scriptNarc.Files[_romEntry.GetInt("HiddenItemsScriptOffset")], 
+                    _romEntry.ArrayEntries["HiddenItemsSkip"], 
+                    Gen5Constants.HiddenItemSetVarCommand
+                )
+            );
+
+            FieldItems = fieldItems.ToArray();
+
+            RegularFieldItems = FieldItems
+                .Where(item => Gen5Constants.AllowedItems.IsAllowed(item) && !Gen5Constants.AllowedItems.IsTm(item))
+                .ToArray();
+
+            CurrentFieldTMs = FieldItems
+                .Where(Gen5Constants.AllowedItems.IsTm)
+                .Select(TmFromIndex)
+                .ToArray();
+
+            IEnumerable<int> Load(IList<byte> script, IList<int> skipTable, int setVar)
             {
-                var part1 = ReadWord(hitemScripts, offset);
-                if (part1 == Gen5Constants.ScriptListTerminator)
-                    break;
-                var offsetInFile = ReadRelativePointer(hitemScripts, offset);
-                if (offsetInFile > hitemScripts.Length)
-                    break;
-                offset += 4;
-                if (skipTableOffset < skipTable.Length &&
-                    skipTableH[skipTableOffset] == offset / 4 - 1)
+                var offset = 0;
+                var skipTableOffset = 0;
+                
+                while (TryAdvanceFieldItemOffset(script, ref offset, out var offsetInFile))
                 {
-                    skipTableOffset++;
-                    continue;
-                }
-                var command = ReadWord(hitemScripts, offsetInFile + 2);
-                var variable = ReadWord(hitemScripts, offsetInFile + 4);
-                if (command == setVarHidden &&
-                    variable == Gen5Constants.HiddenItemVarSet)
-                {
-                    var item = ReadWord(hitemScripts, offsetInFile + 6);
-                    fieldItems.Add(item);
+                    if (!TryAdvanceSkipTableOffset(skipTable, offset, ref skipTableOffset))
+                        continue;
+
+                    var command = ReadWord(script, offsetInFile + 2);
+                    var variable = ReadWord(script, offsetInFile + 4);
+
+
+                    if (command != setVar || variable != Gen5Constants.NormalItemVarSet)
+                        continue;
+
+                    var item = ReadWord(script, offsetInFile + 6);
+                    yield return item;
                 }
             }
-            FieldItems = fieldItems.Slice();
-            RegularFieldItems = FieldItems.Where(
-                    item => Gen5Constants.AllowedItems.IsAllowed(item) && !Gen5Constants.AllowedItems.IsTm(item))
-                .Slice();
-            CurrentFieldTMs = FieldItems.Where(Gen5Constants.AllowedItems.IsTm).Select(TmFromIndex).Slice();
         }
 
+        private bool TryAdvanceFieldItemOffset(IList<byte> script, ref int offset, out int offsetInFile)
+        {
+
+            var part1 = ReadWord(script, offset);
+            offsetInFile = 0;
+
+            if (part1 == Gen5Constants.ScriptListTerminator)
+                return false;
+
+            offsetInFile = ReadRelativePointer(script, offset);
+            offset += 4;
+
+            return offsetInFile <= script.Count;
+        }
+
+        private static bool TryAdvanceSkipTableOffset(IList<int> skipTable, int offset, ref int skipTableOffset)
+        {
+            if (skipTableOffset >= skipTable.Count || skipTable[skipTableOffset] != offset / 4 - 1)
+                return true;
+
+            skipTableOffset++;
+            return false;
+        }
 
         private void SaveFieldItems()
         {
             // normal items
-            var scriptFileNormal = REntry.GetInt("ItemBallsScriptOffset");
-            var scriptFileHidden = REntry.GetInt("HiddenItemsScriptOffset");
-            var skipTable = REntry.ArrayEntries["ItemBallsSkip"];
-            var skipTableH = REntry.ArrayEntries["HiddenItemsSkip"];
-            var itemScripts = _scriptNarc.Files[scriptFileNormal];
-            var offset = 0;
-            var skipTableOffset = 0;
+            var scriptFileNormal = _romEntry.GetInt("ItemBallsScriptOffset");
+            var scriptFileHidden = _romEntry.GetInt("HiddenItemsScriptOffset");
 
             using (var iterItems = ((IEnumerable<int>) FieldItems).GetEnumerator())
             {
-                while (true)
-                {
-                    var part1 = ReadWord(itemScripts, offset);
-                    if (part1 == Gen5Constants.ScriptListTerminator)
-                        break;
-                    var offsetInFile = ReadRelativePointer(itemScripts, offset);
-                    offset += 4;
-                    if (offsetInFile > itemScripts.Length)
-                        break;
-                    if (skipTableOffset < skipTable.Length &&
-                        skipTable[skipTableOffset] == offset / 4 - 1)
-                    {
-                        skipTableOffset++;
-                        continue;
-                    }
-                    var command = ReadWord(itemScripts, offsetInFile + 2);
-                    var variable = ReadWord(itemScripts, offsetInFile + 4);
-                    if (command == Gen5Constants.NormalItemSetVarCommand &&
-                        variable == Gen5Constants.NormalItemVarSet)
-                    {
-                        iterItems.MoveNext();
-                        var item = iterItems.Current;
-                        WriteWord(itemScripts, offsetInFile + 6, item);
-                    }
-                }
+                Apply(iterItems, _scriptNarc.Files[scriptFileNormal], _romEntry.ArrayEntries["ItemBallsSkip"]);
+                Apply(iterItems, _scriptNarc.Files[scriptFileHidden], _romEntry.ArrayEntries["HiddenItemsSkip"]);
+            }
 
-                // hidden items
-                var hitemScripts = _scriptNarc.Files[scriptFileHidden];
-                offset = 0;
-                skipTableOffset = 0;
-                while (true)
-                {
-                    var part1 = ReadWord(hitemScripts, offset);
-                    if (part1 == Gen5Constants.ScriptListTerminator)
-                        break;
-                    var offsetInFile = ReadRelativePointer(hitemScripts, offset);
-                    offset += 4;
-                    if (offsetInFile > hitemScripts.Length)
-                        break;
-                    if (skipTableOffset < skipTable.Length &&
-                        skipTableH[skipTableOffset] == offset / 4 - 1)
-                    {
-                        skipTableOffset++;
-                        continue;
-                    }
-                    var command = ReadWord(hitemScripts, offsetInFile + 2);
-                    var variable = ReadWord(hitemScripts, offsetInFile + 4);
+            void Apply(IEnumerator<int> iterItems, IList<byte> script, IList<int> skipTable)
+            {
+                var offset = 0;
+                var skipTableOffset = 0;
 
-                    if (command != Gen5Constants.HiddenItemSetVarCommand ||
-                        variable != Gen5Constants.HiddenItemVarSet)
+                while (TryAdvanceFieldItemOffset(script, ref offset, out var offsetInFile))
+                {
+                    if (!TryAdvanceSkipTableOffset(skipTable, offset, ref skipTableOffset))
+                        continue;
+
+                    var command = ReadWord(script, offsetInFile + 2);
+                    var variable = ReadWord(script, offsetInFile + 4);
+
+                    if (command != Gen5Constants.NormalItemSetVarCommand || variable != Gen5Constants.NormalItemVarSet)
                         continue;
 
                     iterItems.MoveNext();
                     var item = iterItems.Current;
-                    WriteWord(hitemScripts, offsetInFile + 6, item);
+
+                    WriteWord(script, offsetInFile + 6, item);
                 }
             }
         }
@@ -1794,7 +1734,7 @@ namespace RandomizerSharp.RomHandlers
 
         private void LoadIngameTrades()
         {
-            var unused = REntry.ArrayEntries["TradesUnused"];
+            var unused = _romEntry.ArrayEntries["TradesUnused"];
             var unusedOffset = 0;
             var tableSize = _tradeNarc.Files.Count;
 
@@ -1835,7 +1775,7 @@ namespace RandomizerSharp.RomHandlers
             var tradeOffset = 0;
 
             var tradeCount = _tradeNarc.Files.Count;
-            var unused = REntry.ArrayEntries["TradesUnused"];
+            var unused = _romEntry.ArrayEntries["TradesUnused"];
             var unusedOffset = 0;
             for (var i = 0; i < tradeCount; i++)
             {
@@ -1859,8 +1799,8 @@ namespace RandomizerSharp.RomHandlers
                 WriteLong(tfile, 0x5C, trade.RequestedPokemon.Id);
             }
 
-            WriteNarc(REntry.GetString("InGameTrades"), _tradeNarc);
-            SetStrings(false, REntry.GetInt("IngameTradesTextOffset"), _tradeStrings);
+            WriteNarc(_romEntry.GetString("InGameTrades"), _tradeNarc);
+            SetStrings(false, _romEntry.GetInt("IngameTradesTextOffset"), _tradeStrings);
         }
 
         private void LoadPokemonSprites()
@@ -1890,7 +1830,7 @@ namespace RandomizerSharp.RomHandlers
 
         private void LoadHiddenHollow()
         {
-            if (!IsBW2)
+            if (!IsBw2)
                 return;
 
             for (var i = 0; i < _hhNarc.Files.Count; ++i)
@@ -1917,7 +1857,7 @@ namespace RandomizerSharp.RomHandlers
 
         private void SaveHiddenHollow()
         {
-            if (!IsBW2)
+            if (!IsBw2)
                 return;
 
             foreach (var pair in _hiddenHollows)
@@ -1931,13 +1871,19 @@ namespace RandomizerSharp.RomHandlers
                 data[entry.Version * 78 + entry.Rarityslot * 26 + 20 + entry.Group] = hiddenHollow.Form;
             }
 
-            WriteNarc(REntry.GetString("HiddenHollows"), _hhNarc);
+            WriteNarc(_romEntry.GetString("HiddenHollows"), _hhNarc);
         }
 
         public static bool IsLoadable(string filename) => EntryFor(GetRomCodeFromFile(filename)) != null;
 
         private class HiddenHollowEntry
         {
+            public int Group { get; }
+
+            public int Index { get; }
+            public int Rarityslot { get; }
+            public int Version { get; }
+
             public HiddenHollowEntry(int index, int version, int rarityslot, int group)
             {
                 Index = index;
@@ -1945,12 +1891,6 @@ namespace RandomizerSharp.RomHandlers
                 Rarityslot = rarityslot;
                 Group = group;
             }
-
-            public int Group { get; }
-
-            public int Index { get; }
-            public int Rarityslot { get; }
-            public int Version { get; }
 
             private bool Equals(HiddenHollowEntry other) => Index == other.Index &&
                                                             Version == other.Version &&
@@ -1979,50 +1919,57 @@ namespace RandomizerSharp.RomHandlers
             }
         }
 
-        public class OffsetWithinEntry
+        private class OffsetWithinEntry
         {
-            public int Entry;
-            public int Offset;
+            public int Entry { get; set; }
+            public int Offset { get; set; }
         }
 
-        public class Gen5StaticPokemon
+        private class Gen5StaticPokemon
         {
-            public IReadOnlyList<int> Files;
-            public IReadOnlyList<int> Offsets;
+            private readonly IList<int> _files;
+            private readonly IList<int> _offsets;
+
+            public Gen5StaticPokemon(IList<int> files, IList<int> offset)
+            {
+                _files = files;
+                _offsets = offset;
+            }
 
             public Pokemon GetPokemon(Gen5RomHandler parent, NarcArchive scriptNarc) => parent.AllPokemons[
-                parent.ReadWord(scriptNarc.Files[Files[0]], Offsets[0])];
+                parent.ReadWord(scriptNarc.Files[_files[0]], _offsets[0])];
 
             public void SetPokemon(Gen5RomHandler parent, NarcArchive scriptNarc, Pokemon pkmn)
             {
                 var value = pkmn.Id;
-                for (var i = 0; i < Offsets.Count; i++)
+                for (var i = 0; i < _offsets.Count; i++)
                 {
-                    var file = scriptNarc.Files[Files[i]];
-                    parent.WriteWord(file, Offsets[i], value);
+                    var file = scriptNarc.Files[_files[i]];
+                    parent.WriteWord(file, _offsets[i], value);
                 }
             }
         }
 
-        public class RomEntry
+        private class RomEntry
         {
             public Dictionary<string, int[]> ArrayEntries { get; } =
                 new Dictionary<string, int[]>();
 
-            public string Code { get; set; }
-            public bool CopyStaticPokemon { get; set; }
-
-            public string Name { get; set; }
             public Dictionary<string, int> Numbers { get; } = new Dictionary<string, int>();
 
             public Dictionary<string, OffsetWithinEntry[]> OffsetArrayEntries { get; } =
                 new Dictionary<string, OffsetWithinEntry[]>();
 
             public List<Gen5StaticPokemon> Pokemon { get; } = new List<Gen5StaticPokemon>();
-            public int RomType { get; set; }
-            public bool StaticPokemonSupport { get; set; }
             public Dictionary<string, string> Strings { get; } = new Dictionary<string, string>();
             public Dictionary<string, string> TweakFiles { get; } = new Dictionary<string, string>();
+
+            public string Code { get; set; }
+            public bool CopyStaticPokemon { get; set; }
+
+            public string Name { get; set; }
+            public int RomType { get; set; }
+            public bool StaticPokemonSupport { get; set; }
 
             public int GetInt(string key)
             {

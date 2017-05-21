@@ -10,28 +10,6 @@ namespace RandomizerSharp.Randomizers
 {
     public class UtilityTweacker : BaseRandomizer
     {
-        public UtilityTweacker(AbstractRomHandler romHandler)
-            : base(romHandler)
-        { }
-
-        public UtilityTweacker(AbstractRomHandler romHandler, Random random)
-            : base(romHandler, random)
-        { }
-
-        private static readonly IReadOnlyDictionary<int, Typing> Gen5UpdateMoveType = new Dictionary<int, Typing>
-        {
-            //  Karate Chop => FIGHTING (gen1)
-            { 2, Typing.Flying },
-
-            //  Gust => FLYING (gen1)
-            { 16, Typing.Flying },
-            //  Sand Attack => GROUND (gen1)
-            { 28, Typing.Ground },
-            //  Move 44, Bite, becomes dark (but doesn't exist anyway)
-            //  Curse => GHOST (gen2-4)
-            { 174, Typing.Ghost }
-        };
-
         private static readonly IReadOnlyDictionary<int, int> Gen5UpdateMoveAccuracy = new Dictionary<int, int>
         {
             //  Razor Wind => 100% accuracy (gen1/2)
@@ -182,6 +160,20 @@ namespace RandomizerSharp.Randomizers
             { 254, 20 },
             //  Drain Punch => 10 pp, 75 pow
             { 409, 10 }
+        };
+
+        private static readonly IReadOnlyDictionary<int, Typing> Gen5UpdateMoveType = new Dictionary<int, Typing>
+        {
+            //  Karate Chop => FIGHTING (gen1)
+            { 2, Typing.Flying },
+
+            //  Gust => FLYING (gen1)
+            { 16, Typing.Flying },
+            //  Sand Attack => GROUND (gen1)
+            { 28, Typing.Ground },
+            //  Move 44, Bite, becomes dark (but doesn't exist anyway)
+            //  Curse => GHOST (gen2-4)
+            { 174, Typing.Ghost }
         };
 
         private static readonly IReadOnlyDictionary<int, int> Gen6UpdateMoveAccuracy = new Dictionary<int, int>
@@ -340,6 +332,16 @@ namespace RandomizerSharp.Randomizers
             { 533, 15 }
         };
 
+        public UtilityTweacker(AbstractRomHandler romHandler)
+            : base(romHandler)
+        {
+        }
+
+        public UtilityTweacker(AbstractRomHandler romHandler, Random random)
+            : base(romHandler, random)
+        {
+        }
+
 
         public void StandardizeExpCurves()
         {
@@ -349,7 +351,7 @@ namespace RandomizerSharp.Randomizers
                 if (pkmn == null)
                     continue;
 
-                pkmn.GrowthCurve = pkmn.Legendary ? Exp.Curve.Slow : Exp.Curve.MediumFast;
+                pkmn.GrowthExpCurve = pkmn.Legendary ? ExpCurve.Slow : ExpCurve.MediumFast;
             }
         }
 
@@ -501,7 +503,7 @@ namespace RandomizerSharp.Randomizers
 
                 foreach (var checkEvo in pk.EvolutionsFrom)
                 {
-                    if (!checkEvo.Type.UsesLevel())
+                    if (!checkEvo.Type1.UsesLevel())
                         continue;
 
                     //  bring down the level of this evo if it exceeds max
@@ -516,7 +518,7 @@ namespace RandomizerSharp.Randomizers
                     //  high, bring it down
                     foreach (var otherEvo in pk.EvolutionsTo)
                     {
-                        if (!otherEvo.Type.UsesLevel() || otherEvo.ExtraInfo <= maxIntermediateLevel)
+                        if (!otherEvo.Type1.UsesLevel() || otherEvo.ExtraInfo <= maxIntermediateLevel)
                             continue;
 
                         otherEvo.ExtraInfo = maxIntermediateLevel;
@@ -554,7 +556,7 @@ namespace RandomizerSharp.Randomizers
                 foreach (var tp in t.Pokemon)
                 {
                     if (levelModifier != 0)
-                        tp.Level = Math.Min(100, (int)Math.Round(tp.Level * (1 + levelModifier / 100.0)));
+                        tp.Level = Math.Min(100, (int) Math.Round(tp.Level * (1 + levelModifier / 100.0)));
                 }
             }
         }
@@ -661,7 +663,7 @@ namespace RandomizerSharp.Randomizers
                 extraEvolutions.Clear();
                 foreach (var evo in pkmn.EvolutionsFrom)
                 {
-                    if (changeMoveEvos && evo.Type == EvolutionType.LevelWithMove)
+                    if (changeMoveEvos && evo.Type1 == EvolutionType.LevelWithMove)
                     {
                         // read move
                         var move = evo.ExtraInfo;
@@ -677,18 +679,18 @@ namespace RandomizerSharp.Randomizers
                         if (levelLearntAt == 1)
                             levelLearntAt = 45;
                         // change to pure level evo
-                        evo.Type = EvolutionType.Level;
+                        evo.Type1 = EvolutionType.Level;
                         evo.ExtraInfo = levelLearntAt;
                     }
                     // Pure Trade
-                    if (evo.Type == EvolutionType.Trade)
+                    if (evo.Type1 == EvolutionType.Trade)
                     {
                         // Replace w/ level 37
-                        evo.Type = EvolutionType.Level;
+                        evo.Type1 = EvolutionType.Level;
                         evo.ExtraInfo = 37;
                     }
                     // Trade w/ Item
-                    if (evo.Type == EvolutionType.TradeItem)
+                    if (evo.Type1 == EvolutionType.TradeItem)
                     {
                         // Get the current item & evolution
                         var item = evo.ExtraInfo;
@@ -697,14 +699,14 @@ namespace RandomizerSharp.Randomizers
                             // Slowpoke is awkward - he already has a level evo
                             // So we can't do Level up w/ Held Item for him
                             // Put Water Stone instead
-                            evo.Type = EvolutionType.Stone;
+                            evo.Type1 = EvolutionType.Stone;
                             evo.ExtraInfo = Gen5Constants.WaterStoneIndex; // water
                         }
                         else
                         {
                             // Replace, for this entry, w/
                             // Level up w/ Held Item at Day
-                            evo.Type = EvolutionType.LevelItemDay;
+                            evo.Type1 = EvolutionType.LevelItemDay;
                             // now add an extra evo for
                             // Level up w/ Held Item at Night
                             var extraEntry = new Evolution(
@@ -716,13 +718,13 @@ namespace RandomizerSharp.Randomizers
                             extraEvolutions.Add(extraEntry);
                         }
                     }
-                    if (evo.Type == EvolutionType.TradeSpecial)
+                    if (evo.Type1 == EvolutionType.TradeSpecial)
                     {
                         // This is the karrablast <-> shelmet trade
                         // Replace it with Level up w/ Other Species in Party
                         // (22)
                         // Based on what species we're currently dealing with
-                        evo.Type = EvolutionType.LevelWithOther;
+                        evo.Type1 = EvolutionType.LevelWithOther;
                         evo.ExtraInfo = evo.From.Id == Gen5Constants.KarrablastIndex
                             ? Gen5Constants.ShelmetIndex
                             : Gen5Constants.KarrablastIndex;
@@ -736,7 +738,7 @@ namespace RandomizerSharp.Randomizers
                 }
             }
         }
-        
+
         public void ApplyFastestText()
         {
             switch (RomHandler)
@@ -760,7 +762,7 @@ namespace RandomizerSharp.Randomizers
                             break;
 
                         default:
-                            throw new ArgumentOutOfRangeException();
+                            throw new ArgumentOutOfRangeException(nameof(gen5.Game), gen5.Game, null);
                     }
 
                     FileFunctions.ApplyPatch(gen5.Arm9, patch);

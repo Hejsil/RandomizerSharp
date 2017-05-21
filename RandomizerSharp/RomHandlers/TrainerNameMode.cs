@@ -1,8 +1,9 @@
 ﻿namespace RandomizerSharp.RomHandlers
 {
-
     public enum TrainerNameMode
     {
-        SameLength, MaxLength, MaxLengthWithClass
+        SameLength,
+        MaxLength,
+        MaxLengthWithClass
     }
 }

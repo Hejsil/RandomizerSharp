@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Timers;
 
 namespace RandomizerSharp.NDS
 {
     public static class BlzCoder
     {
-        private const int BlzShift = 1;
-        private const int BlzMask = 0x80;
-        private const int BlzThreshold = 2;
         private const int BlzF = 0x12;
-        private const int RawMaxim = 0x00FFFFFF;
+        private const int BlzMask = 0x80;
         private const int BlzMaxim = 0x01400000;
+        private const int BlzShift = 1;
+        private const int BlzThreshold = 2;
+        private const int RawMaxim = 0x00FFFFFF;
 
         public static byte[] Decode(IList<byte> data, string reference)
         {
@@ -135,18 +134,17 @@ namespace RandomizerSharp.NDS
             return fb;
         }
 
-        private static int ReadUnsigned(byte[] buffer, int offset)
-        {
-            return buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16) |
-                   ((buffer[offset + 3] & 0x7F) << 24);
-        }
+        private static int ReadUnsigned(byte[] buffer, int offset) => buffer[offset] |
+                                                                      (buffer[offset + 1] << 8) |
+                                                                      (buffer[offset + 2] << 16) |
+                                                                      ((buffer[offset + 3] & 0x7F) << 24);
 
         private static void WriteUnsigned(byte[] buffer, int offset, int value)
         {
             buffer[offset] = (byte) (value & 0xFF);
-            buffer[offset + 1] = (byte)((value >> 8) & 0xFF);
-            buffer[offset + 2] = (byte)((value >> 16) & 0xFF);
-            buffer[offset + 3] = (byte)((value >> 24) & 0x7F);
+            buffer[offset + 1] = (byte) ((value >> 8) & 0xFF);
+            buffer[offset + 2] = (byte) ((value >> 16) & 0xFF);
+            buffer[offset + 3] = (byte) ((value >> 24) & 0x7F);
         }
 
         private static (byte[], int) BLZ_Encode(IList<byte> data, bool arm9)
@@ -266,7 +264,7 @@ namespace RandomizerSharp.NDS
 
             return (pakBuffer, pak);
         }
-        
+
         public static (int, int) Search(byte[] rawBuffer, int bestPosition, int raw, int rawEnd)
         {
             var bestLength = BlzThreshold;

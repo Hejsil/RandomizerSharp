@@ -30,49 +30,52 @@ namespace RandomizerSharp
 
     public class MiscTweak : IComparable<MiscTweak>
     {
-        public static IList<MiscTweak> AllTweaks = new List<MiscTweak>();
+        public static IList<MiscTweak> AllTweaks { get; private set; }
+
+        public static MiscTweak AllowPikachuEvolution { get; } = new MiscTweak(64, "pikachuEvo", 0);
+        public static MiscTweak BanLuckyEgg { get; } = new MiscTweak(4096, "luckyEgg", 1);
 
         /* @formatter:off */
         // Higher priority value (third argument) = run first
-        public static readonly MiscTweak BwExpPatch = new MiscTweak(1, "bwPatch", 0);
 
-        public static readonly MiscTweak NerfXAccuracy = new MiscTweak(2, "nerfXAcc", 0);
-        public static readonly MiscTweak FixCritRate = new MiscTweak(4, "critRateFix", 0);
-        public static readonly MiscTweak FastestText = new MiscTweak(8, "fastestText", 0);
-        public static readonly MiscTweak RunningShoesIndoors = new MiscTweak(16, "runningShoes", 0);
-        public static readonly MiscTweak RandomizePcPotion = new MiscTweak(32, "pcPotion", 0);
-        public static readonly MiscTweak AllowPikachuEvolution = new MiscTweak(64, "pikachuEvo", 0);
-        public static readonly MiscTweak NationalDexAtStart = new MiscTweak(128, "nationalDex", 0);
-        public static readonly MiscTweak UpdateTypeEffectiveness = new MiscTweak(256, "typeEffectiveness", 0);
-        public static readonly MiscTweak RandomizeHiddenHollows = new MiscTweak(512, "hiddenHollows", 0);
-        public static readonly MiscTweak LowerCasePokemonNames = new MiscTweak(1024, "lowerCaseNames", 0);
-        public static readonly MiscTweak RandomizeCatchingTutorial = new MiscTweak(2048, "catchingTutorial", 0);
-        public static readonly MiscTweak BanLuckyEgg = new MiscTweak(4096, "luckyEgg", 1);
+        public static MiscTweak BwExpPatch { get; } = new MiscTweak(1, "bwPatch", 0);
+        public static MiscTweak FastestText { get; } = new MiscTweak(8, "fastestText", 0);
+        public static MiscTweak FixCritRate { get; } = new MiscTweak(4, "critRateFix", 0);
+        public static MiscTweak LowerCasePokemonNames { get; } = new MiscTweak(1024, "lowerCaseNames", 0);
+        public static MiscTweak NationalDexAtStart { get; } = new MiscTweak(128, "nationalDex", 0);
+
+        public static MiscTweak NerfXAccuracy { get; } = new MiscTweak(2, "nerfXAcc", 0);
+        public static MiscTweak RandomizeCatchingTutorial { get; } = new MiscTweak(2048, "catchingTutorial", 0);
+        public static MiscTweak RandomizeHiddenHollows { get; } = new MiscTweak(512, "hiddenHollows", 0);
+        public static MiscTweak RandomizePcPotion { get; } = new MiscTweak(32, "pcPotion", 0);
+        public static MiscTweak RunningShoesIndoors { get; } = new MiscTweak(16, "runningShoes", 0);
+        public static MiscTweak UpdateTypeEffectiveness { get; } = new MiscTweak(256, "typeEffectiveness", 0);
+
         private readonly int _priority;
+
+        // ReSharper disable once UnassignedGetOnlyAutoProperty
+        public string TooltipText { get; }
+
+        // ReSharper disable once UnassignedGetOnlyAutoProperty
+        public string TweakName { get; }
+
+        public int Value { get; }
 
         /* @formatter:on */
 
         // ReSharper disable once UnusedParameter.Local
         private MiscTweak(int value, string tweakId, int priority)
         {
+            if (AllTweaks == null)
+                AllTweaks = new List<MiscTweak>();
+
             Value = value;
+            TweakName = tweakId;
+            TooltipText = tweakId;
             _priority = priority;
             AllTweaks.Add(this);
         }
 
-        public int Value { get; }
-
-        // ReSharper disable once UnassignedGetOnlyAutoProperty
-        public string TweakName { get; }
-
-        // ReSharper disable once UnassignedGetOnlyAutoProperty
-        public string TooltipText { get; }
-
-        public int CompareTo(MiscTweak o)
-        {
-            // Order according to reverse priority, so higher priority = earlier in
-            // ordering
-            return o._priority - _priority;
-        }
+        public int CompareTo(MiscTweak o) => o._priority - _priority;
     }
 }

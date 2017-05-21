@@ -10,7 +10,6 @@ namespace RandomizerSharp.RomHandlers
     public abstract class AbstractDsRomHandler : AbstractRomHandler
     {
         protected NdsRom BaseRom { get; }
-        protected internal string DataFolder;
 
         protected AbstractDsRomHandler(string filename)
         {
@@ -21,7 +20,7 @@ namespace RandomizerSharp.RomHandlers
             IsYellow = false;
             IsRomHack = false;
         }
-        
+
         protected byte[] Get3Byte(int amount)
         {
             var ret = new byte[3];
@@ -31,11 +30,8 @@ namespace RandomizerSharp.RomHandlers
             return ret;
         }
 
-        public NarcArchive ReadNarc(string subpath)
-        {
-            return new NarcArchive(ReadFile(subpath));
-        }
-        
+        public NarcArchive ReadNarc(string subpath) => new NarcArchive(ReadFile(subpath));
+
         public void WriteNarc(string subpath, NarcArchive narc)
         {
             WriteFile(subpath, narc.Bytes);
@@ -51,21 +47,15 @@ namespace RandomizerSharp.RomHandlers
             return ndsCode;
         }
 
-        protected int ReadWord(IList<byte> data, int offset)
-        {
-            return (data[offset] & 0xFF) | ((data[offset + 1] & 0xFF) << 8);
-        }
+        protected int ReadWord(IList<byte> data, int offset) =>
+            (data[offset] & 0xFF) | ((data[offset + 1] & 0xFF) << 8);
 
-        protected int ReadLong(IList<byte> data, int offset)
-        {
-            return (data[offset] & 0xFF) | ((data[offset + 1] & 0xFF) << 8) | ((data[offset + 2] & 0xFF) << 16) |
-                   ((data[offset + 3] & 0xFF) << 24);
-        }
+        protected int ReadLong(IList<byte> data, int offset) => (data[offset] & 0xFF) |
+                                                                ((data[offset + 1] & 0xFF) << 8) |
+                                                                ((data[offset + 2] & 0xFF) << 16) |
+                                                                ((data[offset + 3] & 0xFF) << 24);
 
-        protected int ReadRelativePointer(IList<byte> data, int offset)
-        {
-            return ReadLong(data, offset) + offset + 4;
-        }
+        protected int ReadRelativePointer(IList<byte> data, int offset) => ReadLong(data, offset) + offset + 4;
 
         protected void WriteWord(IList<byte> data, int offset, int value)
         {
@@ -86,17 +76,14 @@ namespace RandomizerSharp.RomHandlers
             var relPointer = pointer - (offset + 4);
             WriteLong(data, offset, relPointer);
         }
-        
-        protected ArraySlice<byte> ReadFile(string location)
-        {
-            return BaseRom.GetFile(location);
-        }
-        
+
+        protected ArraySlice<byte> ReadFile(string location) => BaseRom.GetFile(location);
+
         protected void WriteFile(string location, byte[] data)
         {
             WriteFile(location, data, 0, data.Length);
         }
-        
+
         protected void WriteFile(string location, byte[] data, int offset, int length)
         {
             if (offset != 0 || length != data.Length)
@@ -104,22 +91,16 @@ namespace RandomizerSharp.RomHandlers
 
             BaseRom.WriteFile(location, data);
         }
-        
-        protected byte[] ReadArm9()
-        {
-            return BaseRom.GetArm9();
-        }
-        
+
+        protected byte[] ReadArm9() => BaseRom.GetArm9();
+
         protected void WriteArm9(byte[] data)
         {
             BaseRom.WriteArm9(data);
         }
-        
-        protected byte[] ReadOverlay(int number)
-        {
-            return BaseRom.GetOverlay(number);
-        }
-        
+
+        protected byte[] ReadOverlay(int number) => BaseRom.GetOverlay(number);
+
         protected void WriteOverlay(int number, byte[] data)
         {
             BaseRom.WriteOverlay(number, data);
@@ -147,24 +128,42 @@ namespace RandomizerSharp.RomHandlers
 
             switch (t.InnerEnumValue)
             {
-                case Typing.InnerEnum.Fighting: return 398;
-                case Typing.InnerEnum.Dragon: return 399;
-                case Typing.InnerEnum.Water: return 400;
-                case Typing.InnerEnum.Psychic: return 401;
-                case Typing.InnerEnum.Normal: return 402;
-                case Typing.InnerEnum.Poison: return 403;
-                case Typing.InnerEnum.Ice: return 404;
-                case Typing.InnerEnum.Grass: return 405;
-                case Typing.InnerEnum.Fire: return 406;
-                case Typing.InnerEnum.Dark: return 407;
-                case Typing.InnerEnum.Steel: return 408;
-                case Typing.InnerEnum.Electric: return 409;
-                case Typing.InnerEnum.Ground: return 410;
-                case Typing.InnerEnum.Rock: return 412;
-                case Typing.InnerEnum.Flying: return 413;
-                case Typing.InnerEnum.Bug: return 610;
-                case Typing.InnerEnum.Ghost: return 411;
-                default: return 411;
+                case Typing.InnerEnum.Fighting:
+                    return 398;
+                case Typing.InnerEnum.Dragon:
+                    return 399;
+                case Typing.InnerEnum.Water:
+                    return 400;
+                case Typing.InnerEnum.Psychic:
+                    return 401;
+                case Typing.InnerEnum.Normal:
+                    return 402;
+                case Typing.InnerEnum.Poison:
+                    return 403;
+                case Typing.InnerEnum.Ice:
+                    return 404;
+                case Typing.InnerEnum.Grass:
+                    return 405;
+                case Typing.InnerEnum.Fire:
+                    return 406;
+                case Typing.InnerEnum.Dark:
+                    return 407;
+                case Typing.InnerEnum.Steel:
+                    return 408;
+                case Typing.InnerEnum.Electric:
+                    return 409;
+                case Typing.InnerEnum.Ground:
+                    return 410;
+                case Typing.InnerEnum.Rock:
+                    return 412;
+                case Typing.InnerEnum.Flying:
+                    return 413;
+                case Typing.InnerEnum.Bug:
+                    return 610;
+                case Typing.InnerEnum.Ghost:
+                    return 411;
+                default:
+                    return 411;
             }
         }
     }

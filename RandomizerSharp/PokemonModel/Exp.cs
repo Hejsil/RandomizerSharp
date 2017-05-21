@@ -2,52 +2,42 @@
 {
     public static class Exp
     {
-        public enum Curve
-        {
-            Slow = 5,
-            MediumSlow = 3,
-            MediumFast = 0,
-            Fast = 4,
-            Erratic = 1,
-            Fluctuating = 2
-        }
-
-        public static Curve FromByte(byte curve)
+        public static ExpCurve FromByte(byte curve)
         {
             switch (curve)
             {
                 case 0:
-                    return Curve.MediumFast;
+                    return ExpCurve.MediumFast;
                 case 1:
-                    return Curve.Erratic;
+                    return ExpCurve.Erratic;
                 case 2:
-                    return Curve.Fluctuating;
+                    return ExpCurve.Fluctuating;
                 case 3:
-                    return Curve.MediumSlow;
+                    return ExpCurve.MediumSlow;
                 case 4:
-                    return Curve.Fast;
+                    return ExpCurve.Fast;
                 case 5:
-                    return Curve.Slow;
+                    return ExpCurve.Slow;
             }
 
-            return Curve.MediumFast;
+            return ExpCurve.MediumFast;
         }
 
-        public static byte ToByte(this Curve curve)
+        public static byte ToByte(this ExpCurve expCurve)
         {
-            switch (curve)
+            switch (expCurve)
             {
-                case Curve.Slow:
+                case ExpCurve.Slow:
                     return 5;
-                case Curve.MediumSlow:
+                case ExpCurve.MediumSlow:
                     return 3;
-                case Curve.MediumFast:
+                case ExpCurve.MediumFast:
                     return 0;
-                case Curve.Fast:
+                case ExpCurve.Fast:
                     return 4;
-                case Curve.Erratic:
+                case ExpCurve.Erratic:
                     return 1;
-                case Curve.Fluctuating:
+                case ExpCurve.Fluctuating:
                     return 2;
             }
             return 0; // default

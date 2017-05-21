@@ -1,0 +1,34 @@
+namespace RandomizerSharp.PokemonModel
+{
+    public enum EvolutionKind
+    {
+        Level,
+        Stone,
+        Trade,
+        TradeItem,
+        Happiness,
+        HappinessDay,
+        HappinessNight,
+        LevelAttackHigher,
+        LevelDefenseHigher,
+        LevelAtkDefSame,
+        LevelLowPv,
+        LevelHighPv,
+        LevelCreateExtra,
+        LevelIsExtra,
+        LevelHighBeauty,
+        StoneMaleOnly,
+        StoneFemaleOnly,
+        LevelItemDay,
+        LevelItemNight,
+        LevelWithMove,
+        LevelWithOther,
+        LevelMaleOnly,
+        LevelFemaleOnly,
+        LevelElectrifiedArea,
+        LevelMossRock,
+        LevelIcyRock,
+        TradeSpecial,
+        None
+    }
+}

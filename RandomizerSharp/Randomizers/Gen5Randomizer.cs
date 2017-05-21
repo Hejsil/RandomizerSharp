@@ -12,7 +12,8 @@ namespace RandomizerSharp.Randomizers
         // ReSharper disable once SuggestBaseTypeForParameter
         public Gen5Randomizer(Gen5RomHandler romHandler)
             : this(romHandler, (int) DateTime.Now.Ticks)
-        { }
+        {
+        }
 
         // ReSharper disable once SuggestBaseTypeForParameter
         public Gen5Randomizer(Gen5RomHandler romHandler, int seed)

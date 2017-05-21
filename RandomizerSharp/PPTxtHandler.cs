@@ -10,9 +10,10 @@ namespace RandomizerSharp
 {
     public class PpTxtHandler
     {
-        public static IDictionary<string, string> PokeToText = new Dictionary<string, string>();
-        public static IDictionary<string, string> TextToPoke = new Dictionary<string, string>();
-        public static string PokeToTextPattern, TextToPokePattern;
+        public static IDictionary<string, string> PokeToText { get; } = new Dictionary<string, string>();
+        public static string PokeToTextPattern { get; }
+        public static IDictionary<string, string> TextToPoke { get; } = new Dictionary<string, string>();
+        public static string TextToPokePattern { get; }
 
         private static readonly List<int> LastKeys = new List<int>();
         private static readonly List<int> LastUnknowns = new List<int>();
@@ -23,26 +24,31 @@ namespace RandomizerSharp
             using (var strReader = new StreamReader(memStr))
             {
                 for (var q = strReader.ReadLine(); q != null; q = strReader.ReadLine())
+                {
                     if (q.Trim().Length > 0)
                     {
-                        var r = q.Split(new[] {'='}, 2);
+                        var r = q.Split(new[] { '=' }, 2);
                         if (r[1].EndsWith("\r\n", StringComparison.Ordinal))
                             r[1] = r[1].Substring(0, r[1].Length - 2);
                         PokeToText[Convert.ToString((char) Convert.ToInt32(r[0], 16))] =
                             r[1].Replace("\\", "\\\\").Replace("$", "\\$");
                         TextToPoke[r[1]] = "\\\\x" + r[0];
                     }
+                }
 
                 PokeToTextPattern = MakePattern(PokeToText.Keys);
                 TextToPokePattern = MakePattern(TextToPoke.Keys);
             }
         }
 
-        public static string MakePattern(IEnumerable<string> tokens)
-        {
-            return "(" + Implode(tokens, "|").Replace("\\", "\\\\").Replace("[", "\\[").Replace("]", "\\]")
-                       .Replace("(", "\\(").Replace(")", "\\)") + ")";
-        }
+        public static string MakePattern(IEnumerable<string> tokens) => "(" +
+                                                                        Implode(tokens, "|")
+                                                                            .Replace("\\", "\\\\")
+                                                                            .Replace("[", "\\[")
+                                                                            .Replace("]", "\\]")
+                                                                            .Replace("(", "\\(")
+                                                                            .Replace(")", "\\)") +
+                                                                        ")";
 
         public static string Implode(IEnumerable<string> tokens, string sep)
         {
@@ -105,13 +111,13 @@ namespace RandomizerSharp
             LastKeys.Clear();
             LastUnknowns.Clear();
 
-            var sizeSections = new [] { 0, 0, 0 };
-            var sectionOffset = new [] { 0, 0, 0 };
+            var sizeSections = new[] { 0, 0, 0 };
+            var sectionOffset = new[] { 0, 0, 0 };
 
 
             var numSections = ReadWord(ds, 0);
             var numEntries = ReadWord(ds, 2);
-            
+
             var strings = new string[numEntries];
 
             sizeSections[0] = ReadInt(ds, 4);
@@ -155,7 +161,7 @@ namespace RandomizerSharp
                         pos += 2;
                         tmpEncChars.Add(tmpChar);
                     }
-                    
+
 
                     var key = tmpEncChars[characterCount[j] - 1] ^ 0xFFFF;
                     for (var k = characterCount[j] - 1; k >= 0; k--)
@@ -173,15 +179,16 @@ namespace RandomizerSharp
                         tmpEncChars = Decompress(tmpEncChars);
                         characterCount[j] = tmpEncChars.Count;
                     }
-                    
+
                     var str = new StringBuilder(characterCount[j]);
 
                     for (var k = 0; k < characterCount[j]; k++)
                     {
-                        if (tmpEncChars[k] == 0xFFFF) continue;
+                        if (tmpEncChars[k] == 0xFFFF)
+                            continue;
 
                         if (tmpEncChars[k] > 20 && tmpEncChars[k] <= 0xFFF0)
-                            str.Append((char)tmpEncChars[k]);
+                            str.Append((char) tmpEncChars[k]);
                         else
                             str.AppendFormat("\\x{0:X4}", tmpEncChars[k]);
                     }
@@ -207,10 +214,10 @@ namespace RandomizerSharp
 
             ReadTexts(originalData);
 
-            var sizeSections = new[] { 0, 0, 0};
-            var sectionOffset = new[] { 0, 0, 0};
-            var newsizeSections = new[] { 0, 0, 0};
-            var newsectionOffset = new[] { 0, 0, 0};
+            var sizeSections = new[] { 0, 0, 0 };
+            var sectionOffset = new[] { 0, 0, 0 };
+            var newsizeSections = new[] { 0, 0, 0 };
+            var newsectionOffset = new[] { 0, 0, 0 };
             var ds = originalData;
             var pos = 0;
             var numSections = ReadWord(ds, 0);
@@ -354,16 +361,13 @@ namespace RandomizerSharp
             return chars;
         }
 
-        public static int ReadWord(IList<byte> data, int offset)
-        {
-            return (data[offset] & 0xFF) + ((data[offset + 1] & 0xFF) << 8);
-        }
+        public static int ReadWord(IList<byte> data, int offset) => (data[offset] & 0xFF) +
+                                                                    ((data[offset + 1] & 0xFF) << 8);
 
-        public static int ReadInt(IList<byte> data, int offset)
-        {
-            return (data[offset] & 0xFF) + ((data[offset + 1] & 0xFF) << 8) + ((data[offset + 2] & 0xFF) << 16) +
-                   ((data[offset + 3] & 0xFF) << 24);
-        }
+        public static int ReadInt(IList<byte> data, int offset) => (data[offset] & 0xFF) +
+                                                                   ((data[offset + 1] & 0xFF) << 8) +
+                                                                   ((data[offset + 2] & 0xFF) << 16) +
+                                                                   ((data[offset + 3] & 0xFF) << 24);
 
         public static void WriteWord(IList<byte> data, int offset, int value)
         {

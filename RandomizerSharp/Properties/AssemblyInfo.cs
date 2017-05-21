@@ -1,5 +1,5 @@
-﻿using System.Runtime.CompilerServices;
-using System.Reflection;
+﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following
@@ -26,7 +26,7 @@ using System.Runtime.InteropServices;
 //
 //      Major Version
 //      Minor Version
-//      Build Id
+//      Build TradeId
 //      Revision
 //
 // You can specify all the values or you can default the Build and Revision Numbers
@@ -36,4 +36,3 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly: InternalsVisibleTo("RandomizerSharp.Tests")]
 [assembly: InternalsVisibleTo("RandomizerSharp.Explorables")]
-

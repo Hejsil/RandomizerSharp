@@ -7,18 +7,26 @@ namespace RandomizerSharp
 {
     public class GfxFunctions
     {
-        public static Bitmap DrawTiledImage(byte[] data, int[] palette, int width, int height, int bpp)
-        {
-            return DrawTiledImage(data, palette, 0, width, height, 8, 8, bpp);
-        }
+        public static Bitmap DrawTiledImage(byte[] data, int[] palette, int width, int height, int bpp) =>
+            DrawTiledImage(data, palette, 0, width, height, 8, 8, bpp);
 
-        public static Bitmap DrawTiledImage(byte[] data, int[] palette, int offset, int width, int height, int bpp)
-        {
-            return DrawTiledImage(data, palette, offset, width, height, 8, 8, bpp);
-        }
+        public static Bitmap DrawTiledImage(
+            byte[] data,
+            int[] palette,
+            int offset,
+            int width,
+            int height,
+            int bpp) => DrawTiledImage(data, palette, offset, width, height, 8, 8, bpp);
 
-        public static Bitmap DrawTiledImage(byte[] data, int[] palette, int offset, int width, int height,
-            int tileWidth, int tileHeight, int bpp)
+        public static Bitmap DrawTiledImage(
+            byte[] data,
+            int[] palette,
+            int offset,
+            int width,
+            int height,
+            int tileWidth,
+            int tileHeight,
+            int bpp)
         {
             if (bpp != 1 && bpp != 2 && bpp != 4 && bpp != 8)
                 throw new ArgumentException("Bits per pixel must be a multiple of 2.");

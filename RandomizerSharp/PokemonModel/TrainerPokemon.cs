@@ -2,24 +2,21 @@
 {
     public class TrainerPokemon
     {
-        public int Ability;
+        public int Ability { get; set; }
 
-        public int AiLevel;
-        public int HeldItem;
-        public int Level;
+        public int AiLevel { get; set; }
+        public int HeldItem { get; set; }
+        public int Level { get; set; }
 
-        public int Move1;
-        public int Move2;
-        public int Move3;
-        public int Move4;
+        public int Move1 { get; set; }
+        public int Move2 { get; set; }
+        public int Move3 { get; set; }
+        public int Move4 { get; set; }
 
-        public Pokemon Pokemon;
+        public Pokemon Pokemon { get; set; }
 
-        public bool ResetMoves = false;
+        public bool ResetMoves { get; set; } = false;
 
-        public override string ToString()
-        {
-            return Pokemon.Name + " Lv" + Level;
-        }
+        public override string ToString() => $"{Pokemon.Name} Lv{Level}";
     }
 }

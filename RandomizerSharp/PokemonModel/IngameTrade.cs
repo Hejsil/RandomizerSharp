@@ -2,16 +2,18 @@
 {
     public class IngameTrade
     {
-        public int Id;
+        public Pokemon GivenPokemon { get; set; }
 
-        public int Item = 0;
+        public int Item { get; set; }
 
-        public int[] Ivs = new int[0];
+        public int[] Ivs { get; set; } = new int[0];
 
-        public string Nickname, OtName;
+        public string Nickname { get; set; }
 
-        public int OtId;
+        public int OtId { get; set; }
+        public string OtName { get; set; }
 
-        public Pokemon RequestedPokemon, GivenPokemon;
+        public Pokemon RequestedPokemon { get; set; }
+        public int TradeId { get; set; }
     }
 }

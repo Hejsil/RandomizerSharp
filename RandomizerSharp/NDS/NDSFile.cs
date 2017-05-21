@@ -4,6 +4,7 @@ namespace RandomizerSharp.NDS
 {
     public class NdsFile
     {
+        private readonly NdsRom _parent;
         public byte[] Data { get; private set; } = Array.Empty<byte>();
         public string ExtFilename { get; set; }
         public int FileId { get; set; }
@@ -11,13 +12,8 @@ namespace RandomizerSharp.NDS
         public int Offset { get; set; }
         public int Size { get; set; }
 
-        private readonly NdsRom _parent;
-   
 
-        public NdsFile(NdsRom parent)
-        {
-            _parent = parent;
-        }
+        public NdsFile(NdsRom parent) => _parent = parent;
 
         public byte[] LoadContents()
         {
@@ -34,11 +30,11 @@ namespace RandomizerSharp.NDS
 
             return Data;
         }
-        
+
         public void WriteOverride(byte[] data)
         {
             LoadContents();
-            
+
             if (Data.Length == data.Length)
             {
                 for (var i = 0; i < data.Length; i++)

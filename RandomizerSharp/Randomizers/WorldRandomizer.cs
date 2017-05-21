@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using RandomizerSharp.Constants;
 using RandomizerSharp.PokemonModel;
 using RandomizerSharp.RomHandlers;
@@ -13,11 +11,13 @@ namespace RandomizerSharp.Randomizers
     {
         public WorldRandomizer(AbstractRomHandler romHandler)
             : base(romHandler)
-        { }
+        {
+        }
 
         public WorldRandomizer(AbstractRomHandler romHandler, Random random)
             : base(romHandler, random)
-        { }
+        {
+        }
 
         public void RandomizeStaticPokemon(bool legendForLegend)
         {
@@ -246,7 +246,7 @@ namespace RandomizerSharp.Randomizers
 
                         hollow.Pokemon = pokeChoice;
                         hollow.Form = 0;
-                        hollow.GenderRatio = (byte)genderRatio;
+                        hollow.GenderRatio = (byte) genderRatio;
                     }
 
                     break;

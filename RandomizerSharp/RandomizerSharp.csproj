@@ -84,8 +84,10 @@
     <Compile Include="NDS\NDSFile.cs" />
     <Compile Include="NDS\NDSRom.cs" />
     <Compile Include="NDS\NDSY9Entry.cs" />
+    <Compile Include="PokemonModel\ExpCurve.cs" />
     <Compile Include="PokemonModel\Encounter.cs" />
     <Compile Include="PokemonModel\EncounterSet.cs" />
+    <Compile Include="PokemonModel\EvolutionKind.cs" />
     <Compile Include="PokemonModel\EvolutionType.cs" />
     <Compile Include="PokemonModel\Game.cs" />
     <Compile Include="PokemonModel\GenRestrictions.cs" />
@@ -109,8 +111,10 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Randomizers\BaseRandomizer.cs" />
+    <Compile Include="Randomizers\EncountersRandomization.cs" />
     <Compile Include="Randomizers\Gen5Randomizer.cs" />
     <Compile Include="Randomizers\MoveRandomizer.cs" />
+    <Compile Include="Randomizers\TmsHmsCompatibility.cs" />
     <Compile Include="Randomizers\TrainerRandomizer.cs" />
     <Compile Include="Randomizers\TraitRandomizer.cs" />
     <Compile Include="Randomizers\UtilityTweacker.cs" />

@@ -4,25 +4,24 @@ namespace RandomizerSharp.NDS
 {
     public class Ndsy9Entry
     {
-
-        public int BssSize;
-        public int CompressFlag;
-        public int CompressedSize;
-        public byte[] Data;
-        private bool _decompressedData;
-        public string ExtFilename;
-        public int FileId;
-        public int Offset, Size, OriginalSize;
-        public int OverlayId;
-
         private readonly NdsRom _parent;
-        public int RamAddress, RamSize;
-        public int StaticStart, StaticEnd;
+        private bool _decompressedData;
+        public string ExtFilename { get; }
+        public int BssSize { get; set; }
+        public int CompressedSize { get; set; }
+        public int CompressFlag { get; set; }
+        public byte[] Data { get; set; }
+        public int FileId { get; set; }
+        public int Offset { get; set; }
+        public int OriginalSize { get; set; }
+        public int OverlayId { get; set; }
+        public int RamAddress { get; set; }
+        public int RamSize { get; set; }
+        public int Size { get; set; }
+        public int StaticEnd { get; set; }
+        public int StaticStart { get; set; }
 
-        public Ndsy9Entry(NdsRom parent)
-        {
-            _parent = parent;
-        }
+        public Ndsy9Entry(NdsRom parent) => _parent = parent;
 
         // returns null if no override
         public ArraySlice<byte> OverrideContents()
@@ -39,7 +38,7 @@ namespace RandomizerSharp.NDS
             CompressedSize = Data.Length;
             return Data;
         }
-        
+
         public ArraySlice<byte> GetContents()
         {
             if (Data != null)
@@ -52,13 +51,13 @@ namespace RandomizerSharp.NDS
 
             return Data;
         }
-        
+
         public virtual void WriteOverride(ArraySlice<byte> data)
         {
             GetContents();
 
             Size = data.Length;
-            
+
             // Compression?
             if (CompressFlag != 0 && OriginalSize == CompressedSize && CompressedSize != 0)
                 Data = BlzCoder.Decode(Data, "overlay " + OverlayId);

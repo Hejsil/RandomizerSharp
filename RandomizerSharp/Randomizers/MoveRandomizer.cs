@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using RandomizerSharp.Constants;
 using RandomizerSharp.PokemonModel;
 using RandomizerSharp.RomHandlers;
@@ -13,17 +11,12 @@ namespace RandomizerSharp.Randomizers
     {
         public MoveRandomizer(AbstractRomHandler romHandler)
             : base(romHandler)
-        { }
+        {
+        }
 
         public MoveRandomizer(AbstractRomHandler romHandler, Random random)
             : base(romHandler, random)
-        { }
-
-        public enum TmsHmsCompatibility
         {
-            RandomPreferType,
-            CompletelyRandom,
-            Full
         }
 
         public void RandomizeMovePowers()
@@ -52,7 +45,7 @@ namespace RandomizerSharp.Randomizers
 
                 //  Divide randomized power by average hit count, round to
                 //  nearest 5
-                mv.Power = (int)(Math.Round(mv.Power / (mv.HitCount / 5)) * 5);
+                mv.Power = (int) (Math.Round(mv.Power / (mv.HitCount / 5)) * 5);
                 if (mv.Power < 5)
                     mv.Power = 5;
             }
@@ -132,7 +125,7 @@ namespace RandomizerSharp.Randomizers
             foreach (var mv in RomHandler.ValidMoves)
             {
                 if (mv.InternalId != 165 && mv.Category != MoveCategory.Status)
-                    mv.Category = (MoveCategory)Random.Next(2);
+                    mv.Category = (MoveCategory) Random.Next(2);
             }
         }
 

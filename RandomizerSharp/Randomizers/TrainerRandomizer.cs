@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using RandomizerSharp.Constants;
 using RandomizerSharp.PokemonModel;
 using RandomizerSharp.RomHandlers;
@@ -13,11 +11,13 @@ namespace RandomizerSharp.Randomizers
     {
         public TrainerRandomizer(AbstractRomHandler romHandler)
             : base(romHandler)
-        { }
+        {
+        }
 
         public TrainerRandomizer(AbstractRomHandler romHandler, Random random)
             : base(romHandler, random)
-        { }
+        {
+        }
 
         public void RandomizeTrainerPokes(
             bool usePowerLevels,
@@ -206,7 +206,7 @@ namespace RandomizerSharp.Randomizers
                     bestPoke.ResetMoves = true;
                 }
             }
-            
+
             int GetLevelOfStarter(IEnumerable<Trainer> currentTrainers, string tag)
             {
                 foreach (var t in currentTrainers)
@@ -256,7 +256,7 @@ namespace RandomizerSharp.Randomizers
                 return candidates[Random.Next(candidates.Count)];
             }
         }
-        
+
         public void TypeThemeTrainerPokes(
             bool usePowerLevels,
             bool weightByFrequency,
@@ -348,7 +348,7 @@ namespace RandomizerSharp.Randomizers
                         wgAllowed);
                     tp.ResetMoves = true;
                     if (levelModifier != 0)
-                        tp.Level = Math.Min(100, (int)Math.Round(tp.Level * (1 + levelModifier / 100.0)));
+                        tp.Level = Math.Min(100, (int) Math.Round(tp.Level * (1 + levelModifier / 100.0)));
                 }
             }
 
@@ -389,7 +389,7 @@ namespace RandomizerSharp.Randomizers
                         shedAllowed);
                     tp.ResetMoves = true;
                     if (levelModifier != 0)
-                        tp.Level = Math.Min(100, (int)Math.Round(tp.Level * (1 + levelModifier / 100.0)));
+                        tp.Level = Math.Min(100, (int) Math.Round(tp.Level * (1 + levelModifier / 100.0)));
                 }
             }
         }
@@ -462,6 +462,5 @@ namespace RandomizerSharp.Randomizers
                 return pk;
             }
         }
-
     }
 }

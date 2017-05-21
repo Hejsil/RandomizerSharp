@@ -5,12 +5,7 @@ namespace RandomizerSharp
 {
     public class DsDecmp
     {
-        public static ArraySlice<byte> Decompress(ArraySlice<byte> data)
-        {
-            return Decompress(data, 0);
-        }
-
-        public static ArraySlice<byte> Decompress(ArraySlice<byte> data, int offset)
+        public static ArraySlice<byte> Decompress(ArraySlice<byte> data, int offset = 0)
         {
             switch (data[offset] & 0xFF)
             {
@@ -23,17 +18,24 @@ namespace RandomizerSharp
             }
         }
 
-        private static ArraySlice<byte> Decompress10Lz(IList<byte> data, int offset)
+        private static byte[] PerpareData(IList<byte> data, ref int offset)
         {
             offset++;
             var length = (data[offset] & 0xFF) | ((data[offset + 1] & 0xFF) << 8) | ((data[offset + 2] & 0xFF) << 16);
             offset += 3;
-            if (length == 0)
-            {
-                length = PpTxtHandler.ReadInt(data, offset);
-                offset += 4;
-            }
-            var outData = new byte[length];
+
+            if (length != 0)
+                return new byte[length];
+
+            length = PpTxtHandler.ReadInt(data, offset);
+            offset += 4;
+
+            return new byte[length];
+        }
+
+        private static ArraySlice<byte> Decompress10Lz(IList<byte> data, int offset)
+        {
+            var outData = PerpareData(data, ref offset);
             var currSize = 0;
             while (currSize < outData.Length)
             {
@@ -77,17 +79,9 @@ namespace RandomizerSharp
             return outData;
         }
 
-        private static ArraySlice<byte> Decompress11Lz(ArraySlice<byte> data, int offset)
+        private static ArraySlice<byte> Decompress11Lz(IList<byte> data, int offset)
         {
-            offset++;
-            var length = (data[offset] & 0xFF) | ((data[offset + 1] & 0xFF) << 8) | ((data[offset + 2] & 0xFF) << 16);
-            offset += 3;
-            if (length == 0)
-            {
-                length = PpTxtHandler.ReadInt((byte[]) data, offset);
-                offset += 4;
-            }
-            var outData = new byte[length];
+            var outData = PerpareData(data, ref offset);
             var currSize = 0;
             while (currSize < outData.Length)
             {

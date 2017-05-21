@@ -27,33 +27,34 @@ namespace RandomizerSharp.PokemonModel
     /*----------------------------------------------------------------------------*/
 
 
-    public class Trainer : IComparable<Trainer>
+    public class Trainer : IComparable<Trainer>, IEquatable<Trainer>
     {
-        public string FullDisplayName;
-        public bool ImportantTrainer;
-        public string Name;
-        public int Offset;
-        public TrainerPokemon[] Pokemon;
-        public int Poketype;
-        public string Tag;
-        public int Trainerclass;
+        public bool ImportantTrainer { get; }
+        public string Name { get; }
+        public string FullDisplayName { get; set; }
+        public int Offset { get; set; }
+        public TrainerPokemon[] Pokemon { get; set; }
+        public int Poketype { get; set; }
+        public string Tag { get; set; }
+        public int Trainerclass { get; set; }
 
-        public virtual int CompareTo(Trainer o)
-        {
-            return Offset - o.Offset;
-        }
+        public virtual int CompareTo(Trainer o) => Offset - o.Offset;
 
         public override string ToString()
         {
             var sb = new StringBuilder("[");
+
             if (!ReferenceEquals(FullDisplayName, null))
                 sb.Append(FullDisplayName + " ");
             else if (!ReferenceEquals(Name, null))
                 sb.Append(Name + " ");
+
             if (Trainerclass != 0)
                 sb.Append("(" + Trainerclass + ") - ");
+
             sb.Append($"{Offset:x}");
             sb.Append(" => ");
+
             var first = true;
             foreach (var p in Pokemon)
             {
@@ -62,9 +63,12 @@ namespace RandomizerSharp.PokemonModel
                 sb.Append(p.Pokemon.Name + " Lv" + p.Level);
                 first = false;
             }
+
             sb.Append(']');
+
             if (!ReferenceEquals(Tag, null))
                 sb.Append(" (" + Tag + ")");
+
             return sb.ToString();
         }
 
@@ -79,20 +83,14 @@ namespace RandomizerSharp.PokemonModel
             return result;
         }
 
-        public override bool Equals(object obj)
+        public bool Equals(Trainer trainer)
         {
-            if (this == obj)
+            if (ReferenceEquals(this, trainer))
                 return true;
-            if (obj == null)
-                return false;
-            if (GetType() != obj.GetType())
-                return false;
-            var other = (Trainer) obj;
 
-            if (Offset != other.Offset)
-                return false;
-
-            return true;
+            return Offset == trainer?.Offset;
         }
+
+        public override bool Equals(object obj) => Equals(obj as Trainer);
     }
 }

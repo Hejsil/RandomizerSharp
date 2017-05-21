@@ -25,13 +25,10 @@
 
     public class MoveLearnt
     {
-        public int Level;
+        public int Level { get; set; }
 
-        public int Move;
+        public int Move { get; set; }
 
-        public override string ToString()
-        {
-            return "move " + Move + " at level " + Level;
-        }
+        public override string ToString() => $"move {Move} at level {Level}";
     }
 }

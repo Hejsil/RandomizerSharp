@@ -4,27 +4,29 @@ namespace RandomizerSharp.Constants
 {
     public class GlobalConstants
     {
+        public static IReadOnlyList<bool> BannedForDamagingMove { get; }
+
+        public static IReadOnlyList<bool> BannedRandomMoves { get; }
+
+        public static IReadOnlyList<int> BattleTrappingAbilities { get; } = new[] { 23, 42, 71 };
+
+        public static readonly IReadOnlyList<int> DoubleHitMoves = new[] { 155, 458, 24, 530, 544, 41 }
+            ; // Twineedle -  Gear Grind -  Dual Chop -  Double Kick -  Double Hit -  Bonemerang
+
+        public const int MetronomeMove = 118;
+
+        public const int MinDamagingMovePower = 50;
+
+        public static IReadOnlyList<int> NegativeAbilities { get; } = new[] { 129, 112, 54, 59, 161 };
+
+        public static IReadOnlyList<int> NormalMultihitMoves { get; } =
+            new[] { 292, 140, 198, 331, 4, 3, 31, 154, 333, 42, 350, 131, 541 };
+
+        public const int TripleKickIndex = 167;
         // Defeatist, Slow Start, Truant, Forecast, Zen Mode
         // To test: Illusion, Imposter
 
         public const int WonderGuardIndex = 25;
-
-        public const int MinDamagingMovePower = 50;
-
-        public const int MetronomeMove = 118;
-
-        public const int TripleKickIndex = 167;
-
-        public static IReadOnlyList<bool> BannedRandomMoves { get; }
-        public static IReadOnlyList<bool> BannedForDamagingMove { get; }
-        
-        public static IReadOnlyList<int> NormalMultihitMoves { get; } = new [] { 292, 140, 198, 331, 4, 3, 31, 154, 333, 42, 350, 131, 541 };
-
-        public static readonly IReadOnlyList<int> DoubleHitMoves = new [] {155, 458, 24, 530, 544, 41}; // Twineedle -  Gear Grind -  Dual Chop -  Double Kick -  Double Hit -  Bonemerang
-        
-        public static IReadOnlyList<int> BattleTrappingAbilities { get; } = new [] { 23, 42, 71 };
-
-        public static IReadOnlyList<int> NegativeAbilities { get; } = new [] { 129, 112, 54, 59, 161 };
 
         static GlobalConstants()
         {

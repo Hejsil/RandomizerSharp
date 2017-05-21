@@ -3,23 +3,20 @@
     public class Move
     {
         public const int StruggleId = 165;
+        public int EffectIndex { get; }
 
-        public MoveCategory Category;
-        public int EffectIndex;
-        public double HitCount = 1; // not saved, only used in randomized move powers.
-        public double Hitratio;
-        public int InternalId;
+        public MoveCategory Category { get; set; }
+        public double HitCount { get; set; } = 1;
+        public double Hitratio { get; set; }
+        public int InternalId { get; set; }
 
-        public string Name;
-        public int Number;
-        public int Power;
-        public int Pp;
-        public Typing Type;
+        public string Name { get; set; }
+        public int Number { get; set; }
+        public int Power { get; set; }
+        public int Pp { get; set; }
+        public Typing Type { get; set; }
 
-        public override string ToString()
-        {
-            return "#" + Number + " " + Name + " - Power: " + Power + ", Base PP: " + Pp + ", Type: " + Type +
-                   ", Hit%: " + Hitratio + ", Effect: " + EffectIndex;
-        }
+        public override string ToString() =>
+            $"#{Number} {Name} - Power: {Power}, Base PP: {Pp}, Type: {Type}, Hit%: {Hitratio}, Effect: {EffectIndex}";
     }
 }

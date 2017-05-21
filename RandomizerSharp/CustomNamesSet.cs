@@ -15,17 +15,6 @@ namespace RandomizerSharp
         private readonly List<string> _trainerClasses;
         private readonly List<string> _trainerNames;
 
-        public CustomNamesSet(Stream data)
-        {
-            if (data.ReadByte() != CustomNamesVersion) throw new IOException("Invalid custom names file provided.");
-
-            _trainerNames = ReadNamesBlock(data);
-            _trainerClasses = ReadNamesBlock(data);
-            _doublesTrainerNames = ReadNamesBlock(data);
-            _doublesTrainerClasses = ReadNamesBlock(data);
-            _pokemonNicknames = ReadNamesBlock(data);
-        }
-
         public IReadOnlyList<byte> Bytes
         {
             get
@@ -41,37 +30,7 @@ namespace RandomizerSharp
             }
         }
 
-        public IList<string> TrainerNames
-        {
-            get => _trainerNames;
-            set
-            {
-                _trainerNames.Clear();
-                _trainerNames.AddRange(value);
-            }
-        }
-
-        public IList<string> TrainerClasses
-        {
-            get => _trainerClasses;
-            set
-            {
-                _trainerClasses.Clear();
-                _trainerClasses.AddRange(value);
-            }
-        }
-
-        public List<string> DoublesTrainerNames
-        {
-            get => _doublesTrainerNames;
-            set
-            {
-                _doublesTrainerNames.Clear();
-                _doublesTrainerNames.AddRange(value);
-            }
-        }
-
-        public List<string> DoublesTrainerClasses
+        public ICollection<string> DoublesTrainerClasses
         {
             get => _doublesTrainerClasses;
             set
@@ -81,7 +40,17 @@ namespace RandomizerSharp
             }
         }
 
-        public List<string> PokemonNicknames
+        public ICollection<string> DoublesTrainerNames
+        {
+            get => _doublesTrainerNames;
+            set
+            {
+                _doublesTrainerNames.Clear();
+                _doublesTrainerNames.AddRange(value);
+            }
+        }
+
+        public ICollection<string> PokemonNicknames
         {
             get => _pokemonNicknames;
             set
@@ -91,12 +60,45 @@ namespace RandomizerSharp
             }
         }
 
+        public ICollection<string> TrainerClasses
+        {
+            get => _trainerClasses;
+            set
+            {
+                _trainerClasses.Clear();
+                _trainerClasses.AddRange(value);
+            }
+        }
+
+        public ICollection<string> TrainerNames
+        {
+            get => _trainerNames;
+            set
+            {
+                _trainerNames.Clear();
+                _trainerNames.AddRange(value);
+            }
+        }
+
+        public CustomNamesSet(Stream data)
+        {
+            if (data.ReadByte() != CustomNamesVersion)
+                throw new IOException("Invalid custom names file provided.");
+
+            _trainerNames = ReadNamesBlock(data);
+            _trainerClasses = ReadNamesBlock(data);
+            _doublesTrainerNames = ReadNamesBlock(data);
+            _doublesTrainerClasses = ReadNamesBlock(data);
+            _pokemonNicknames = ReadNamesBlock(data);
+        }
+
         private static List<string> ReadNamesBlock(Stream @in)
         {
             var szData = FileFunctions.ReadFullyIntoBuffer(@in, 4);
             var size = PpTxtHandler.ReadInt(szData, 0);
 
-            if (@in.Length < size) throw new IOException("Invalid size specified.");
+            if (@in.Length < size)
+                throw new IOException("Invalid size specified.");
 
             var namesData = FileFunctions.ReadFullyIntoBuffer(@in, size);
             var names = new List<string>();
@@ -107,7 +109,8 @@ namespace RandomizerSharp
                 for (var line = reader.ReadLine(); line != null; line = reader.ReadLine())
                 {
                     var name = line.Trim();
-                    if (name.Length > 0) names.Add(name);
+                    if (name.Length > 0)
+                        names.Add(name);
                 }
             }
 
@@ -121,7 +124,8 @@ namespace RandomizerSharp
             var first = true;
             foreach (var name in names)
             {
-                if (!first) outNames.Append(newln);
+                if (!first)
+                    outNames.Append(newln);
 
                 first = false;
                 outNames.Append(name);

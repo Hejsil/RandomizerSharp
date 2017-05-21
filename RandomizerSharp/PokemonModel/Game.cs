@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RandomizerSharp.PokemonModel
+﻿namespace RandomizerSharp.PokemonModel
 {
     public enum Game
     {
@@ -47,6 +41,6 @@ namespace RandomizerSharp.PokemonModel
 
         // Gen 7
         Sun,
-        Moon,
+        Moon
     }
 }

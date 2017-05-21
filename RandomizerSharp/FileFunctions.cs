@@ -6,15 +6,19 @@ namespace RandomizerSharp
 {
     public class FileFunctions
     {
-        public static string FixFilename(string original, string defaultExtension)
-        {
-            return FixFilename(original, defaultExtension, null);
-        }
+        public static string FixFilename(string original, string defaultExtension) => FixFilename(
+            original,
+            defaultExtension,
+            null);
 
         public static string FixFilename(string original, string defaultExtension, IList<string> bannedExtensions)
         {
             var filename = Path.GetFileName(original);
-            if (filename != null && filename.LastIndexOf('.') >= filename.Length - 5 && filename.LastIndexOf('.') != filename.Length - 1 && filename.Length > 4 && filename.LastIndexOf('.') != -1)
+            if (filename != null &&
+                filename.LastIndexOf('.') >= filename.Length - 5 &&
+                filename.LastIndexOf('.') != filename.Length - 1 &&
+                filename.Length > 4 &&
+                filename.LastIndexOf('.') != -1)
             {
                 var ext = filename.Substring(filename.LastIndexOf('.') + 1).ToLower();
                 if (bannedExtensions != null && bannedExtensions.Contains(ext))
@@ -33,11 +37,15 @@ namespace RandomizerSharp
             @in.Read(buf, 0, bytes);
             return buf;
         }
-        
+
         public static void ApplyPatch(ArraySlice<byte> rom, byte[] patch)
         {
             var patchlen = patch.Length;
-            if (patchlen < 8 || patch[0] != 'P' || patch[1] != 'A' || patch[2] != 'T' || patch[3] != 'C' ||
+            if (patchlen < 8 ||
+                patch[0] != 'P' ||
+                patch[1] != 'A' ||
+                patch[2] != 'T' ||
+                patch[3] != 'C' ||
                 patch[4] != 'H')
                 throw new IOException("not a valid IPS file");
             var offset = 5;
@@ -78,15 +86,12 @@ namespace RandomizerSharp
             throw new IOException("improperly terminated IPS file");
         }
 
-        private static int ReadIpsOffset(byte[] data, int offset)
-        {
-            return ((data[offset] & 0xFF) << 16) | ((data[offset + 1] & 0xFF) << 8) | (data[offset + 2] & 0xFF);
-        }
+        private static int ReadIpsOffset(byte[] data, int offset) => ((data[offset] & 0xFF) << 16) |
+                                                                     ((data[offset + 1] & 0xFF) << 8) |
+                                                                     (data[offset + 2] & 0xFF);
 
-        private static int ReadIpsSize(byte[] data, int offset)
-        {
-            return ((data[offset] & 0xFF) << 8) | (data[offset + 1] & 0xFF);
-        }
+        private static int ReadIpsSize(byte[] data, int offset) => ((data[offset] & 0xFF) << 8) |
+                                                                   (data[offset + 1] & 0xFF);
 
         public static byte[] ConvIntArrToByteArr(int[] arg)
         {
@@ -96,5 +101,4 @@ namespace RandomizerSharp
             return @out;
         }
     }
-    
 }

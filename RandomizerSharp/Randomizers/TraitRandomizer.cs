@@ -10,11 +10,13 @@ namespace RandomizerSharp.Randomizers
     {
         public TraitRandomizer(AbstractRomHandler romHandler)
             : base(romHandler)
-        { }
+        {
+        }
 
         public TraitRandomizer(AbstractRomHandler romHandler, Random random)
             : base(romHandler, random)
-        { }
+        {
+        }
 
         public void RandomizePokemonStats(bool evolutionSanity)
         {
@@ -107,7 +109,7 @@ namespace RandomizerSharp.Randomizers
                     pk?.ShuffleStats(Random);
             }
         }
-        
+
         public void RandomizePokemonTypes(bool evolutionSanity)
         {
             var allPokes = RomHandler.ValidPokemons;
@@ -241,8 +243,8 @@ namespace RandomizerSharp.Randomizers
                             if (ReferenceEquals(pk, fromPk))
                                 continue;
 
-                            //  Force same EXP curve (mandatory)
-                            if (pk.GrowthCurve != fromPk.GrowthCurve)
+                            //  Force same EXP expCurve (mandatory)
+                            if (pk.GrowthExpCurve != fromPk.GrowthExpCurve)
                                 continue;
 
                             var ep = new EvolutionPair(fromPk, pk);
@@ -329,7 +331,7 @@ namespace RandomizerSharp.Randomizers
                             picked = replacements[Random.Next(replacements.Count)];
 
                         //  Step 4: add it to the new evos pool
-                        var newEvo = new Evolution(fromPk, picked, ev.CarryStats, ev.Type, ev.ExtraInfo);
+                        var newEvo = new Evolution(fromPk, picked, ev.CarryStats, ev.Type1, ev.ExtraInfo);
                         fromPk.EvolutionsFrom.Add(newEvo);
                         picked.EvolutionsTo.Add(newEvo);
                         newEvoPairs.Add(new EvolutionPair(fromPk, picked));
@@ -448,7 +450,6 @@ namespace RandomizerSharp.Randomizers
             }
         }
 
-        
 
         public void RandomizeTrainerNames(CustomNamesSet customNames)
         {

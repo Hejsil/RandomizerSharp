@@ -5,130 +5,169 @@ namespace RandomizerSharp.PokemonModel
 {
     public sealed class EvolutionType
     {
-        public enum InnerEnum
-        {
-            Level,
-            Stone,
-            Trade,
-            TradeItem,
-            Happiness,
-            HappinessDay,
-            HappinessNight,
-            LevelAttackHigher,
-            LevelDefenseHigher,
-            LevelAtkDefSame,
-            LevelLowPv,
-            LevelHighPv,
-            LevelCreateExtra,
-            LevelIsExtra,
-            LevelHighBeauty,
-            StoneMaleOnly,
-            StoneFemaleOnly,
-            LevelItemDay,
-            LevelItemNight,
-            LevelWithMove,
-            LevelWithOther,
-            LevelMaleOnly,
-            LevelFemaleOnly,
-            LevelElectrifiedArea,
-            LevelMossRock,
-            LevelIcyRock,
-            TradeSpecial,
-            None
-        }
+        public static EvolutionType Happiness { get; } =
+            new EvolutionType("HAPPINESS", EvolutionKind.Happiness, -1, 4, 1, 1, 1);
 
-        /* @formatter:off */
-        public static readonly EvolutionType Level = new EvolutionType("LEVEL", InnerEnum.Level, 1, 1, 4, 4, 4);
+        public static EvolutionType HappinessDay { get; } =
+            new EvolutionType("HAPPINESS_DAY", EvolutionKind.HappinessDay, -1, 4, 2, 2, 2);
 
-        public static readonly EvolutionType Stone = new EvolutionType("STONE", InnerEnum.Stone, 2, 2, 7, 7, 8);
-        public static readonly EvolutionType Trade = new EvolutionType("TRADE", InnerEnum.Trade, 3, 3, 5, 5, 5);
+        public static EvolutionType HappinessNight { get; } =
+            new EvolutionType("HAPPINESS_NIGHT", EvolutionKind.HappinessNight, -1, 4, 3, 3, 3);
 
-        public static readonly EvolutionType TradeItem =
-            new EvolutionType("TRADE_ITEM", InnerEnum.TradeItem, -1, 3, 6, 6, 6);
+        public static EvolutionType Level { get; } = new EvolutionType("LEVEL", EvolutionKind.Level, 1, 1, 4, 4, 4);
 
-        public static readonly EvolutionType Happiness =
-            new EvolutionType("HAPPINESS", InnerEnum.Happiness, -1, 4, 1, 1, 1);
+        public static EvolutionType LevelAtkDefSame { get; } = new EvolutionType(
+            "LEVEL_ATK_DEF_SAME",
+            EvolutionKind.LevelAtkDefSame,
+            -1,
+            5,
+            9,
+            9,
+            10);
 
-        public static readonly EvolutionType HappinessDay =
-            new EvolutionType("HAPPINESS_DAY", InnerEnum.HappinessDay, -1, 4, 2, 2, 2);
+        public static EvolutionType LevelAttackHigher { get; } =
+            new EvolutionType("LEVEL_ATTACK_HIGHER", EvolutionKind.LevelAttackHigher, -1, 5, 8, 8, 9);
 
-        public static readonly EvolutionType HappinessNight =
-            new EvolutionType("HAPPINESS_NIGHT", InnerEnum.HappinessNight, -1, 4, 3, 3, 3);
+        public static EvolutionType LevelCreateExtra { get; } = new EvolutionType(
+            "LEVEL_CREATE_EXTRA",
+            EvolutionKind.LevelCreateExtra,
+            -1,
+            -1,
+            13,
+            13,
+            14);
 
-        public static readonly EvolutionType LevelAttackHigher =
-            new EvolutionType("LEVEL_ATTACK_HIGHER", InnerEnum.LevelAttackHigher, -1, 5, 8, 8, 9);
+        public static EvolutionType LevelDefenseHigher { get; } =
+            new EvolutionType("LEVEL_DEFENSE_HIGHER", EvolutionKind.LevelDefenseHigher, -1, 5, 10, 10, 11);
 
-        public static readonly EvolutionType LevelDefenseHigher =
-            new EvolutionType("LEVEL_DEFENSE_HIGHER", InnerEnum.LevelDefenseHigher, -1, 5, 10, 10, 11);
+        public static EvolutionType LevelElectrifiedArea { get; } = new EvolutionType(
+            "LEVEL_ELECTRIFIED_AREA",
+            EvolutionKind.LevelElectrifiedArea,
+            -1,
+            -1,
+            -1,
+            24,
+            25);
 
-        public static readonly EvolutionType LevelAtkDefSame =
-            new EvolutionType("LEVEL_ATK_DEF_SAME", InnerEnum.LevelAtkDefSame, -1, 5, 9, 9, 10);
+        public static EvolutionType LevelFemaleOnly { get; } = new EvolutionType(
+            "LEVEL_FEMALE_ONLY",
+            EvolutionKind.LevelFemaleOnly,
+            -1,
+            -1,
+            -1,
+            23,
+            24);
 
-        public static readonly EvolutionType LevelLowPv =
-            new EvolutionType("LEVEL_LOW_PV", InnerEnum.LevelLowPv, -1, -1, 11, 11, 12);
+        public static EvolutionType LevelHighBeauty { get; } = new EvolutionType(
+            "LEVEL_HIGH_BEAUTY",
+            EvolutionKind.LevelHighBeauty,
+            -1,
+            -1,
+            15,
+            15,
+            16);
 
-        public static readonly EvolutionType LevelHighPv =
-            new EvolutionType("LEVEL_HIGH_PV", InnerEnum.LevelHighPv, -1, -1, 12, 12, 13);
+        public static EvolutionType LevelHighPv { get; } =
+            new EvolutionType("LEVEL_HIGH_PV", EvolutionKind.LevelHighPv, -1, -1, 12, 12, 13);
 
-        public static readonly EvolutionType LevelCreateExtra =
-            new EvolutionType("LEVEL_CREATE_EXTRA", InnerEnum.LevelCreateExtra, -1, -1, 13, 13, 14);
+        public static EvolutionType LevelIcyRock { get; } =
+            new EvolutionType("LEVEL_ICY_ROCK", EvolutionKind.LevelIcyRock, -1, -1, -1, 26, 27);
 
-        public static readonly EvolutionType LevelIsExtra =
-            new EvolutionType("LEVEL_IS_EXTRA", InnerEnum.LevelIsExtra, -1, -1, 14, 14, 15);
+        public static EvolutionType LevelIsExtra { get; } =
+            new EvolutionType("LEVEL_IS_EXTRA", EvolutionKind.LevelIsExtra, -1, -1, 14, 14, 15);
 
-        public static readonly EvolutionType LevelHighBeauty =
-            new EvolutionType("LEVEL_HIGH_BEAUTY", InnerEnum.LevelHighBeauty, -1, -1, 15, 15, 16);
+        public static EvolutionType LevelItemDay { get; } =
+            new EvolutionType("LEVEL_ITEM_DAY", EvolutionKind.LevelItemDay, -1, -1, -1, 18, 19);
 
-        public static readonly EvolutionType StoneMaleOnly =
-            new EvolutionType("STONE_MALE_ONLY", InnerEnum.StoneMaleOnly, -1, -1, -1, 16, 17);
+        public static EvolutionType LevelItemNight { get; } = new EvolutionType(
+            "LEVEL_ITEM_NIGHT",
+            EvolutionKind.LevelItemNight,
+            -1,
+            -1,
+            -1,
+            19,
+            20);
 
-        public static readonly EvolutionType StoneFemaleOnly =
-            new EvolutionType("STONE_FEMALE_ONLY", InnerEnum.StoneFemaleOnly, -1, -1, -1, 17, 18);
+        public static EvolutionType LevelLowPv { get; } =
+            new EvolutionType("LEVEL_LOW_PV", EvolutionKind.LevelLowPv, -1, -1, 11, 11, 12);
 
-        public static readonly EvolutionType LevelItemDay =
-            new EvolutionType("LEVEL_ITEM_DAY", InnerEnum.LevelItemDay, -1, -1, -1, 18, 19);
+        public static EvolutionType LevelMaleOnly { get; } = new EvolutionType(
+            "LEVEL_MALE_ONLY",
+            EvolutionKind.LevelMaleOnly,
+            -1,
+            -1,
+            -1,
+            22,
+            23);
 
-        public static readonly EvolutionType LevelItemNight =
-            new EvolutionType("LEVEL_ITEM_NIGHT", InnerEnum.LevelItemNight, -1, -1, -1, 19, 20);
+        public static EvolutionType LevelMossRock { get; } = new EvolutionType(
+            "LEVEL_MOSS_ROCK",
+            EvolutionKind.LevelMossRock,
+            -1,
+            -1,
+            -1,
+            25,
+            26);
 
-        public static readonly EvolutionType LevelWithMove =
-            new EvolutionType("LEVEL_WITH_MOVE", InnerEnum.LevelWithMove, -1, -1, -1, 20, 21);
+        public static EvolutionType LevelWithMove { get; } = new EvolutionType(
+            "LEVEL_WITH_MOVE",
+            EvolutionKind.LevelWithMove,
+            -1,
+            -1,
+            -1,
+            20,
+            21);
 
-        public static readonly EvolutionType LevelWithOther =
-            new EvolutionType("LEVEL_WITH_OTHER", InnerEnum.LevelWithOther, -1, -1, -1, 21, 22);
+        public static EvolutionType LevelWithOther { get; } = new EvolutionType(
+            "LEVEL_WITH_OTHER",
+            EvolutionKind.LevelWithOther,
+            -1,
+            -1,
+            -1,
+            21,
+            22);
 
-        public static readonly EvolutionType LevelMaleOnly =
-            new EvolutionType("LEVEL_MALE_ONLY", InnerEnum.LevelMaleOnly, -1, -1, -1, 22, 23);
+        public static EvolutionType None { get; } = new EvolutionType("NONE", EvolutionKind.None, -1, -1, -1, -1, -1);
 
-        public static readonly EvolutionType LevelFemaleOnly =
-            new EvolutionType("LEVEL_FEMALE_ONLY", InnerEnum.LevelFemaleOnly, -1, -1, -1, 23, 24);
+        public static EvolutionType Stone { get; } = new EvolutionType("STONE", EvolutionKind.Stone, 2, 2, 7, 7, 8);
 
-        public static readonly EvolutionType LevelElectrifiedArea =
-            new EvolutionType("LEVEL_ELECTRIFIED_AREA", InnerEnum.LevelElectrifiedArea, -1, -1, -1, 24, 25);
+        public static EvolutionType StoneFemaleOnly { get; } = new EvolutionType(
+            "STONE_FEMALE_ONLY",
+            EvolutionKind.StoneFemaleOnly,
+            -1,
+            -1,
+            -1,
+            17,
+            18);
 
-        public static readonly EvolutionType LevelMossRock =
-            new EvolutionType("LEVEL_MOSS_ROCK", InnerEnum.LevelMossRock, -1, -1, -1, 25, 26);
+        public static EvolutionType StoneMaleOnly { get; } = new EvolutionType(
+            "STONE_MALE_ONLY",
+            EvolutionKind.StoneMaleOnly,
+            -1,
+            -1,
+            -1,
+            16,
+            17);
 
-        public static readonly EvolutionType LevelIcyRock =
-            new EvolutionType("LEVEL_ICY_ROCK", InnerEnum.LevelIcyRock, -1, -1, -1, 26, 27);
+        public static EvolutionType Trade { get; } = new EvolutionType("TRADE", EvolutionKind.Trade, 3, 3, 5, 5, 5);
 
-        public static readonly EvolutionType TradeSpecial =
-            new EvolutionType("TRADE_SPECIAL", InnerEnum.TradeSpecial, -1, -1, -1, -1, 7);
+        public static EvolutionType TradeItem { get; } =
+            new EvolutionType("TRADE_ITEM", EvolutionKind.TradeItem, -1, 3, 6, 6, 6);
 
-        public static readonly EvolutionType None = new EvolutionType("NONE", InnerEnum.None, -1, -1, -1, -1, -1);
+        public static EvolutionType TradeSpecial { get; } =
+            new EvolutionType("TRADE_SPECIAL", EvolutionKind.TradeSpecial, -1, -1, -1, -1, 7);
+
+        private static readonly EvolutionType[,] ReverseIndexes = new EvolutionType[5, 30];
 
         private static readonly IList<EvolutionType> ValueList = new List<EvolutionType>();
         private static int _nextOrdinal;
-        
-        private static readonly EvolutionType[,] ReverseIndexes = new EvolutionType[5, 30];
 
-        public readonly InnerEnum InnerEnumValue;
-        private readonly string _nameValue;
-
-        private readonly int _ordinalValue;
-        /* @formatter:on */
 
         private readonly int[] _indexNumbers;
+        private readonly string _nameValue;
+        private readonly int _ordinalValue;
+
+        public EvolutionKind EvolutionKindValue { get; }
 
         static EvolutionType()
         {
@@ -162,58 +201,53 @@ namespace RandomizerSharp.PokemonModel
             ValueList.Add(None);
 
             foreach (var et in Values())
+            {
                 for (var i = 0; i < et._indexNumbers.Length; i++)
+                {
                     if (et._indexNumbers[i] > 0 && ReverseIndexes[i, et._indexNumbers[i]] == null)
                         ReverseIndexes[i, et._indexNumbers[i]] = et;
+                }
+            }
         }
 
-        private EvolutionType(string name, InnerEnum innerEnum, params int[] indexes)
+        private EvolutionType(string name, EvolutionKind evolutionKind, params int[] indexes)
         {
             _indexNumbers = indexes;
 
             _nameValue = name;
             _ordinalValue = _nextOrdinal++;
-            InnerEnumValue = innerEnum;
+            EvolutionKindValue = evolutionKind;
         }
 
-        public int ToIndex(int generation)
-        {
-            return _indexNumbers[generation - 1];
-        }
+        public int ToIndex(int generation) => _indexNumbers[generation - 1];
 
-        public static EvolutionType FromIndex(int generation, int index)
-        {
-            return ReverseIndexes[generation - 1, index];
-        }
+        public static EvolutionType FromIndex(int generation, int index) => ReverseIndexes[generation - 1, index];
 
-        public bool UsesLevel()
-        {
-            return this == Level || this == LevelAttackHigher || this == LevelDefenseHigher ||
-                   this == LevelAtkDefSame || this == LevelLowPv || this == LevelHighPv ||
-                   this == LevelCreateExtra || this == LevelIsExtra || this == LevelMaleOnly ||
-                   this == LevelFemaleOnly;
-        }
+        public bool UsesLevel() => this == Level ||
+                                   this == LevelAttackHigher ||
+                                   this == LevelDefenseHigher ||
+                                   this == LevelAtkDefSame ||
+                                   this == LevelLowPv ||
+                                   this == LevelHighPv ||
+                                   this == LevelCreateExtra ||
+                                   this == LevelIsExtra ||
+                                   this == LevelMaleOnly ||
+                                   this == LevelFemaleOnly;
 
-        public static IList<EvolutionType> Values()
-        {
-            return ValueList;
-        }
+        public static IList<EvolutionType> Values() => ValueList;
 
-        public int Ordinal()
-        {
-            return _ordinalValue;
-        }
+        public int Ordinal() => _ordinalValue;
 
-        public override string ToString()
-        {
-            return _nameValue;
-        }
+        public override string ToString() => _nameValue;
 
         public static EvolutionType ValueOf(string name)
         {
             foreach (var enumInstance in ValueList)
+            {
                 if (enumInstance._nameValue == name)
                     return enumInstance;
+            }
+
             throw new ArgumentException(name);
         }
     }

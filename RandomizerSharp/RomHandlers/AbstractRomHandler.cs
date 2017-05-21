@@ -2,13 +2,20 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Security.Policy;
 using RandomizerSharp.PokemonModel;
 
 namespace RandomizerSharp.RomHandlers
 {
     public abstract class AbstractRomHandler
     {
+        public HashSet<int> GameBreakingMoves { get; } = new HashSet<int> { 49, 82 };
+        public IReadOnlyList<Pokemon> LegendaryPokemons => ValidPokemons.Where(p => p.Legendary).ToArray();
+
+        public int MaxTradeNicknameLength => 10;
+
+        public int MaxTradeOtNameLength => 7;
+
+        public IReadOnlyList<Pokemon> NonLegendaryPokemons => ValidPokemons.Where(p => !p.Legendary).ToArray();
         public int AbilitiesPerPokemon { get; protected set; }
         public string[] AbilityNames { get; protected set; } = Array.Empty<string>();
         public IReadOnlyList<Move> AllMoves { get; protected set; } = Array.Empty<Move>();
@@ -43,8 +50,6 @@ namespace RandomizerSharp.RomHandlers
 
         public bool FixedTrainerClassNamesLength { get; protected set; }
 
-        public HashSet<int> GameBreakingMoves { get; } = new HashSet<int> { 49, 82 };
-
         public Game Game { get; set; }
 
         public bool HasMoveTutors { get; protected set; }
@@ -66,14 +71,9 @@ namespace RandomizerSharp.RomHandlers
 
 
         public IReadOnlyList<string> ItemNames { get; protected set; } = Array.Empty<string>();
-        public IReadOnlyList<Pokemon> LegendaryPokemons => ValidPokemons.Where(p => p.Legendary).ToArray();
         public string LoadedFilename { get; protected set; } = "";
 
         public int MaxSumOfTrainerNameLengths { get; protected set; } = int.MaxValue;
-
-        public int MaxTradeNicknameLength => 10;
-
-        public int MaxTradeOtNameLength => 7;
         public int MaxTrainerClassNameLength { get; protected set; }
         public int MaxTrainerNameLength { get; protected set; }
 
@@ -86,8 +86,6 @@ namespace RandomizerSharp.RomHandlers
 
         public int[] MoveTutorMoves { get; protected set; } = Array.Empty<int>();
         public ItemList NonBadItems { get; protected set; }
-
-        public IReadOnlyList<Pokemon> NonLegendaryPokemons => ValidPokemons.Where(p => !p.Legendary).ToArray();
         public IReadOnlyList<Bitmap> PokemonSprites { get; protected set; } = Array.Empty<Bitmap>();
         public int[] RegularFieldItems { get; protected set; } = Array.Empty<int>();
 

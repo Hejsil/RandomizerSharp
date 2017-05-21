@@ -32,14 +32,19 @@ namespace RandomizerSharp
             return enu.ToArray().Slice(count, offset);
         }
 
-        public static ArraySlice<T> Slice<T>(this T[] array, int count, int offset = 0) => new ArraySlice<T>(array, offset, count);
-        public static ArraySlice<T> Slice<T>(this ArraySlice<T> slice, int count, int offset = 0) => new ArraySlice<T>(slice, offset, count);
+        public static ArraySlice<T> Slice<T>(this T[] array, int count, int offset = 0) => new ArraySlice<T>(
+            array,
+            offset,
+            count);
 
+        public static ArraySlice<T> Slice<T>(this ArraySlice<T> slice, int count, int offset = 0) => new ArraySlice<T>(
+            slice,
+            offset,
+            count);
 
 
         public static ArraySlice<T> SliceFrom<T>(this IEnumerable<T> enu, int from)
         {
-
             if (enu is ArraySlice<T> slice)
                 return slice.SliceFrom(from);
 
@@ -50,8 +55,10 @@ namespace RandomizerSharp
         }
 
         public static ArraySlice<T> SliceFrom<T>(this T[] array, int from) => array.Slice(array.Length - from, from);
-        public static ArraySlice<T> SliceFrom<T>(this ArraySlice<T> slice, int from) => slice.Slice(slice.Length - from, from);
 
+        public static ArraySlice<T> SliceFrom<T>(this ArraySlice<T> slice, int from) => slice.Slice(
+            slice.Length - from,
+            from);
 
 
         public static ArraySlice<T> SliceFrom<T>(this IEnumerable<T> enu, int from, int to)
@@ -66,7 +73,10 @@ namespace RandomizerSharp
         }
 
         public static ArraySlice<T> SliceFrom<T>(this T[] array, int from, int to) => array.Slice(to - from, from);
-        public static ArraySlice<T> SliceFrom<T>(this ArraySlice<T> slice, int from, int to) => slice.Slice(to - from, from);
+
+        public static ArraySlice<T> SliceFrom<T>(this ArraySlice<T> slice, int from, int to) => slice.Slice(
+            to - from,
+            from);
 
         public static T[] ToArray<T>(this ArraySlice<T> slice, int count, int offset = 0)
         {

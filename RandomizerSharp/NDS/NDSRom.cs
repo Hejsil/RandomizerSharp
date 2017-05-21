@@ -8,21 +8,25 @@ namespace RandomizerSharp.NDS
     public class NdsRom
     {
         private const int Arm9Align = 0x1FF, Arm7Align = 0x1FF;
-        private const int FntAlign = 0x1FF, FatAlign = 0x1FF;
 
         private const int BannerAlign = 0x1FF, FileAlign = 0x1FF;
+        private const int FntAlign = 0x1FF, FatAlign = 0x1FF;
+        private readonly Dictionary<int, Ndsy9Entry> _arm9OverlaysByFileId = new Dictionary<int, Ndsy9Entry>();
 
         private readonly Dictionary<string, NdsFile> _files = new Dictionary<string, NdsFile>();
         private readonly Dictionary<int, NdsFile> _filesById = new Dictionary<int, NdsFile>();
-        private readonly Dictionary<int, Ndsy9Entry> _arm9OverlaysByFileId = new Dictionary<int, Ndsy9Entry>();
 
         private bool _arm9Compressed;
         private byte[] _arm9Footer;
         private bool _arm9Open, _arm9Changed, _arm9HasFooter;
+        private Ndsy9Entry[] _arm9Overlays;
         private byte[] _arm9Ramstored;
         private int _arm9Szmode, _arm9Szoffset;
-        private Ndsy9Entry[] _arm9Overlays;
         private byte[] _fat;
+
+        public FileStream BaseRom { get; }
+
+        public string Code { get; private set; }
 
         public NdsRom(string filename)
         {
@@ -34,10 +38,6 @@ namespace RandomizerSharp.NDS
             _arm9Ramstored = null;
         }
 
-        public string Code { get; private set; }
-
-        public FileStream BaseRom { get; }
-        
         private void ReadFileSystem()
         {
             var directoryPaths = new Dictionary<int, string> { [0xF000] = "" };
@@ -202,7 +202,7 @@ namespace RandomizerSharp.NDS
                 _arm9OverlaysByFileId[fileId] = overlay;
             }
         }
-        
+
         public void SaveTo(string filename)
         {
             using (var fNew = new FileStream(filename, FileMode.Create, FileAccess.ReadWrite))
@@ -212,7 +212,7 @@ namespace RandomizerSharp.NDS
                 BaseRom.Seek(0, SeekOrigin.Begin);
                 Copy(BaseRom, fNew, headersize);
 
-                var arm9Offset = (int)(fNew.Position + Arm9Align) & ~Arm9Align;
+                var arm9Offset = (int) (fNew.Position + Arm9Align) & ~Arm9Align;
                 var oldArm9Offset = ReadFromFile(BaseRom, 0x20, 4);
                 var arm9Size = ReadFromFile(BaseRom, 0x2C, 4);
 
@@ -244,7 +244,7 @@ namespace RandomizerSharp.NDS
                     Copy(BaseRom, fNew, arm9Size + 12);
                 }
 
-                var arm9OvlOffset = (int)fNew.Position;
+                var arm9OvlOffset = (int) fNew.Position;
                 var arm9OvlSize = _arm9Overlays.Length * 32;
                 var arm7Offset = (arm9OvlOffset + arm9OvlSize + Arm7Align) & ~Arm7Align;
                 var oldArm7Offset = ReadFromFile(BaseRom, 0x30, 4);
@@ -254,7 +254,7 @@ namespace RandomizerSharp.NDS
                 fNew.Seek(arm7Offset, SeekOrigin.Begin);
                 Copy(BaseRom, fNew, arm7Size);
 
-                var arm7OvlOffset = (int)fNew.Position;
+                var arm7OvlOffset = (int) fNew.Position;
                 var oldArm7OvlOffset = ReadFromFile(BaseRom, 0x58, 4);
                 var arm7OvlSize = ReadFromFile(BaseRom, 0x5C, 4);
                 BaseRom.Seek(oldArm7OvlOffset, SeekOrigin.Begin);
@@ -262,7 +262,7 @@ namespace RandomizerSharp.NDS
                 fNew.Seek(arm7OvlOffset, SeekOrigin.Begin);
                 Copy(BaseRom, fNew, arm7OvlSize);
 
-                var bannerOffset = (int)(fNew.Position + BannerAlign) & ~BannerAlign;
+                var bannerOffset = (int) (fNew.Position + BannerAlign) & ~BannerAlign;
                 var oldBannerOffset = ReadFromFile(BaseRom, 0x68, 4);
                 var bannerSize = 0x840;
 
@@ -270,7 +270,7 @@ namespace RandomizerSharp.NDS
                 fNew.Seek(bannerOffset, SeekOrigin.Begin);
                 Copy(BaseRom, fNew, bannerSize);
 
-                var fntOffset = (int)(fNew.Position + FntAlign) & ~FntAlign;
+                var fntOffset = (int) (fNew.Position + FntAlign) & ~FntAlign;
                 var oldFntOffset = ReadFromFile(BaseRom, 0x40, 4);
                 var fntSize = ReadFromFile(BaseRom, 0x44, 4);
 
@@ -278,7 +278,7 @@ namespace RandomizerSharp.NDS
                 fNew.Seek(fntOffset, SeekOrigin.Begin);
                 Copy(BaseRom, fNew, fntSize);
 
-                var fatOffset = (int)(fNew.Position + FatAlign) & ~FatAlign;
+                var fatOffset = (int) (fNew.Position + FatAlign) & ~FatAlign;
                 var fatSize = _fat.Length;
                 var newfat = new byte[_fat.Length];
                 var y9Table = new byte[_arm9Overlays.Length * 32];
@@ -393,7 +393,7 @@ namespace RandomizerSharp.NDS
                 WriteToFile(fNew, 0x15E, 2, crc & 0xFFFF);
             }
         }
-        
+
         private void Copy(FileStream from, FileStream to, int bytes)
         {
             var sizeofCopybuf = Math.Min(256 * 1024, bytes);
@@ -406,7 +406,7 @@ namespace RandomizerSharp.NDS
                 bytes -= read;
             }
         }
-        
+
         public byte[] GetFile(string filename)
         {
             if (_files.ContainsKey(filename))
@@ -414,7 +414,7 @@ namespace RandomizerSharp.NDS
 
             return null;
         }
-        
+
         public byte[] GetOverlay(int number)
         {
             if (number >= 0 && number < _arm9Overlays.Length)
@@ -428,7 +428,7 @@ namespace RandomizerSharp.NDS
                 return _arm9Overlays[number].RamAddress;
             return -1;
         }
-        
+
         public byte[] GetArm9()
         {
             if (!_arm9Open)
@@ -442,7 +442,7 @@ namespace RandomizerSharp.NDS
                 BaseRom.Read(arm9, 0, arm9.Length);
                 var nitrocode = ReadFromFile(BaseRom, 4);
 
-                if (nitrocode == unchecked((int)0xDEC00621))
+                if (nitrocode == unchecked((int) 0xDEC00621))
                 {
                     _arm9Footer = new byte[12];
                     WriteToByteArr(_arm9Footer, 0, 4, unchecked((int) 0xDEC00621));
@@ -454,7 +454,7 @@ namespace RandomizerSharp.NDS
                     _arm9HasFooter = false;
                 }
 
-                while (ReadFromByteArr(arm9, arm9.Length - 12, 4) == unchecked((int)0xDEC00621) ||
+                while (ReadFromByteArr(arm9, arm9.Length - 12, 4) == unchecked((int) 0xDEC00621) ||
                        ReadFromByteArr(arm9, arm9.Length - 12, 4) == 0 &&
                        ReadFromByteArr(arm9, arm9.Length - 8, 4) == 0 &&
                        ReadFromByteArr(arm9, arm9.Length - 4, 4) == 0)
@@ -566,10 +566,7 @@ namespace RandomizerSharp.NDS
                 data[offset + i] = unchecked((byte) ((value >> (i * 8)) & 0xFF));
         }
 
-        public int ReadFromFile(FileStream file, int size)
-        {
-            return ReadFromFile(file, -1, size);
-        }
+        public int ReadFromFile(FileStream file, int size) => ReadFromFile(file, -1, size);
 
         public int ReadFromFile(FileStream file, int offset, int size)
         {

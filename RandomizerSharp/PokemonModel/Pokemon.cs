@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace RandomizerSharp.PokemonModel
 {
-    public class Pokemon : IComparable<Pokemon>
+    public class Pokemon : IComparable<Pokemon>, IEquatable<Pokemon>
     {
         public const int ShedinjaNumber = 292;
 
@@ -61,50 +61,45 @@ namespace RandomizerSharp.PokemonModel
                 649
             };
 
+        public List<Evolution> EvolutionsFrom { get; } = new List<Evolution>();
+        public List<Evolution> EvolutionsTo { get; } = new List<Evolution>();
+        public int Id { get; }
+
+        public bool Legendary => Legendaries.Contains(Id);
+        public List<MoveLearnt> MovesLearnt { get; } = new List<MoveLearnt>();
+
         public int Ability1 { get; set; }
         public int Ability2 { get; set; }
         public int Ability3 { get; set; }
-        public int CatchRate { get; set; }
-        public int ExpYield { get; set; }
-        public List<Evolution> EvolutionsFrom { get; } = new List<Evolution>();
-        public List<Evolution> EvolutionsTo { get; } = new List<Evolution>();
-        public int FrontSpritePointer { get; set; }
-        public int PicDimensions { get; set; }
-        public int GenderRatio { get; set; }
-        public Exp.Curve GrowthCurve { get; set; }
-        public int GuaranteedHeldItem { get; set; }
-        public int CommonHeldItem { get; set; }
-        public int RareHeldItem { get; set; }
-        public int DarkGrassHeldItem { get; set; }
-        public int Hp { get; set; }
         public int Attack { get; set; }
+        public int CatchRate { get; set; }
+        public int CommonHeldItem { get; set; }
+        public int DarkGrassHeldItem { get; set; }
         public int Defense { get; set; }
-        public int Spatk { get; set; }
-        public int Spdef { get; set; }
-        public int Speed { get; set; }
-        public int Special { get; set; }
+        public int ExpYield { get; set; }
+        public int FrontSpritePointer { get; set; }
+        public int GenderRatio { get; set; }
+        public ExpCurve GrowthExpCurve { get; set; }
+        public int GuaranteedHeldItem { get; set; }
+        public int Hp { get; set; }
         public string Name { get; set; }
-        public int Id { get; }
+        public int PicDimensions { get; set; }
         public Typing PrimaryType { get; set; }
+        public int RareHeldItem { get; set; }
         public Typing SecondaryType { get; set; }
         public List<int> ShuffledStatsOrder { get; set; } = new List<int> { 0, 1, 2, 3, 4, 5 };
+        public int Spatk { get; set; }
+        public int Spdef { get; set; }
+        public int Special { get; set; }
+        public int Speed { get; set; }
         public bool TemporaryFlag { get; set; }
-        public List<MoveLearnt> MovesLearnt { get; } = new List<MoveLearnt>();
 
         // ReSharper disable once InconsistentNaming
         public bool[] TMHMCompatibility { get; set; } = Array.Empty<bool>();
 
-        public Pokemon(int id)
-        {
-            Id = id;
-        }
+        public Pokemon(int id) => Id = id;
 
-        public bool Legendary => Legendaries.Contains(Id);
-
-        public int CompareTo(Pokemon o)
-        {
-            return Id - o.Id;
-        }
+        public int CompareTo(Pokemon o) => Id - o.Id;
 
         public virtual void ShuffleStats(Random random)
         {
@@ -120,7 +115,7 @@ namespace RandomizerSharp.PokemonModel
 
         private void ApplyShuffledOrderToStats()
         {
-            IList<int> stats = new List<int> {Hp, Attack, Defense, Spatk, Spdef, Speed};
+            IList<int> stats = new List<int> { Hp, Attack, Defense, Spatk, Spdef, Speed };
             Hp = stats[ShuffledStatsOrder[0]];
             Attack = stats[ShuffledStatsOrder[1]];
             Defense = stats[ShuffledStatsOrder[2]];
@@ -130,10 +125,7 @@ namespace RandomizerSharp.PokemonModel
             Special = (int) Math.Ceiling((Spatk + Spdef) / 2.0f);
         }
 
-        public int Bst()
-        {
-            return Hp + Attack + Defense + Spatk + Spdef + Speed;
-        }
+        public int Bst() => Hp + Attack + Defense + Spatk + Spdef + Speed;
 
         public int BstForPowerLevels()
         {
@@ -143,38 +135,30 @@ namespace RandomizerSharp.PokemonModel
             return Hp + Attack + Defense + Spatk + Spdef + Speed;
         }
 
-        public override string ToString()
-        {
-            return 
-                $"Pokemon[" +
-                $"name={Name}, " +
-                $"number={Id}, " +
-                $"primaryType={PrimaryType}, " +
-                $"secondaryType={SecondaryType}, " +
-                $"hp={Hp}, " +
-                $"attack={Attack}, " +
-                $"defense={Defense}, " +
-                $"spatk={Spatk}, " +
-                $"spdef={Spdef}, " +
-                $"speed={Speed}" +
-                $"]";
-        }
+        public override string ToString() => $"Pokemon[" +
+                                             $"name={Name}, " +
+                                             $"number={Id}, " +
+                                             $"primaryType={PrimaryType}, " +
+                                             $"secondaryType={SecondaryType}, " +
+                                             $"hp={Hp}, " +
+                                             $"attack={Attack}, " +
+                                             $"defense={Defense}, " +
+                                             $"spatk={Spatk}, " +
+                                             $"spdef={Spdef}, " +
+                                             $"speed={Speed}" +
+                                             $"]";
 
-        public string ToStringRby()
-        {
-            return
-                $"Pokemon[" +
-                $"name={Name}, " +
-                $"number={Id}, " +
-                $"primaryType={PrimaryType}, " +
-                $"secondaryType={SecondaryType}, " +
-                $"hp={Hp}, " +
-                $"attack={Attack}, " +
-                $"defense={Defense}, " +
-                $"special={Special}, " +
-                $"speed={Speed}" +
-                $"]";
-        }
+        public string ToStringRby() => $"Pokemon[" +
+                                       $"name={Name}, " +
+                                       $"number={Id}, " +
+                                       $"primaryType={PrimaryType}, " +
+                                       $"secondaryType={SecondaryType}, " +
+                                       $"hp={Hp}, " +
+                                       $"attack={Attack}, " +
+                                       $"defense={Defense}, " +
+                                       $"special={Special}, " +
+                                       $"speed={Speed}" +
+                                       $"]";
 
         public override int GetHashCode()
         {
@@ -187,18 +171,14 @@ namespace RandomizerSharp.PokemonModel
             return result;
         }
 
-        public override bool Equals(object obj)
+        public bool Equals(Pokemon poke)
         {
-            if (this == obj)
+            if (ReferenceEquals(this, poke))
                 return true;
-            if (obj == null)
-                return false;
-            if (GetType() != obj.GetType())
-                return false;
-            var other = (Pokemon) obj;
-            if (Id != other.Id)
-                return false;
-            return true;
+
+            return Id == poke?.Id;
         }
+
+        public override bool Equals(object obj) => Equals(obj as Pokemon);
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace RandomizerSharp.PokemonModel
 {
-    public enum MoveCategory 
+    public enum MoveCategory
     {
         Status = 0,
         Physical = 1,

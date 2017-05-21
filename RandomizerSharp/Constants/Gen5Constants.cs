@@ -5,9 +5,13 @@ namespace RandomizerSharp.Constants
 {
     public class Gen5Constants
     {
-        public const int TypeBw = 0;
-        public const int TypeBw2 = 1;
-        public const int PokemonCount = 649, MoveCount = 559, NonUnovaPokemonCount = 493;
+        public static ItemList AllowedItems => AllowedItems1.Copy();
+
+        public const int B2Route4EncounterFile = 104,
+            B2VrExclusiveRoom1 = 71,
+            B2VrExclusiveRoom2 = 73,
+            B2ReversalMountainStart = 49,
+            B2ReversalMountainEnd = 54;
 
         public const int BsHpOffset = 0,
             BsAttackOffset = 1,
@@ -28,63 +32,10 @@ namespace RandomizerSharp.Constants
             BsTmhmCompatOffset = 40,
             BsMtCompatOffset = 60;
 
-        public const string Bw1StarterScriptMagic = "2400A702";
-
-        public const int Bw1StarterTextOffset = 18, Bw1CherenText1Offset = 26, Bw1CherenText2Offset = 53;
-
-        public const string Bw2StarterScriptMagic = "2800A1400400";
-
-        public const int Bw2StarterTextOffset = 37, Bw2RivalTextOffset = 60;
-
-        public const int PerSeasonEncounterDataLength = 232,
-            Bw2AreaDataEntryLength = 345,
-            Bw2EncounterAreaCount = 85;
-
-        public const int Bw2Route4AreaIndex = 40,
-            Bw2VictoryRoadAreaIndex = 76,
-            Bw2ReversalMountainAreaIndex = 73;
-
-        public const int B2Route4EncounterFile = 104,
-            B2VrExclusiveRoom1 = 71,
-            B2VrExclusiveRoom2 = 73,
-            B2ReversalMountainStart = 49,
-            B2ReversalMountainEnd = 54;
-
-        public const int W2Route4EncounterFile = 105,
-            W2VrExclusiveRoom1 = 78,
-            W2VrExclusiveRoom2 = 79,
-            W2ReversalMountainStart = 55,
-            W2ReversalMountainEnd = 60;
-
-        public const string TmDataPrefix = "87038803";
-
-        public const int TmCount = 95,
-            HmCount = 6,
-            TmBlockOneCount = 92,
-            TmBlockOneOffset = 328,
-            TmBlockTwoOffset = 618;
+        public static readonly IReadOnlyList<int> Bw1EarlyRequiredHmMoves = new[] { 15 };
 
         public const string Bw1ItemPalettesPrefix = "E903EA03020003000400050006000700",
             Bw2ItemPalettesPrefix = "FD03FE03020003000400050006000700";
-
-        public const int Bw2MoveTutorCount = 60, Bw2MoveTutorBytesPerEntry = 12;
-
-        public const int EvolutionMethodCount = 27;
-
-        public const int SlowpokeIndex = 79, KarrablastIndex = 588, ShelmetIndex = 616;
-
-        public const int WaterStoneIndex = 84;
-
-        public const int HighestAbilityIndex = 123;
-
-        public const int NormalItemSetVarCommand = 0x28,
-            HiddenItemSetVarCommand = 0x2A,
-            NormalItemVarSet = 0x800C,
-            HiddenItemVarSet = 0x8000;
-
-        public const int ScriptListTerminator = 0xFD13;
-
-        public const int LuckyEggIndex = 0xE7;
 
         public static readonly IReadOnlyList<byte> Bw1NewStarterScript = new byte[]
         {
@@ -106,40 +57,54 @@ namespace RandomizerSharp.Constants
             0x00
         };
 
-        public static readonly IReadOnlyList<byte> Bw2NewStarterScript = new byte[]
+        public static readonly IReadOnlyList<int> Bw1RequiredFieldTMs = new[]
         {
-            0x28,
-            0x00,
-            0xA1,
-            0x40,
-            0x04,
-            0x00,
-            0xDE,
-            0x00,
-            0x00,
-            0x00,
-            0xFD,
-            0x01,
-            0x05,
-            0x00
+            2,
+            3,
+            5,
+            6,
+            9,
+            12,
+            13,
+            19,
+            22,
+            24,
+            26,
+            29,
+            30,
+            35,
+            36,
+            39,
+            41,
+            46,
+            47,
+            50,
+            52,
+            53,
+            55,
+            58,
+            61,
+            63,
+            65,
+            66,
+            71,
+            80,
+            81,
+            84,
+            85,
+            86,
+            90,
+            91,
+            92,
+            93
         };
 
-        public static readonly IReadOnlyList<int> EncountersOfEachType = new [] { 12, 12, 12, 5, 5, 5, 5 };
+        public const string Bw1StarterScriptMagic = "2400A702";
 
-        public static readonly IReadOnlyList<string> EncounterTypeNames = new []
-        {
-            "Grass/Cave",
-            "Doubles Grass",
-            "Shaking Spots",
-            "Surfing",
-            "Surfing Spots",
-            "Fishing",
-            "Fishing Spots"
-        };
+        public const int Bw1StarterTextOffset = 18, Bw1CherenText1Offset = 26, Bw1CherenText2Offset = 53;
+        public static readonly IReadOnlyList<int> Bw2EarlyRequiredHmMoves = new int[0];
 
-        public static readonly IReadOnlyList<int> HabitatClassificationOfEachType = new [] { 0, 0, 0, 1, 1, 2, 2 };
-
-        public static readonly IReadOnlyList<int> Bw2HiddenHollowUnovaPokemon = new []
+        public static readonly IReadOnlyList<int> Bw2HiddenHollowUnovaPokemon = new[]
         {
             505,
             507,
@@ -196,74 +161,24 @@ namespace RandomizerSharp.Constants
             632
         };
 
-        public static readonly IReadOnlyList<MoveCategory> MoveCategoryIndices = new []
-        {
-            MoveCategory.Status,
-            MoveCategory.Physical,
-            MoveCategory.Special
-        };
+        public const int Bw2MoveTutorCount = 60, Bw2MoveTutorBytesPerEntry = 12;
 
-        public static readonly IReadOnlyList<Typing> TypeTable = new []
+        public static readonly IReadOnlyList<byte> Bw2NewStarterScript = new byte[]
         {
-            Typing.Normal,
-            Typing.Fighting,
-            Typing.Flying,
-            Typing.Poison,
-            Typing.Ground,
-            Typing.Rock,
-            Typing.Bug,
-            Typing.Ghost,
-            Typing.Steel,
-            Typing.Fire,
-            Typing.Water,
-            Typing.Grass,
-            Typing.Electric,
-            Typing.Psychic,
-            Typing.Ice,
-            Typing.Dragon,
-            Typing.Dark
-        };
-
-        public static readonly IReadOnlyList<int> Bw1RequiredFieldTMs = new[]
-        {
-            2,
-            3,
-            5,
-            6,
-            9,
-            12,
-            13,
-            19,
-            22,
-            24,
-            26,
-            29,
-            30,
-            35,
-            36,
-            39,
-            41,
-            46,
-            47,
-            50,
-            52,
-            53,
-            55,
-            58,
-            61,
-            63,
-            65,
-            66,
-            71,
-            80,
-            81,
-            84,
-            85,
-            86,
-            90,
-            91,
-            92,
-            93
+            0x28,
+            0x00,
+            0xA1,
+            0x40,
+            0x04,
+            0x00,
+            0xDE,
+            0x00,
+            0x00,
+            0x00,
+            0xFD,
+            0x01,
+            0x05,
+            0x00
         };
 
         public static readonly IReadOnlyList<int> Bw2RequiredFieldTMs = new[]
@@ -309,72 +224,98 @@ namespace RandomizerSharp.Constants
             93
         };
 
-        public static readonly IReadOnlyList<int> Bw1EarlyRequiredHmMoves = new[] { 15 };
-        public static readonly IReadOnlyList<int> Bw2EarlyRequiredHmMoves = new int[0];
+        public const int Bw2Route4AreaIndex = 40,
+            Bw2VictoryRoadAreaIndex = 76,
+            Bw2ReversalMountainAreaIndex = 73;
+
+        public const string Bw2StarterScriptMagic = "2800A1400400";
+
+        public const int Bw2StarterTextOffset = 37, Bw2RivalTextOffset = 60;
+
+        public static readonly IReadOnlyList<int> EncountersOfEachType = new[] { 12, 12, 12, 5, 5, 5, 5 };
+
+        public static readonly IReadOnlyList<string> EncounterTypeNames = new[]
+        {
+            "Grass/Cave",
+            "Doubles Grass",
+            "Shaking Spots",
+            "Surfing",
+            "Surfing Spots",
+            "Fishing",
+            "Fishing Spots"
+        };
+
+        public const int EvolutionMethodCount = 27;
         public static readonly IReadOnlyList<int> FieldMoves = new[] { 15, 19, 57, 70, 148, 91, 100, 127, 230, 291 };
 
-        // ReSharper disable once UnusedMember.Local
-        private static readonly IReadOnlyList<IReadOnlyList<int>> HabitatListEntries = new[]
+        public static readonly IReadOnlyList<int> HabitatClassificationOfEachType = new[] { 0, 0, 0, 1, 1, 2, 2 };
+
+        public const int HighestAbilityIndex = 123;
+
+        public const int LuckyEggIndex = 0xE7;
+
+        public static readonly IReadOnlyList<MoveCategory> MoveCategoryIndices = new[]
         {
-            new[] { 104, 105 }, // Route 4
-            new[] { 124 }, // Route 15
-            new[] { 134 }, // Route 21
-            new[] { 84, 85, 86 }, // Clay Tunnel
-            new[] { 23, 24, 25, 26 }, // Twist Mountain
-            new[] { 97 }, // Village Bridge
-            new[] { 27, 28, 29, 30 }, // Dragonspiral Tower
-            new[] { 81, 82, 83 }, // Relic Passage
-            new[] { 106 }, // Route 5*
-            new[] { 125 }, // Route 16*
-            new[] { 98 }, // Marvelous Bridge
-            new[] { 123 }, // Abundant Shrine
-            new[] { 132 }, // Undella Town
-            new[] { 107 }, // Route 6
-            new[] { 43 }, // Undella Bay
-            new[] { 102, 103 }, // Wellspring Cave
-            new[] { 95 }, // Nature Preserve
-            new[] { 127 }, // Route 18
-            new[] { 32, 33, 34, 35, 36 }, // Giant Chasm
-            new[] { 111 }, // Route 7
-            new[] { 31, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80 }, // Victory Road
-            new[] { 12, 13, 14, 15, 16, 17, 18, 19 }, // Relic Castle
-            new[] { 0 }, // Striation City
-            new[] { 128 }, // Route 19
-            new[] { 3 }, // Aspertia City
-            new[] { 116 }, // Route 8*
-            new[] { 44, 45 }, // Floccesy Ranch
-            new[] { 61, 62, 63, 64, 65, 66, 67, 68, 69, 70 }, // Strange House
-            new[] { 129 }, // Route 20
-            new[] { 4 }, // Virbank City
-            new[] { 37, 38, 39, 40, 41 }, // Castelia Sewers
-            new[] { 118 }, // Route 9
-            new[] { 46, 47 }, // Virbank Complex
-            new[] { 42 }, // P2 Laboratory
-            new[] { 1 }, // Castelia City
-            new[] { 8, 9 }, // Pinwheel Forest
-            new[] { 5 }, // Humilau City
-            new[] { 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60 }, // Reversal Mountain
-            new[] { 6, 7 }, // Dreamyard
-            new[] { 112, 113, 114, 115 }, // Celestial Tower
-            new[] { 130 }, // Route 22
-            new[] { 10, 11 }, // Desert Resort
-            new[] { 119 }, // Route 11
-            new[] { 133 }, // Route 17
-            new[] { 99 }, // Route 1
-            new[] { 131 }, // Route 23
-            new[] { 2 }, // Icirrus City*
-            new[] { 120 }, // Route 12
-            new[] { 100 }, // Route 2
-            new[] { 108, 109 }, // Mistralton Cave
-            new[] { 121 }, // Route 13
-            new[] { 101 }, // Route 3
-            new[] { 117 }, // Moor of Icirrus*
-            new[] { 96 }, // Driftveil Drawbridge
-            new[] { 93, 94 }, // Seaside Cave
-            new[] { 126 }, // Lostlorn Forest
-            new[] { 122 }, // Route 14
-            new[] { 20, 21, 22 } // Chargestone Cave
+            MoveCategory.Status,
+            MoveCategory.Physical,
+            MoveCategory.Special
         };
+
+        public static ItemList NonBadItems => NonBadItems1.Copy();
+
+        public const int NormalItemSetVarCommand = 0x28,
+            HiddenItemSetVarCommand = 0x2A,
+            NormalItemVarSet = 0x800C,
+            HiddenItemVarSet = 0x8000;
+
+        public const int PerSeasonEncounterDataLength = 232,
+            Bw2AreaDataEntryLength = 345,
+            Bw2EncounterAreaCount = 85;
+
+        public const int PokemonCount = 649, MoveCount = 559, NonUnovaPokemonCount = 493;
+
+        public const int ScriptListTerminator = 0xFD13;
+
+        public const int SlowpokeIndex = 79, KarrablastIndex = 588, ShelmetIndex = 616;
+
+        public const int TmCount = 95,
+            HmCount = 6,
+            TmBlockOneCount = 92,
+            TmBlockOneOffset = 328,
+            TmBlockTwoOffset = 618;
+
+        public const string TmDataPrefix = "87038803";
+        public const int TypeBw = 0;
+        public const int TypeBw2 = 1;
+
+        public static readonly IReadOnlyList<Typing> TypeTable = new[]
+        {
+            Typing.Normal,
+            Typing.Fighting,
+            Typing.Flying,
+            Typing.Poison,
+            Typing.Ground,
+            Typing.Rock,
+            Typing.Bug,
+            Typing.Ghost,
+            Typing.Steel,
+            Typing.Fire,
+            Typing.Water,
+            Typing.Grass,
+            Typing.Electric,
+            Typing.Psychic,
+            Typing.Ice,
+            Typing.Dragon,
+            Typing.Dark
+        };
+
+        public const int W2Route4EncounterFile = 105,
+            W2VrExclusiveRoom1 = 78,
+            W2VrExclusiveRoom2 = 79,
+            W2ReversalMountainStart = 55,
+            W2ReversalMountainEnd = 60;
+
+        public const int WaterStoneIndex = 84;
 
         public static readonly IReadOnlyList<int> WildFileToAreaMap = new[]
         {
@@ -516,6 +457,70 @@ namespace RandomizerSharp.Constants
         };
 
         private static readonly ItemList AllowedItems1;
+
+        // ReSharper disable once UnusedMember.Local
+        private static readonly IReadOnlyList<IReadOnlyList<int>> HabitatListEntries = new[]
+        {
+            new[] { 104, 105 }, // Route 4
+            new[] { 124 }, // Route 15
+            new[] { 134 }, // Route 21
+            new[] { 84, 85, 86 }, // Clay Tunnel
+            new[] { 23, 24, 25, 26 }, // Twist Mountain
+            new[] { 97 }, // Village Bridge
+            new[] { 27, 28, 29, 30 }, // Dragonspiral Tower
+            new[] { 81, 82, 83 }, // Relic Passage
+            new[] { 106 }, // Route 5*
+            new[] { 125 }, // Route 16*
+            new[] { 98 }, // Marvelous Bridge
+            new[] { 123 }, // Abundant Shrine
+            new[] { 132 }, // Undella Town
+            new[] { 107 }, // Route 6
+            new[] { 43 }, // Undella Bay
+            new[] { 102, 103 }, // Wellspring Cave
+            new[] { 95 }, // Nature Preserve
+            new[] { 127 }, // Route 18
+            new[] { 32, 33, 34, 35, 36 }, // Giant Chasm
+            new[] { 111 }, // Route 7
+            new[] { 31, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80 }, // Victory Road
+            new[] { 12, 13, 14, 15, 16, 17, 18, 19 }, // Relic Castle
+            new[] { 0 }, // Striation City
+            new[] { 128 }, // Route 19
+            new[] { 3 }, // Aspertia City
+            new[] { 116 }, // Route 8*
+            new[] { 44, 45 }, // Floccesy Ranch
+            new[] { 61, 62, 63, 64, 65, 66, 67, 68, 69, 70 }, // Strange House
+            new[] { 129 }, // Route 20
+            new[] { 4 }, // Virbank City
+            new[] { 37, 38, 39, 40, 41 }, // Castelia Sewers
+            new[] { 118 }, // Route 9
+            new[] { 46, 47 }, // Virbank Complex
+            new[] { 42 }, // P2 Laboratory
+            new[] { 1 }, // Castelia City
+            new[] { 8, 9 }, // Pinwheel Forest
+            new[] { 5 }, // Humilau City
+            new[] { 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60 }, // Reversal Mountain
+            new[] { 6, 7 }, // Dreamyard
+            new[] { 112, 113, 114, 115 }, // Celestial Tower
+            new[] { 130 }, // Route 22
+            new[] { 10, 11 }, // Desert Resort
+            new[] { 119 }, // Route 11
+            new[] { 133 }, // Route 17
+            new[] { 99 }, // Route 1
+            new[] { 131 }, // Route 23
+            new[] { 2 }, // Icirrus City*
+            new[] { 120 }, // Route 12
+            new[] { 100 }, // Route 2
+            new[] { 108, 109 }, // Mistralton Cave
+            new[] { 121 }, // Route 13
+            new[] { 101 }, // Route 3
+            new[] { 117 }, // Moor of Icirrus*
+            new[] { 96 }, // Driftveil Drawbridge
+            new[] { 93, 94 }, // Seaside Cave
+            new[] { 126 }, // Lostlorn Forest
+            new[] { 122 }, // Route 14
+            new[] { 20, 21, 22 } // Chargestone Cave
+        };
+
         private static readonly ItemList NonBadItems1;
 
         static Gen5Constants()
@@ -548,17 +553,18 @@ namespace RandomizerSharp.Constants
             NonBadItems.BanRange(0x104, 5); // contest scarves
         }
 
-        public static ItemList AllowedItems => AllowedItems1.Copy();
-        public static ItemList NonBadItems => NonBadItems1.Copy();
-
         public static byte MoveCategoryToByte(MoveCategory cat)
         {
             switch (cat)
             {
-                case MoveCategory.Physical: return 1;
-                case MoveCategory.Special: return 2;
-                case MoveCategory.Status: return 0;
-                default: return 0;
+                case MoveCategory.Physical:
+                    return 1;
+                case MoveCategory.Special:
+                    return 2;
+                case MoveCategory.Status:
+                    return 0;
+                default:
+                    return 0;
             }
         }
 
@@ -566,24 +572,42 @@ namespace RandomizerSharp.Constants
         {
             switch (type.InnerEnumValue)
             {
-                case Typing.InnerEnum.Normal: return 0x00;
-                case Typing.InnerEnum.Fighting: return 0x01;
-                case Typing.InnerEnum.Flying: return 0x02;
-                case Typing.InnerEnum.Poison: return 0x03;
-                case Typing.InnerEnum.Ground: return 0x04;
-                case Typing.InnerEnum.Rock: return 0x05;
-                case Typing.InnerEnum.Bug: return 0x06;
-                case Typing.InnerEnum.Ghost: return 0x07;
-                case Typing.InnerEnum.Fire: return 0x09;
-                case Typing.InnerEnum.Water: return 0x0A;
-                case Typing.InnerEnum.Grass: return 0x0B;
-                case Typing.InnerEnum.Electric: return 0x0C;
-                case Typing.InnerEnum.Psychic: return 0x0D;
-                case Typing.InnerEnum.Ice: return 0x0E;
-                case Typing.InnerEnum.Dragon: return 0x0F;
-                case Typing.InnerEnum.Steel: return 0x08;
-                case Typing.InnerEnum.Dark: return 0x10;
-                default: return 0; // normal by default
+                case Typing.InnerEnum.Normal:
+                    return 0x00;
+                case Typing.InnerEnum.Fighting:
+                    return 0x01;
+                case Typing.InnerEnum.Flying:
+                    return 0x02;
+                case Typing.InnerEnum.Poison:
+                    return 0x03;
+                case Typing.InnerEnum.Ground:
+                    return 0x04;
+                case Typing.InnerEnum.Rock:
+                    return 0x05;
+                case Typing.InnerEnum.Bug:
+                    return 0x06;
+                case Typing.InnerEnum.Ghost:
+                    return 0x07;
+                case Typing.InnerEnum.Fire:
+                    return 0x09;
+                case Typing.InnerEnum.Water:
+                    return 0x0A;
+                case Typing.InnerEnum.Grass:
+                    return 0x0B;
+                case Typing.InnerEnum.Electric:
+                    return 0x0C;
+                case Typing.InnerEnum.Psychic:
+                    return 0x0D;
+                case Typing.InnerEnum.Ice:
+                    return 0x0E;
+                case Typing.InnerEnum.Dragon:
+                    return 0x0F;
+                case Typing.InnerEnum.Steel:
+                    return 0x08;
+                case Typing.InnerEnum.Dark:
+                    return 0x10;
+                default:
+                    return 0; // normal by default
             }
         }
 
@@ -758,12 +782,15 @@ namespace RandomizerSharp.Constants
 
         private static void Tag(IList<Trainer> allTrainers, int number, string tag)
         {
-            if (allTrainers.Count > number - 1) allTrainers[number - 1].Tag = tag;
+            if (allTrainers.Count > number - 1)
+                allTrainers[number - 1].Tag = tag;
         }
 
         private static void Tag(IList<Trainer> allTrainers, string tag, params int[] numbers)
         {
-            foreach (var num in numbers) if (allTrainers.Count > num - 1) allTrainers[num - 1].Tag = tag;
+            foreach (var num in numbers)
+                if (allTrainers.Count > num - 1)
+                    allTrainers[num - 1].Tag = tag;
         }
     }
 }

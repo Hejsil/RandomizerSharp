@@ -34,40 +34,41 @@ namespace RandomizerSharp.PokemonModel
             Tri
         }
 
-        public static readonly Typing Normal = new Typing("NORMAL", InnerEnum.Normal);
-        public static readonly Typing Fighting = new Typing("FIGHTING", InnerEnum.Fighting);
-        public static readonly Typing Flying = new Typing("FLYING", InnerEnum.Flying);
-        public static readonly Typing Grass = new Typing("GRASS", InnerEnum.Grass);
-        public static readonly Typing Water = new Typing("WATER", InnerEnum.Water);
-        public static readonly Typing Fire = new Typing("FIRE", InnerEnum.Fire);
-        public static readonly Typing Rock = new Typing("ROCK", InnerEnum.Rock);
-        public static readonly Typing Ground = new Typing("GROUND", InnerEnum.Ground);
-        public static readonly Typing Psychic = new Typing("PSYCHIC", InnerEnum.Psychic);
-        public static readonly Typing Bug = new Typing("BUG", InnerEnum.Bug);
-        public static readonly Typing Dragon = new Typing("DRAGON", InnerEnum.Dragon);
-        public static readonly Typing Electric = new Typing("ELECTRIC", InnerEnum.Electric);
-        public static readonly Typing Ghost = new Typing("GHOST", InnerEnum.Ghost);
-        public static readonly Typing Poison = new Typing("POISON", InnerEnum.Poison);
-        public static readonly Typing Ice = new Typing("ICE", InnerEnum.Ice);
-        public static readonly Typing Steel = new Typing("STEEL", InnerEnum.Steel);
-        public static readonly Typing Dark = new Typing("DARK", InnerEnum.Dark);
-        public static readonly Typing Gas = new Typing("GAS", InnerEnum.Gas, true);
-        public static readonly Typing Fairy = new Typing("FAIRY", InnerEnum.Fairy, true);
-        public static readonly Typing Wood = new Typing("WOOD", InnerEnum.Wood, true);
-        public static readonly Typing Abnormal = new Typing("ABNORMAL", InnerEnum.Abnormal, true);
-        public static readonly Typing Wind = new Typing("WIND", InnerEnum.Wind, true);
-        public static readonly Typing Sound = new Typing("SOUND", InnerEnum.Sound, true);
-        public static readonly Typing Light = new Typing("LIGHT", InnerEnum.Light, true);
-        public static readonly Typing Tri = new Typing("TRI", InnerEnum.Tri, true);
+        public static Typing Abnormal { get; } = new Typing("ABNORMAL", InnerEnum.Abnormal, true);
+        public static Typing Bug { get; } = new Typing("BUG", InnerEnum.Bug);
+        public static Typing Dark { get; } = new Typing("DARK", InnerEnum.Dark);
+        public static Typing Dragon { get; } = new Typing("DRAGON", InnerEnum.Dragon);
+        public static Typing Electric { get; } = new Typing("ELECTRIC", InnerEnum.Electric);
+        public static Typing Fairy { get; } = new Typing("FAIRY", InnerEnum.Fairy, true);
+        public static Typing Fighting { get; } = new Typing("FIGHTING", InnerEnum.Fighting);
+        public static Typing Fire { get; } = new Typing("FIRE", InnerEnum.Fire);
+        public static Typing Flying { get; } = new Typing("FLYING", InnerEnum.Flying);
+        public static Typing Gas { get; } = new Typing("GAS", InnerEnum.Gas, true);
+        public static Typing Ghost { get; } = new Typing("GHOST", InnerEnum.Ghost);
+        public static Typing Grass { get; } = new Typing("GRASS", InnerEnum.Grass);
+        public static Typing Ground { get; } = new Typing("GROUND", InnerEnum.Ground);
+        public static Typing Ice { get; } = new Typing("ICE", InnerEnum.Ice);
+        public static Typing Light { get; } = new Typing("LIGHT", InnerEnum.Light, true);
+
+        public static Typing Normal { get; } = new Typing("NORMAL", InnerEnum.Normal);
+        public static Typing Poison { get; } = new Typing("POISON", InnerEnum.Poison);
+        public static Typing Psychic { get; } = new Typing("PSYCHIC", InnerEnum.Psychic);
+        public static Typing Rock { get; } = new Typing("ROCK", InnerEnum.Rock);
+        public static Typing Sound { get; } = new Typing("SOUND", InnerEnum.Sound, true);
+        public static Typing Steel { get; } = new Typing("STEEL", InnerEnum.Steel);
+        public static Typing Tri { get; } = new Typing("TRI", InnerEnum.Tri, true);
+        public static Typing Water { get; } = new Typing("WATER", InnerEnum.Water);
+        public static Typing Wind { get; } = new Typing("WIND", InnerEnum.Wind, true);
+        public static Typing Wood { get; } = new Typing("WOOD", InnerEnum.Wood, true);
 
         private static readonly IList<Typing> ValueList = new List<Typing>();
         private static int _nextOrdinal;
-
-        public readonly InnerEnum InnerEnumValue;
         private readonly string _nameValue;
         private readonly int _ordinalValue;
 
-        public bool IsHackOnly;
+        public InnerEnum InnerEnumValue { get; }
+
+        public bool IsHackOnly { get; }
 
         static Typing()
         {
@@ -117,37 +118,25 @@ namespace RandomizerSharp.PokemonModel
         }
 
 
-        public static Typing RandomType(Random random)
-        {
-            return ValueList[random.Next(ValueList.Count)];
-        }
+        public static Typing RandomType(Random random) => ValueList[random.Next(ValueList.Count)];
 
-        public string CamelCase()
-        {
-            return RomFunctions.CamelCase(ToString());
-        }
+        public string CamelCase() => RomFunctions.CamelCase(ToString());
 
 
-        public static IList<Typing> Values()
-        {
-            return ValueList;
-        }
+        public static IList<Typing> Values() => ValueList;
 
-        public int Ordinal()
-        {
-            return _ordinalValue;
-        }
+        public int Ordinal() => _ordinalValue;
 
-        public override string ToString()
-        {
-            return _nameValue;
-        }
+        public override string ToString() => _nameValue;
 
         public static Typing ValueOf(string name)
         {
             foreach (var enumInstance in ValueList)
+            {
                 if (enumInstance._nameValue == name)
                     return enumInstance;
+            }
+
             throw new ArgumentException(name);
         }
     }

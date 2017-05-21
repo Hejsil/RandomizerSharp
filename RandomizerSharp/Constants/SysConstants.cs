@@ -30,15 +30,16 @@ namespace RandomizerSharp.Constants
     public class SysConstants
     {
         public const string AutoupdateUrl = "http://pokehacks.dabomstew.com/randomizer/autoupdate/";
-        public const string WebsiteUrl = "http://pokehacks.dabomstew.com/randomizer/";
-        public const int UpdateVersion = 1721;
         public const string CustomNamesFile = "customnames.rncn";
+        public static readonly string LineSep = Environment.NewLine;
+        public const string NnamesFile = "nicknames.txt";
+
+        public const string TclassesFile = "trainerclasses.txt";
 
         // OLD custom names files
         public const string TnamesFile = "trainernames.txt";
 
-        public const string TclassesFile = "trainerclasses.txt";
-        public const string NnamesFile = "nicknames.txt";
-        public static readonly string LineSep = Environment.NewLine;
+        public const int UpdateVersion = 1721;
+        public const string WebsiteUrl = "http://pokehacks.dabomstew.com/randomizer/";
     }
 }

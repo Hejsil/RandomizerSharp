@@ -61,8 +61,10 @@ namespace RandomizerSharp
         {
             var table = new HashSet<T>(items);
             foreach (var item in col)
+            {
                 if (table.Contains(item))
                     col.Remove(item);
+            }
         }
 
         public static void Shuffle<T>(this IList<T> list, Random random)
@@ -84,30 +86,15 @@ namespace RandomizerSharp
                 arr[i] = value;
         }
 
-        public static int ReadFully(this Stream stream, byte[] buffer)
-        {
-            return stream.Read(buffer, 0, buffer.Length);
-        }
+        public static int ReadFully(this Stream stream, byte[] buffer) => stream.Read(buffer, 0, buffer.Length);
 
-        public static long Seek(this Stream stream, int offset)
-        {
-            return stream.Seek(offset, SeekOrigin.Begin);
-        }
+        public static long Seek(this Stream stream, int offset) => stream.Seek(offset, SeekOrigin.Begin);
 
-        public static bool IsEmpty(this string str)
-        {
-            return str.Length == 0;
-        }
+        public static bool IsEmpty(this string str) => str.Length == 0;
 
-        public static bool IsEmpty<T>(this T[] arr)
-        {
-            return arr.Length == 0;
-        }
+        public static bool IsEmpty<T>(this T[] arr) => arr.Length == 0;
 
-        public static bool IsEmpty<T>(this ICollection<T> col)
-        {
-            return col.Count == 0;
-        }
+        public static bool IsEmpty<T>(this ICollection<T> col) => col.Count == 0;
 
         public static void AddAll<T1, T2>(this IDictionary<T1, T2> thisDictionary, IDictionary<T1, T2> other)
         {
@@ -119,8 +106,10 @@ namespace RandomizerSharp
         {
             var table = new HashSet<T>(items);
             foreach (var item in col)
+            {
                 if (!table.Contains(item))
                     col.Remove(item);
+            }
         }
     }
 }
