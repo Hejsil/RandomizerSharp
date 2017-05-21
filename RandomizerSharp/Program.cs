@@ -1,10 +1,9 @@
-﻿using System.IO;
-using RandomizerSharp.Randomizers;
+﻿using RandomizerSharp.Randomizers;
 using RandomizerSharp.RomHandlers;
 
 namespace RandomizerSharp
 {
-    internal class Program
+    public class Program
     {
         private static void Main(string[] args)
         {
@@ -12,22 +11,28 @@ namespace RandomizerSharp
             var radomized = @"A:\Programs\desmume-0.9.11-win64\roms\random.nds";
             
             var romHandler = new Gen5RomHandler(rom);
-            var randomizer = new Randomizer(romHandler, StreamWriter.Null);
-            var gen5Randomizer = new Gen5Randomizer(romHandler, StreamWriter.Null);
 
-            randomizer.RandomizeStarters(true);
-            randomizer.RandomizeStaticPokemon(true);
-            randomizer.RandomizeIngameTrades(true, true, true);
-            randomizer.RandomizeTrainerPokes(true, false, true, true);
-            randomizer.RandomEncounters(Randomizer.Encounters.CatchEmAll, false);
-            randomizer.RandomizeTmMoves(true, false, true, 1.0);
-            randomizer.RandomizeTmhmCompatibility(Randomizer.TmsHmsCompatibility.RandomPreferType);
-            randomizer.RandomizeMoveTutorMoves(true, false, 1.0);
-            randomizer.RandomizeMoveTutorCompatibility(true);
-            randomizer.RandomizeFieldItems(true);
+            var world = new WorldRandomizer(romHandler);
+            world.RandomizeStarters(true);
+            world.RandomizeStaticPokemon(true);
+            world.RandomizeIngameTrades(true, true, true);
+            world.RandomizeFieldItems(true);
+            world.RandomizeHiddenHollowPokemon();
 
-            gen5Randomizer.ApplyFastestText();
-            gen5Randomizer.RandomizeHiddenHollowPokemon();
+            var trainer = new TrainerRandomizer(romHandler);
+            trainer.RandomizeTrainerPokes(true, false, true, true);
+
+            var wild = new WildRandomizer(romHandler);
+            wild.RandomEncounters(WildRandomizer.Encounters.CatchEmAll, false);
+
+            var move = new MoveRandomizer(romHandler);
+            move.RandomizeTmMoves(true, false, true, 1.0);
+            move.RandomizeTmhmCompatibility(MoveRandomizer.TmsHmsCompatibility.RandomPreferType);
+            move.RandomizeMoveTutorMoves(true, false, 1.0);
+            move.RandomizeMoveTutorCompatibility(true);
+
+            var util = new UtilityTweacker(romHandler);
+            util.ApplyFastestText();
 
             romHandler.SaveRom(radomized);
         }

@@ -1,30 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using RandomizerSharp.Constants;
 using RandomizerSharp.PokemonModel;
+using RandomizerSharp.Properties;
 using RandomizerSharp.RomHandlers;
 
 namespace RandomizerSharp.Randomizers
 {
-    public class RomUtilities
+    public class UtilityTweacker : BaseRandomizer
     {
-        private readonly AbstractRomHandler _romHandler;
-        private readonly Random _random;
-
-        // ReSharper disable once SuggestBaseTypeForParameter
-        public RomUtilities(Gen5RomHandler romHandlerHandler)
-            : this(romHandlerHandler, (int) DateTime.Now.Ticks)
+        public UtilityTweacker(AbstractRomHandler romHandler)
+            : base(romHandler)
         { }
 
-        // ReSharper disable once SuggestBaseTypeForParameter
-        public RomUtilities(Gen5RomHandler romHandlerHandler, int seed)
-        {
-            _romHandler = romHandlerHandler;
-            _random = new Random(seed);
-        }
+        public UtilityTweacker(AbstractRomHandler romHandler, Random random)
+            : base(romHandler, random)
+        { }
 
         private static readonly IReadOnlyDictionary<int, Typing> Gen5UpdateMoveType = new Dictionary<int, Typing>
         {
@@ -351,7 +343,7 @@ namespace RandomizerSharp.Randomizers
 
         public void StandardizeExpCurves()
         {
-            var pokes = _romHandler.ValidPokemons;
+            var pokes = RomHandler.ValidPokemons;
             foreach (var pkmn in pokes)
             {
                 if (pkmn == null)
@@ -363,7 +355,7 @@ namespace RandomizerSharp.Randomizers
 
         public void OrderDamagingMovesByDamage()
         {
-            foreach (var pkmn in _romHandler.ValidPokemons)
+            foreach (var pkmn in RomHandler.ValidPokemons)
             {
                 var moves = pkmn.MovesLearnt;
                 //  Build up a list of damaging moves and their positions
@@ -371,7 +363,7 @@ namespace RandomizerSharp.Randomizers
                 var damagingMoves = new List<Move>();
                 for (var i = 0; i < moves.Count; i++)
                 {
-                    var mv = _romHandler.ValidMoves[moves[i].Move];
+                    var mv = RomHandler.ValidMoves[moves[i].Move];
                     if (mv.Power > 1)
                     {
                         //  considered a damaging move for this purpose
@@ -381,7 +373,7 @@ namespace RandomizerSharp.Randomizers
                 }
 
                 //  Ties should be sorted randomly, so shuffle the list first.
-                damagingMoves.Shuffle(_random);
+                damagingMoves.Shuffle(Random);
                 //  Sort the damaging moves by power
                 damagingMoves.Sort(
                     (m1, m2) =>
@@ -406,7 +398,7 @@ namespace RandomizerSharp.Randomizers
                 Level = 1,
                 Move = GlobalConstants.MetronomeMove
             };
-            foreach (var pkmn in _romHandler.ValidPokemons)
+            foreach (var pkmn in RomHandler.ValidPokemons)
             {
                 pkmn.MovesLearnt.Clear();
                 pkmn.MovesLearnt.Add(metronomeMl);
@@ -414,40 +406,40 @@ namespace RandomizerSharp.Randomizers
 
             //  trainers
             //  run this to remove all custom non-Metronome moves
-            foreach (var t in _romHandler.Trainers)
+            foreach (var t in RomHandler.Trainers)
             foreach (var tpk in t.Pokemon)
                 tpk.ResetMoves = true;
 
             //  tms
-            var tmMoves = _romHandler.TmMoves;
+            var tmMoves = RomHandler.TmMoves;
             for (var i = 0; i < tmMoves.Length; i++)
                 tmMoves[i] = GlobalConstants.MetronomeMove;
 
             //  movetutors
-            if (_romHandler.HasMoveTutors)
+            if (RomHandler.HasMoveTutors)
             {
-                var mtMoves = _romHandler.MoveTutorMoves;
+                var mtMoves = RomHandler.MoveTutorMoves;
                 for (var i = 0; i < mtMoves.Length; i++)
                     mtMoves[i] = GlobalConstants.MetronomeMove;
             }
 
             //  move tweaks
-            var metronome = _romHandler.ValidMoves[GlobalConstants.MetronomeMove];
+            var metronome = RomHandler.ValidMoves[GlobalConstants.MetronomeMove];
             metronome.Pp = 40;
-            var hms = _romHandler.HmMoves;
+            var hms = RomHandler.HmMoves;
             foreach (var hm in hms)
             {
-                var thisHm = _romHandler.ValidMoves[hm];
+                var thisHm = RomHandler.ValidMoves[hm];
                 thisHm.Pp = 0;
             }
         }
 
         public void FullMoveTutorCompatibility()
         {
-            if (!_romHandler.HasMoveTutors)
+            if (!RomHandler.HasMoveTutors)
                 return;
 
-            var compat = _romHandler.MoveTutorCompatibility;
+            var compat = RomHandler.MoveTutorCompatibility;
             foreach (var compatEntry in compat)
             {
                 var flags = compatEntry.Value;
@@ -459,15 +451,15 @@ namespace RandomizerSharp.Randomizers
 
         public void EnsureMoveTutorCompatSanity()
         {
-            if (!_romHandler.HasMoveTutors)
+            if (!RomHandler.HasMoveTutors)
                 return;
 
             //  if a pokemon learns a move in its moveset
             //  and there is a tutor of that move, make sure
             //  that tutor can be learned.
-            var compat = _romHandler.MoveTutorCompatibility;
-            var mtMoves = _romHandler.MoveTutorMoves;
-            foreach (var pkmn in _romHandler.ValidPokemons)
+            var compat = RomHandler.MoveTutorCompatibility;
+            var mtMoves = RomHandler.MoveTutorMoves;
+            foreach (var pkmn in RomHandler.ValidPokemons)
             {
                 var moveset = pkmn.MovesLearnt;
                 var pkmnCompat = compat[pkmn];
@@ -485,7 +477,7 @@ namespace RandomizerSharp.Randomizers
 
         public void MinimumCatchRate(int rateNonLegendary, int rateLegendary)
         {
-            var pokes = _romHandler.ValidPokemons;
+            var pokes = RomHandler.ValidPokemons;
             foreach (var pkmn in pokes)
             {
                 if (pkmn == null)
@@ -499,7 +491,7 @@ namespace RandomizerSharp.Randomizers
 
         public void CondenseLevelEvolutions(int maxLevel, int maxIntermediateLevel)
         {
-            var allPokemon = _romHandler.ValidPokemons;
+            var allPokemon = RomHandler.ValidPokemons;
             var changedEvos = new HashSet<Evolution>();
             //  search for level evolutions
             foreach (var pk in allPokemon)
@@ -536,7 +528,7 @@ namespace RandomizerSharp.Randomizers
 
         protected void ApplyCamelCaseNames()
         {
-            var pokes = _romHandler.ValidPokemons;
+            var pokes = RomHandler.ValidPokemons;
             foreach (var pkmn in pokes)
             {
                 if (pkmn == null)
@@ -548,8 +540,8 @@ namespace RandomizerSharp.Randomizers
 
         public void RemoveBrokenMoves()
         {
-            var allBanned = new HashSet<int>(_romHandler.GameBreakingMoves);
-            foreach (var pokemon in _romHandler.ValidPokemons)
+            var allBanned = new HashSet<int>(RomHandler.GameBreakingMoves);
+            foreach (var pokemon in RomHandler.ValidPokemons)
                 pokemon.MovesLearnt.RemoveAll(move => allBanned.Contains(move.Move));
         }
 
@@ -557,7 +549,7 @@ namespace RandomizerSharp.Randomizers
         {
             //  Fully random is easy enough - randomize then worry about rival
             //  carrying starter at the end
-            foreach (var t in _romHandler.Trainers)
+            foreach (var t in RomHandler.Trainers)
             {
                 foreach (var tp in t.Pokemon)
                 {
@@ -570,7 +562,7 @@ namespace RandomizerSharp.Randomizers
 
         public void ForceFullyEvolvedTrainerPokes(int minLevel)
         {
-            foreach (var t in _romHandler.Trainers)
+            foreach (var t in RomHandler.Trainers)
             foreach (var tp in t.Pokemon)
             {
                 if (tp.Level < minLevel)
@@ -609,7 +601,7 @@ namespace RandomizerSharp.Randomizers
                         break;
 
                     //  pick a random evolution to continue from
-                    pokemon = pokemon.EvolutionsFrom[_random.Next(pokemon.EvolutionsFrom.Count)].To;
+                    pokemon = pokemon.EvolutionsFrom[Random.Next(pokemon.EvolutionsFrom.Count)].To;
                     seenMons.Add(pokemon);
                 }
 
@@ -619,7 +611,7 @@ namespace RandomizerSharp.Randomizers
 
         public void UpdateMovesToGen5()
         {
-            foreach (var move in _romHandler.ValidMoves)
+            foreach (var move in RomHandler.ValidMoves)
             {
                 var id = move.InternalId;
 
@@ -642,7 +634,7 @@ namespace RandomizerSharp.Randomizers
         {
             UpdateMovesToGen5();
 
-            foreach (var move in _romHandler.ValidMoves)
+            foreach (var move in RomHandler.ValidMoves)
             {
                 var id = move.InternalId;
 
@@ -655,6 +647,124 @@ namespace RandomizerSharp.Randomizers
 
                 if (Gen6UpdateMovePp.TryGetValue(id, out var pp))
                     move.Pp = pp;
+            }
+        }
+
+        public void RemoveTradeEvolutions(bool changeMoveEvos)
+        {
+            var extraEvolutions = new HashSet<Evolution>();
+            foreach (var pkmn in RomHandler.ValidPokemons)
+            {
+                if (pkmn == null)
+                    continue;
+
+                extraEvolutions.Clear();
+                foreach (var evo in pkmn.EvolutionsFrom)
+                {
+                    if (changeMoveEvos && evo.Type == EvolutionType.LevelWithMove)
+                    {
+                        // read move
+                        var move = evo.ExtraInfo;
+                        var levelLearntAt = 1;
+                        foreach (var ml in evo.From.MovesLearnt)
+                        {
+                            if (ml.Move == move)
+                            {
+                                levelLearntAt = ml.Level;
+                                break;
+                            }
+                        }
+                        if (levelLearntAt == 1)
+                            levelLearntAt = 45;
+                        // change to pure level evo
+                        evo.Type = EvolutionType.Level;
+                        evo.ExtraInfo = levelLearntAt;
+                    }
+                    // Pure Trade
+                    if (evo.Type == EvolutionType.Trade)
+                    {
+                        // Replace w/ level 37
+                        evo.Type = EvolutionType.Level;
+                        evo.ExtraInfo = 37;
+                    }
+                    // Trade w/ Item
+                    if (evo.Type == EvolutionType.TradeItem)
+                    {
+                        // Get the current item & evolution
+                        var item = evo.ExtraInfo;
+                        if (evo.From.Id == Gen5Constants.SlowpokeIndex)
+                        {
+                            // Slowpoke is awkward - he already has a level evo
+                            // So we can't do Level up w/ Held Item for him
+                            // Put Water Stone instead
+                            evo.Type = EvolutionType.Stone;
+                            evo.ExtraInfo = Gen5Constants.WaterStoneIndex; // water
+                        }
+                        else
+                        {
+                            // Replace, for this entry, w/
+                            // Level up w/ Held Item at Day
+                            evo.Type = EvolutionType.LevelItemDay;
+                            // now add an extra evo for
+                            // Level up w/ Held Item at Night
+                            var extraEntry = new Evolution(
+                                evo.From,
+                                evo.To,
+                                true,
+                                EvolutionType.LevelItemNight,
+                                item);
+                            extraEvolutions.Add(extraEntry);
+                        }
+                    }
+                    if (evo.Type == EvolutionType.TradeSpecial)
+                    {
+                        // This is the karrablast <-> shelmet trade
+                        // Replace it with Level up w/ Other Species in Party
+                        // (22)
+                        // Based on what species we're currently dealing with
+                        evo.Type = EvolutionType.LevelWithOther;
+                        evo.ExtraInfo = evo.From.Id == Gen5Constants.KarrablastIndex
+                            ? Gen5Constants.ShelmetIndex
+                            : Gen5Constants.KarrablastIndex;
+                    }
+                }
+
+                foreach (var ev in extraEvolutions)
+                {
+                    pkmn.EvolutionsFrom.Add(ev);
+                    ev.To.EvolutionsTo.Add(ev);
+                }
+            }
+        }
+        
+        public void ApplyFastestText()
+        {
+            switch (RomHandler)
+            {
+                case Gen5RomHandler gen5:
+                    byte[] patch;
+
+                    switch (gen5.Game)
+                    {
+                        case Game.Black2:
+                            patch = Resources.b2_instant_text;
+                            break;
+                        case Game.White2:
+                            patch = Resources.w2_instant_text;
+                            break;
+                        case Game.Black:
+                            patch = Resources.b1_instant_text;
+                            break;
+                        case Game.White:
+                            patch = Resources.w1_instant_text;
+                            break;
+
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+
+                    FileFunctions.ApplyPatch(gen5.Arm9, patch);
+                    break;
             }
         }
     }

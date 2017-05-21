@@ -1,7 +1,5 @@
 ﻿using System;
-using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
-using RandomizerSharp.NDS;
 
 namespace RandomizerSharp.Benchmarks
 {

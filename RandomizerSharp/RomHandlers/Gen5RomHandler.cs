@@ -51,6 +51,17 @@ namespace RandomizerSharp.RomHandlers
             REntry = EntryFor(BaseRom.Code);
             Arm9 = ReadArm9();
 
+            if (REntry.Name.StartsWith("Black 2"))
+                Game = Game.Black2;
+            else if (REntry.Name.StartsWith("White 2"))
+                Game = Game.White2;
+            else if (REntry.Name.StartsWith("Black"))
+                Game = Game.Black;
+            else if (REntry.Name.StartsWith("White"))
+                Game = Game.White;
+            else
+                throw new ArgumentException();
+
             _stringsNarc = ReadNarc(REntry.GetString("TextStrings"));
             _storyTextNarc = ReadNarc(REntry.GetString("TextStory"));
             _scriptNarc = ReadNarc(REntry.GetString("Scripts"));
@@ -62,7 +73,7 @@ namespace RandomizerSharp.RomHandlers
             _encounterNarc = ReadNarc(REntry.GetString("WildPokemon"));
             _pokespritesNarc = ReadNarc(REntry.GetString("PokemonGraphics"));
 
-            if (REntry.RomType == Gen5Constants.TypeBw2)
+            if (IsBW2)
             {
                 _hhNarc = ReadNarc(REntry.GetString("HiddenHollows"));
                 _driftveilNarc = ReadNarc(REntry.GetString("DriftveilPokemon"));
@@ -77,17 +88,11 @@ namespace RandomizerSharp.RomHandlers
             _mnames = GetStrings(false, REntry.GetInt("TrainerMugshotsTextOffset"));
             _pokeNames = GetStrings(false, REntry.GetInt("PokemonNamesTextOffset"));
 
-            RomName = "Pokemon " + REntry.Name;
-            RomCode = REntry.Code;
-            SupportLevel = REntry.StaticPokemonSupport ? "Complete" : "No Static Pokemon";
-
             CanChangeTrainerText = true;
             FixedTrainerClassNamesLength = false;
             HasTimeBasedEncounters = true;
-            HasDVs = false;
             SupportsFourStartingMoves = true;
 
-            GenerationOfPokemon = 5;
             AbilitiesPerPokemon = 3;
             MaxTrainerNameLength = 10;
             MaxTrainerClassNameLength = 12;
@@ -119,12 +124,13 @@ namespace RandomizerSharp.RomHandlers
             LoadMoveTutorCompatibility();
 
             LoadIngameTrades();
-
-
+            
             LoadDoublesTrainerClasses();
             LoadTrainerNames();
             LoadTrainers();
         }
+
+        private bool IsBW2 => Game == Game.Black2 || Game == Game.White2;
 
         public byte[] Arm9 { get; }
 
@@ -591,8 +597,9 @@ namespace RandomizerSharp.RomHandlers
                 foreach (var entry in thisStarter)
                     WriteWord(scriptNARC.Files[entry.Entry], entry.Offset, Starters[i].Pokemon.Id);
             }
+
             // GIVE ME BACK MY PURRLOIN
-            if (REntry.RomType == Gen5Constants.TypeBw2)
+            if (IsBW2)
             {
                 var newScript = Gen5Constants.Bw2NewStarterScript;
                 var oldFile = scriptNARC.Files[REntry.GetInt("PokedexGivenFileOffset")];
@@ -646,7 +653,7 @@ namespace RandomizerSharp.RomHandlers
             WriteNarc(REntry.GetString("StarterGraphics"), starterNARC);
 
             // Fix text depending on version
-            if (REntry.RomType == Gen5Constants.TypeBw)
+            if (!IsBW2)
             {
                 IList<string> yourHouseStrings = GetStrings(true, REntry.GetInt("StarterLocationTextOffset"));
                 for (var i = 0; i < 3; i++)
@@ -708,7 +715,8 @@ namespace RandomizerSharp.RomHandlers
                 var baseOffset = map * 48;
                 var mapNameIndex = mapHeaderData[baseOffset + 26] & 0xFF;
                 var mapName1 = allDictionaryNames[mapNameIndex];
-                if (REntry.RomType == Gen5Constants.TypeBw2)
+
+                if (IsBW2)
                 {
                     var wildSet = mapHeaderData[baseOffset + 20] & 0xFF;
                     if (wildSet != 255)
@@ -810,7 +818,7 @@ namespace RandomizerSharp.RomHandlers
             }
 
             // Habitat List / Area Data?
-            if (REntry.RomType != Gen5Constants.TypeBw2)
+            if (!IsBW2)
                 return;
 
             var areaNarc = ReadNarc(REntry.GetString("PokemonAreaData"));
@@ -1069,7 +1077,7 @@ namespace RandomizerSharp.RomHandlers
                 allTrainers.Add(tr);
             }
 
-            if (REntry.RomType == Gen5Constants.TypeBw)
+            if (!IsBW2)
             {
                 Gen5Constants.TagTrainersBw(allTrainers);
                 Trainers = allTrainers;
@@ -1236,7 +1244,7 @@ namespace RandomizerSharp.RomHandlers
         private void LoadMiscTweaksAvailable()
         {
             var available = 0;
-            if (REntry.RomType == Gen5Constants.TypeBw2)
+            if (IsBW2)
                 available |= MiscTweak.RandomizeHiddenHollows.Value;
             if (REntry.TweakFiles["FastestTextTweak"] != null)
                 available |= MiscTweak.FastestText.Value;
@@ -1252,7 +1260,6 @@ namespace RandomizerSharp.RomHandlers
             if (patchName == null)
                 return false;
 
-            FileFunctions.ApplyPatch(data, (byte[]) Resources.ResourceManager.GetObject(patchName));
             return true;
         }
 
@@ -1279,9 +1286,7 @@ namespace RandomizerSharp.RomHandlers
                 TmMoves[i + Gen5Constants.TmBlockOneCount] = ReadWord(Arm9, offset + i * 2);
 
 
-            RequiredFieldTMs = REntry.RomType == Gen5Constants.TypeBw
-                ? Gen5Constants.Bw1RequiredFieldTMs
-                : Gen5Constants.Bw2RequiredFieldTMs;
+            RequiredFieldTMs = IsBW2 ? Gen5Constants.Bw2RequiredFieldTMs : Gen5Constants.Bw1RequiredFieldTMs;
         }
 
         private void SaveTmMoves()
@@ -1317,9 +1322,7 @@ namespace RandomizerSharp.RomHandlers
             SetStrings(false, REntry.GetInt("ItemDescriptionsTextOffset"), itemDescriptions);
 
             // Palettes
-            var baseOfPalettes = REntry.RomType == Gen5Constants.TypeBw
-                ? Gen5Constants.Bw1ItemPalettesPrefix
-                : Gen5Constants.Bw2ItemPalettesPrefix;
+            var baseOfPalettes = IsBW2 ? Gen5Constants.Bw2ItemPalettesPrefix : Gen5Constants.Bw1ItemPalettesPrefix;
 
             var offsPals = Find(Arm9, baseOfPalettes);
             if (offsPals > 0)
@@ -1358,9 +1361,7 @@ namespace RandomizerSharp.RomHandlers
                 hmMoves[i] = ReadWord(Arm9, offset + i * 2);
 
             HmMoves = hmMoves;
-            EarlyRequiredHmMoves = REntry.RomType == Gen5Constants.TypeBw2
-                ? Gen5Constants.Bw2EarlyRequiredHmMoves
-                : Gen5Constants.Bw1EarlyRequiredHmMoves;
+            EarlyRequiredHmMoves =  IsBW2 ? Gen5Constants.Bw2EarlyRequiredHmMoves : Gen5Constants.Bw1EarlyRequiredHmMoves;
         }
 
 
@@ -1427,7 +1428,7 @@ namespace RandomizerSharp.RomHandlers
                 MoveTutorCompatibility[pkmn] = flags;
             }
 
-            HasMoveTutors = REntry.RomType == Gen5Constants.TypeBw2;
+            HasMoveTutors = IsBW2;
         }
 
         private void SaveMoveTutorCompatibility()
@@ -1889,7 +1890,7 @@ namespace RandomizerSharp.RomHandlers
 
         private void LoadHiddenHollow()
         {
-            if (REntry.RomType != Gen5Constants.TypeBw2)
+            if (!IsBW2)
                 return;
 
             for (var i = 0; i < _hhNarc.Files.Count; ++i)
@@ -1916,7 +1917,7 @@ namespace RandomizerSharp.RomHandlers
 
         private void SaveHiddenHollow()
         {
-            if (REntry.RomType != Gen5Constants.TypeBw2)
+            if (!IsBW2)
                 return;
 
             foreach (var pair in _hiddenHollows)

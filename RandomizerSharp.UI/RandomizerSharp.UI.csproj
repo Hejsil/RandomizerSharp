@@ -56,7 +56,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Settings.cs" />
+    <Compile Include="Setting\IngameTradeRandomization.cs" />
+    <Compile Include="Setting\IngameTradeSettings.cs" />
+    <Compile Include="Setting\Settings.cs" />
+    <Compile Include="Setting\StarterRandomization.cs" />
+    <Compile Include="Setting\StaticRandomization.cs" />
+    <Compile Include="Setting\TrainerSettings.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

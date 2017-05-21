@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using ImageProcessor;
 using ImageProcessor.Imaging;
 
 namespace RandomizerSharp

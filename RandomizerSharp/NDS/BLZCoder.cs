@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Timers;
 
 namespace RandomizerSharp.NDS
 {
@@ -13,39 +15,6 @@ namespace RandomizerSharp.NDS
         private const int BlzMaxim = 0x01400000;
 
         public static byte[] Decode(IList<byte> data, string reference)
-        {
-            var bytes = new byte[data.Count];
-            data.CopyTo(bytes, 0);
-
-            var (result, resultLength) = BLZ_Decode(bytes);
-
-            var retbuf = new byte[resultLength];
-            for (var i = 0; i < resultLength; i++)
-                retbuf[i] = (byte)result[i];
-
-            return retbuf;
-        }
-
-        public static byte[] Encode(IList<byte> data, bool arm9, string reference)
-        {
-            var bytes = new byte[data.Count];
-            data.CopyTo(bytes, 0);
-
-            Console.Write(@"- encoding '{0}' (memory)", reference);
-            var startTime = DateTime.Now;
-            var (result, resultLength) = BLZ_Encode(bytes, arm9);
-
-            Console.Write(@" - done, time=" + (DateTime.Now - startTime).TotalMilliseconds + @"ms");
-            Console.WriteLine();
-
-            var retbuf = new byte[resultLength];
-            for (var i = 0; i < resultLength; i++)
-                retbuf[i] = (byte)result[i];
-
-            return retbuf;
-        }
-
-        private static (int[], int) BLZ_Decode(byte[] data)
         {
             int rawLen, len;
             int decLen;
@@ -84,7 +53,7 @@ namespace RandomizerSharp.NDS
                     throw new NotImplementedException("\nBad decoded length\n");
                 }
             }
-            var rawBuffer = new int[rawLen];
+            var rawBuffer = new byte[rawLen];
             var pak = 0;
             var raw = 0;
             var pakEnd = decLen + pakLen;
@@ -129,36 +98,58 @@ namespace RandomizerSharp.NDS
                 }
             }
             BLZ_Invert(rawBuffer, decLen, rawLen - decLen);
-            rawLen = raw;
+
             if (raw != rawEnd)
                 Console.Write(@", WARNING: unexpected end of encoded file!");
-            return (rawBuffer, rawLen);
+
+            return rawBuffer;
         }
 
-        private static int[] PrepareData(byte[] data)
+        public static byte[] Encode(IList<byte> data, bool arm9, string reference)
         {
-            var fs = data.Length;
-            var fb = new int[fs + 3];
+            Console.Write(@"- encoding '{0}' (memory)", reference);
+
+            var timer = new Stopwatch();
+            timer.Start();
+            var (result, resultLength) = BLZ_Encode(data, arm9);
+            timer.Stop();
+
+            Console.WriteLine(@" - done, time={0}ms", TimeSpan.FromTicks(timer.ElapsedTicks).TotalMilliseconds);
+
+            // We have to make a copy, as the encoder pads some data at the end, which is not needed later
+            var retbuf = new byte[resultLength];
+            Array.Copy(result, 0, retbuf, 0, resultLength);
+
+            return retbuf;
+        }
+
+        private static byte[] PrepareData(ICollection<byte> data)
+        {
+            var fs = data.Count;
+            var fb = new byte[fs + 3];
+            data.CopyTo(fb, 0);
+
             for (var i = 0; i < fs; i++)
-                fb[i] = data[i] & 0xFF;
+                fb[i] = (byte) (fb[i] & 0xFF);
+
             return fb;
         }
 
-        private static int ReadUnsigned(int[] buffer, int offset)
+        private static int ReadUnsigned(byte[] buffer, int offset)
         {
             return buffer[offset] | (buffer[offset + 1] << 8) | (buffer[offset + 2] << 16) |
                    ((buffer[offset + 3] & 0x7F) << 24);
         }
 
-        private static void WriteUnsigned(int[] buffer, int offset, int value)
+        private static void WriteUnsigned(byte[] buffer, int offset, int value)
         {
-            buffer[offset] = value & 0xFF;
-            buffer[offset + 1] = (value >> 8) & 0xFF;
-            buffer[offset + 2] = (value >> 16) & 0xFF;
-            buffer[offset + 3] = (value >> 24) & 0x7F;
+            buffer[offset] = (byte) (value & 0xFF);
+            buffer[offset + 1] = (byte)((value >> 8) & 0xFF);
+            buffer[offset + 2] = (byte)((value >> 16) & 0xFF);
+            buffer[offset + 3] = (byte)((value >> 24) & 0x7F);
         }
 
-        private static (int[], int) BLZ_Encode(byte[] data, bool arm9)
+        private static (byte[], int) BLZ_Encode(IList<byte> data, bool arm9)
         {
             var rawBuffer = PrepareData(data);
             var rawLen = rawBuffer.Length - 3;
@@ -173,7 +164,7 @@ namespace RandomizerSharp.NDS
             return (pakBuffer, pakLen);
         }
 
-        private static (int[], int) BLZ_Code(int[] rawBuffer, int rawLen, bool arm9)
+        private static (byte[], int) BLZ_Code(byte[] rawBuffer, int rawLen, bool arm9)
         {
             var flag = 0;
             var bestPosition = 0;
@@ -182,7 +173,7 @@ namespace RandomizerSharp.NDS
             var pakLength = rawLen + (rawLen + 7) / 8 + 11;
             var rawNew = rawLen;
 
-            var pakBuffer = new int[pakLength];
+            var pakBuffer = new byte[pakLength];
 
             if (arm9)
                 rawNew -= 0x4000;
@@ -204,14 +195,14 @@ namespace RandomizerSharp.NDS
                 int lenBest1;
                 (bestPosition, lenBest1) = Search(rawBuffer, bestPosition, raw, rawEnd);
 
-                pakBuffer[flag] = pakBuffer[flag] << 1;
+                pakBuffer[flag] = (byte) (pakBuffer[flag] << 1);
 
                 if (lenBest1 > BlzThreshold)
                 {
                     raw += lenBest1;
                     pakBuffer[flag] |= 1;
-                    pakBuffer[pak++] = ((lenBest1 - (BlzThreshold + 1)) << 4) | ((bestPosition - 3) >> 8);
-                    pakBuffer[pak++] = (bestPosition - 3) & 0xFF;
+                    pakBuffer[pak++] = (byte) (((lenBest1 - (BlzThreshold + 1)) << 4) | ((bestPosition - 3) >> 8));
+                    pakBuffer[pak++] = (byte) ((bestPosition - 3) & 0xFF);
                 }
                 else
                 {
@@ -228,7 +219,7 @@ namespace RandomizerSharp.NDS
             while (mask > 0 && mask != 1)
             {
                 mask = mask >> BlzShift;
-                pakBuffer[flag] = pakBuffer[flag] << 1;
+                pakBuffer[flag] = (byte) (pakBuffer[flag] << 1);
             }
 
             pakLength = pak;
@@ -249,13 +240,14 @@ namespace RandomizerSharp.NDS
             }
             else
             {
-                var tmp = new int[rawTmpPos + pakTempPos + 11];
+                var tmp = new byte[rawTmpPos + pakTempPos + 11];
                 int len;
                 for (len = 0; len < rawTmpPos; len++)
                     tmp[len] = rawBuffer[len];
                 for (len = 0; len < pakTempPos; len++)
                     tmp[rawTmpPos + len] = pakBuffer[len + pakLength - pakTempPos];
                 pakBuffer = tmp;
+
                 pak = rawTmpPos + pakTempPos;
                 var encLen = pakTempPos;
                 var hdrLen = 8;
@@ -267,7 +259,7 @@ namespace RandomizerSharp.NDS
                 }
                 WriteUnsigned(pakBuffer, pak, encLen + hdrLen);
                 pak += 3;
-                pakBuffer[pak++] = hdrLen;
+                pakBuffer[pak++] = (byte) hdrLen;
                 WriteUnsigned(pakBuffer, pak, incLen - hdrLen);
                 pak += 4;
             }
@@ -275,7 +267,7 @@ namespace RandomizerSharp.NDS
             return (pakBuffer, pak);
         }
         
-        public static (int, int) Search(int[] rawBuffer, int bestPosition, int raw, int rawEnd)
+        public static (int, int) Search(byte[] rawBuffer, int bestPosition, int raw, int rawEnd)
         {
             var bestLength = BlzThreshold;
 
@@ -307,7 +299,7 @@ namespace RandomizerSharp.NDS
             return (bestPosition, bestLength);
         }
 
-        private static void BLZ_Invert(int[] buffer, int offset, int length)
+        private static void BLZ_Invert(byte[] buffer, int offset, int length)
         {
             var bottom = offset + length - 1;
             while (offset < bottom)

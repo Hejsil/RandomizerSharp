@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Security.Policy;
 using RandomizerSharp.PokemonModel;
 
 namespace RandomizerSharp.RomHandlers
@@ -9,10 +10,7 @@ namespace RandomizerSharp.RomHandlers
     public abstract class AbstractRomHandler
     {
         public int AbilitiesPerPokemon { get; protected set; }
-
-
         public string[] AbilityNames { get; protected set; } = Array.Empty<string>();
-
         public IReadOnlyList<Move> AllMoves { get; protected set; } = Array.Empty<Move>();
         public ItemList AllowedItems { get; protected set; }
         public IReadOnlyList<Pokemon> AllPokemons { get; protected set; } = Array.Empty<Pokemon>();
@@ -47,10 +45,7 @@ namespace RandomizerSharp.RomHandlers
 
         public HashSet<int> GameBreakingMoves { get; } = new HashSet<int> { 49, 82 };
 
-        public int GenerationOfPokemon { get; protected set; }
-
-
-        public bool HasDVs { get; protected set; }
+        public Game Game { get; set; }
 
         public bool HasMoveTutors { get; protected set; }
 
@@ -98,14 +93,8 @@ namespace RandomizerSharp.RomHandlers
 
         public IReadOnlyList<int> RequiredFieldTMs { get; protected set; } = Array.Empty<int>();
 
-        public string RomCode { get; protected set; } = "";
-
-        public string RomName { get; protected set; } = "";
-
         public IReadOnlyList<StarterPokemon> Starters { get; protected set; } = Array.Empty<StarterPokemon>();
         public Pokemon[] StaticPokemon { get; protected set; } = Array.Empty<Pokemon>();
-
-        public string SupportLevel { get; protected set; } = "";
 
         public bool SupportsFourStartingMoves { get; protected set; }
 
