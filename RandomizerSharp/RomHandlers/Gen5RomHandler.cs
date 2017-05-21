@@ -645,7 +645,7 @@ namespace RandomizerSharp.RomHandlers
             if (offset <= 0)
                 return;
 
-            Array.Copy(oldFile, 0, newFile, 0, oldFile.Length);
+            oldFile.CopyTo(newFile, 0);
             Array.Copy(newScript.ToArray(), 0, newFile, oldFile.Length, newScript.Count);
             if (_romEntry.Code[3] == 'J')
             {
@@ -1436,9 +1436,9 @@ namespace RandomizerSharp.RomHandlers
             if (hexString.Length % 2 != 0)
                 return -3; // error
 
-            var hex = Convert.ToInt32(hexString, 16);
             var searchFor = new byte[hexString.Length / 2];
-            PpTxtHandler.WriteInt(searchFor, 0, hex);
+            for (var i = 0; i < searchFor.Length; i++)
+                searchFor[i] = Convert.ToByte(hexString.Substring(i * 2, 2), 16);
 
             var found = RomFunctions.Search(data, searchFor);
 

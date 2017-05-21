@@ -526,31 +526,35 @@ namespace RandomizerSharp.Constants
         static Gen5Constants()
         {
             AllowedItems1 = new ItemList(638);
+
             // Key items + version exclusives
-            AllowedItems.BanRange(428, 109);
-            AllowedItems.BanRange(621, 18);
-            AllowedItems.BanSingles(574, 578, 579, 616, 617);
+            AllowedItems1.BanRange(428, 109);
+            AllowedItems1.BanRange(621, 18);
+            AllowedItems1.BanSingles(574, 578, 579, 616, 617);
+
             // Unknown blank items or version exclusives
-            AllowedItems.BanRange(113, 3);
-            AllowedItems.BanRange(120, 14);
+            AllowedItems1.BanRange(113, 3);
+            AllowedItems1.BanRange(120, 14);
+
             // TMs & HMs - tms cant be held in gen5
-            AllowedItems.TmRange(328, 92);
-            AllowedItems.TmRange(618, 3);
-            AllowedItems.BanRange(328, 100);
-            AllowedItems.BanRange(618, 3);
+            AllowedItems1.TmRange(328, 92);
+            AllowedItems1.TmRange(618, 3);
+            AllowedItems1.BanRange(328, 100);
+            AllowedItems1.BanRange(618, 3);
+
             // Battle Launcher exclusives
-            AllowedItems.BanRange(592, 24);
+            AllowedItems1.BanRange(592, 24);
 
             // non-bad items
             // ban specific pokemon hold items, berries, apricorns, mail
             NonBadItems1 = AllowedItems.Copy();
-            NonBadItems.BanSingles(0x6F, 0x70, 0xEC, 0x9B);
-            NonBadItems.BanRange(0x5F, 4); // mulch
-            NonBadItems.BanRange(0x87, 2); // orbs
-            NonBadItems.BanRange(0x89, 12); // mails
-            NonBadItems.BanRange(0x9F, 54); // berries DansGame
-            NonBadItems.BanRange(0x100, 4); // pokemon specific
-            NonBadItems.BanRange(0x104, 5); // contest scarves
+            NonBadItems1.BanSingles(0x6F, 0x70, 0xEC, 0x9B);
+            NonBadItems1.BanRange(0x5F, 4); // mulch
+            NonBadItems1.BanRange(0x87, 2); // orbs
+            NonBadItems1.BanRange(0x89, 12); // mails
+            NonBadItems1.BanRange(0x9F, 54); // berries DansGame
+            NonBadItems1.BanRange(0x100, 4); // pokemon specific
+            NonBadItems1.BanRange(0x104, 5); // contest scarves
         }
 
         public static byte MoveCategoryToByte(MoveCategory cat)
