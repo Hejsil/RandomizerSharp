@@ -1805,12 +1805,8 @@ namespace RandomizerSharp.RomHandlers
 
         private void LoadPokemonSprites()
         {
-            var pokemonSprites = new Bitmap[AllPokemons.Count];
-
-            for (var i = 0; i < pokemonSprites.Length; i++)
+            foreach (var pokemon in AllPokemons)
             {
-                var pokemon = AllPokemons[i];
-
                 // First prepare the palette, it's the easy bit
                 var rawPalette = _pokespritesNarc.Files[pokemon.Id * 20 + 18];
                 var palette = new int[16];
@@ -1822,10 +1818,8 @@ namespace RandomizerSharp.RomHandlers
                 var uncompressedPic = DsDecmp.Decompress(compressedPic);
 
                 // Output to 64x144 tiled image to prepare for unscrambling
-                pokemonSprites[i] = GfxFunctions.DrawTiledImage(uncompressedPic, palette, 48, 64, 144, 4);
+                pokemon.Sprite = GfxFunctions.DrawTiledImage(uncompressedPic, palette, 48, 64, 144, 4);
             }
-
-            PokemonSprites = pokemonSprites;
         }
 
         private void LoadHiddenHollow()

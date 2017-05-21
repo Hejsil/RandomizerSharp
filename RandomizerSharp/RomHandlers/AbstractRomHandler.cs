@@ -86,7 +86,6 @@ namespace RandomizerSharp.RomHandlers
 
         public int[] MoveTutorMoves { get; protected set; } = Array.Empty<int>();
         public ItemList NonBadItems { get; protected set; }
-        public IReadOnlyList<Bitmap> PokemonSprites { get; protected set; } = Array.Empty<Bitmap>();
         public int[] RegularFieldItems { get; protected set; } = Array.Empty<int>();
 
         public IReadOnlyList<int> RequiredFieldTMs { get; protected set; } = Array.Empty<int>();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace RandomizerSharp.PokemonModel
 {
@@ -93,6 +94,7 @@ namespace RandomizerSharp.PokemonModel
         public int Special { get; set; }
         public int Speed { get; set; }
         public bool TemporaryFlag { get; set; }
+        public Bitmap Sprite { get; set; }
 
         // ReSharper disable once InconsistentNaming
         public bool[] TMHMCompatibility { get; set; } = Array.Empty<bool>();
