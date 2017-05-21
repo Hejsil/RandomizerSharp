@@ -6,15 +6,18 @@
         xmlns:local="clr-namespace:RandomizerSharp.UI"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
-    <Grid Margin="50">
-        <Grid.RowDefinitions>
-            <RowDefinition></RowDefinition>
-            <RowDefinition Height="50"></RowDefinition>
-            <RowDefinition></RowDefinition>
-        </Grid.RowDefinitions>
-
-        <Button Name="PickButton" Grid.Row="0" Click="PickButton_OnClick">Pick Rom</Button>
-        <Button Name="SaveButton" Grid.Row="2" IsEnabled="False" Click="SaveButton_OnClick">No rom has been picked</Button>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="File">
+                <MenuItem Header="Open Rom"></MenuItem>
+                <MenuItem Header="Save Rom"></MenuItem>
+                <Separator></Separator>
+                <MenuItem Header="Exit"></MenuItem>
+            </MenuItem>
+        </Menu>
         
-    </Grid>
+        <TabControl>
+            
+        </TabControl>
+    </DockPanel>
 </Window>
