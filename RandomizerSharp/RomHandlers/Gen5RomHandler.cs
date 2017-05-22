@@ -399,7 +399,6 @@ namespace RandomizerSharp.RomHandlers
             }
 
             AllPokemons = allPokemons;
-            ValidPokemons = new ReadOnlyCollection<Pokemon>(allPokemons.SliceFrom(1, Gen5Constants.PokemonCount));
             PopulateEvolutions();
         }
 
@@ -415,7 +414,7 @@ namespace RandomizerSharp.RomHandlers
                 {
                     Name = moveNames[i],
                     Number = i,
-                    InternalId = i,
+                    Id = i,
                     Hitratio = moveData[4] & 0xFF,
                     Power = moveData[3] & 0xFF,
                     Pp = moveData[5] & 0xFF,
@@ -432,7 +431,6 @@ namespace RandomizerSharp.RomHandlers
             }
 
             AllMoves = allMoves;
-            ValidMoves = new ReadOnlyCollection<Move>(allMoves.SliceFrom(1, Gen5Constants.MoveCount));
             FieldMoves = Gen5Constants.FieldMoves;
         }
 
@@ -1372,8 +1370,6 @@ namespace RandomizerSharp.RomHandlers
 
         private void LoadMoveTutorCompatibility()
         {
-            MoveTutorCompatibility.Clear();
-
             if (!HasMoveTutors)
                 return;
 
@@ -1397,7 +1393,7 @@ namespace RandomizerSharp.RomHandlers
                     Array.Copy(mtflags, 1, flags, offsetOfThisData + 1, countsPersonalOrder[mt]);
                 }
 
-                MoveTutorCompatibility[pkmn] = flags;
+                pkmn.MoveTutorCompatibility = flags;
             }
 
             HasMoveTutors = IsBw2;
@@ -1413,10 +1409,9 @@ namespace RandomizerSharp.RomHandlers
             ArraySlice<int> countsPersonalOrder = new[] { 15, 17, 13, 15 };
             ArraySlice<int> countsMoveOrder = new[] { 13, 15, 15, 17 };
             ArraySlice<int> personalToMoveOrder = new[] { 1, 3, 0, 2 };
-            foreach (var compatEntry in MoveTutorCompatibility)
+            foreach (var pkmn in AllPokemons)
             {
-                var pkmn = compatEntry.Key;
-                var flags = compatEntry.Value;
+                var flags = pkmn.MoveTutorCompatibility;
                 var data = _pokeNarc.Files[pkmn.Id];
                 for (var mt = 0; mt < 4; mt++)
                 {

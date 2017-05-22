@@ -26,8 +26,8 @@ namespace RandomizerSharp.Randomizers
             var banned = RomHandler.BannedForStaticPokemon;
             if (legendForLegend)
             {
-                var legendariesLeft = new List<Pokemon>(RomHandler.LegendaryPokemons);
-                var nonlegsLeft = new List<Pokemon>(RomHandler.NonLegendaryPokemons);
+                var legendariesLeft = LegendaryPokemon.ToList();
+                var nonlegsLeft = NonLegendaryPokemon.ToList();
                 legendariesLeft.RemoveAll(banned.Contains);
                 nonlegsLeft.RemoveAll(banned.Contains);
 
@@ -39,28 +39,29 @@ namespace RandomizerSharp.Randomizers
                         currentStaticPokemon[i] = legendariesLeft[num];
                         legendariesLeft.RemoveAt(num);
 
-                        if (legendariesLeft.Count == 0)
-                        {
-                            legendariesLeft.AddRange(RomHandler.LegendaryPokemons);
-                            legendariesLeft.RemoveAll(banned.Contains);
-                        }
+                        if (legendariesLeft.Count != 0)
+                            continue;
+
+                        legendariesLeft.AddRange(LegendaryPokemon);
+                        legendariesLeft.RemoveAll(banned.Contains);
                     }
                     else
                     {
                         var num = Random.Next(nonlegsLeft.Count);
                         currentStaticPokemon[i] = nonlegsLeft[num];
                         nonlegsLeft.RemoveAt(num);
-                        if (nonlegsLeft.Count == 0)
-                        {
-                            nonlegsLeft.AddRange(RomHandler.NonLegendaryPokemons);
-                            nonlegsLeft.RemoveAll(banned.Contains);
-                        }
+
+                        if (nonlegsLeft.Count != 0)
+                            continue;
+
+                        nonlegsLeft.AddRange(NonLegendaryPokemon);
+                        nonlegsLeft.RemoveAll(banned.Contains);
                     }
                 }
             }
             else
             {
-                var pokemonLeft = new List<Pokemon>(RomHandler.ValidPokemons);
+                var pokemonLeft = ValidPokemons.ToList();
                 pokemonLeft.RemoveAll(banned.Contains);
                 for (var i = 0; i < currentStaticPokemon.Length; i++)
                 {
@@ -71,7 +72,7 @@ namespace RandomizerSharp.Randomizers
 
                     if (pokemonLeft.Count == 0)
                     {
-                        pokemonLeft.AddRange(RomHandler.ValidPokemons);
+                        pokemonLeft.AddRange(ValidPokemons);
                         pokemonLeft.RemoveAll(banned.Contains);
                     }
                 }
@@ -142,7 +143,7 @@ namespace RandomizerSharp.Randomizers
             // Randomise
             var starterCount = 3;
 
-            if (RomHandler.IsYellow)
+            if (RomHandler.Game == Game.Yellow)
                 starterCount = 2;
 
             foreach (var starter in RomHandler.Starters)
@@ -151,7 +152,7 @@ namespace RandomizerSharp.Randomizers
             for (var i = 0; i < starterCount; i++)
             {
                 Pokemon pkmn;
-                var selectFrom = RomHandler.ValidPokemons;
+                var selectFrom = ValidPokemons;
 
                 if (withTwoEvos)
                 {

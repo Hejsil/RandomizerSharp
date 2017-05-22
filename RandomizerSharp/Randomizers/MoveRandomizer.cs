@@ -21,9 +21,9 @@ namespace RandomizerSharp.Randomizers
 
         public void RandomizeMovePowers()
         {
-            foreach (var mv in RomHandler.ValidMoves)
+            foreach (var mv in ValidMoves)
             {
-                if (mv.InternalId == Move.StruggleId || mv.Power < 10)
+                if (mv.Id == Move.StruggleId || mv.Power < 10)
                     continue;
 
                 //  "Generic" damaging move to randomize power
@@ -54,9 +54,9 @@ namespace RandomizerSharp.Randomizers
 
         public void RandomizeMovePPs()
         {
-            foreach (var mv in RomHandler.ValidMoves)
+            foreach (var mv in ValidMoves)
             {
-                if (mv == null || mv.InternalId == 165)
+                if (mv == null || mv.Id == 165)
                     continue;
 
                 if (Random.Next(3) != 2)
@@ -68,52 +68,52 @@ namespace RandomizerSharp.Randomizers
 
         public void RandomizeMoveAccuracies()
         {
-            foreach (var mv in RomHandler.ValidMoves)
+            foreach (var mv in ValidMoves)
             {
-                if (mv != null &&
-                    mv.InternalId != 165 &&
-                    mv.Hitratio >= 5)
-                    if (mv.Hitratio <= 50)
-                    {
-                        //  lowest tier (acc <= 50)
-                        //  new accuracy = rand(20...50) inclusive
-                        //  with a 10% chance to increase by 50%
-                        mv.Hitratio = Random.Next(7) * 5 + 20;
-                        if (Random.Next(10) == 0)
-                            mv.Hitratio = mv.Hitratio * 1 / (5 * 5);
-                    }
-                    else if (mv.Hitratio < 90)
-                    {
-                        //  middle tier (50 < acc < 90)
-                        //  count down from 100% to 20% in 5% increments with 20%
-                        //  chance to "stop" and use the current accuracy at each
-                        //  increment
-                        //  gives decent-but-not-100% accuracy most of the time
-                        mv.Hitratio = 100;
-                        while (mv.Hitratio > 20)
-                        {
-                            if (Random.Next(10) < 2)
-                                break;
+                if (mv == null || mv.Id == 165 || !(mv.Hitratio >= 5))
+                    continue;
 
-                            mv.Hitratio -= 5;
-                        }
-                    }
-                    else
+                if (mv.Hitratio <= 50)
+                {
+                    //  lowest tier (acc <= 50)
+                    //  new accuracy = rand(20...50) inclusive
+                    //  with a 10% chance to increase by 50%
+                    mv.Hitratio = Random.Next(7) * 5 + 20;
+                    if (Random.Next(10) == 0)
+                        mv.Hitratio = mv.Hitratio * 1 / (5 * 5);
+                }
+                else if (mv.Hitratio < 90)
+                {
+                    //  middle tier (50 < acc < 90)
+                    //  count down from 100% to 20% in 5% increments with 20%
+                    //  chance to "stop" and use the current accuracy at each
+                    //  increment
+                    //  gives decent-but-not-100% accuracy most of the time
+                    mv.Hitratio = 100;
+                    while (mv.Hitratio > 20)
                     {
-                        //  highest tier (90 <= acc <= 100)
-                        //  count down from 100% to 20% in 5% increments with 40%
-                        //  chance to "stop" and use the current accuracy at each
-                        //  increment
-                        //  gives high accuracy most of the time
-                        mv.Hitratio = 100;
-                        while (mv.Hitratio > 20)
-                        {
-                            if (Random.Next(10) < 4)
-                                break;
+                        if (Random.Next(10) < 2)
+                            break;
 
-                            mv.Hitratio -= 5;
-                        }
+                        mv.Hitratio -= 5;
                     }
+                }
+                else
+                {
+                    //  highest tier (90 <= acc <= 100)
+                    //  count down from 100% to 20% in 5% increments with 40%
+                    //  chance to "stop" and use the current accuracy at each
+                    //  increment
+                    //  gives high accuracy most of the time
+                    mv.Hitratio = 100;
+                    while (mv.Hitratio > 20)
+                    {
+                        if (Random.Next(10) < 4)
+                            break;
+
+                        mv.Hitratio -= 5;
+                    }
+                }
             }
         }
 
@@ -122,9 +122,9 @@ namespace RandomizerSharp.Randomizers
             if (!RomHandler.HasPhysicalSpecialSplit)
                 return;
 
-            foreach (var mv in RomHandler.ValidMoves)
+            foreach (var mv in ValidMoves)
             {
-                if (mv.InternalId != 165 && mv.Category != MoveCategory.Status)
+                if (mv.Id != 165 && mv.Category != MoveCategory.Status)
                     mv.Category = (MoveCategory) Random.Next(2);
             }
         }
@@ -147,38 +147,39 @@ namespace RandomizerSharp.Randomizers
             var validDamagingMoves = new List<Move>();
             var validTypeMoves = new Dictionary<Typing, List<Move>>();
             var validTypeDamagingMoves = new Dictionary<Typing, List<Move>>();
-            foreach (var mv in RomHandler.ValidMoves)
+            foreach (var mv in ValidMoves)
             {
-                if (mv != null &&
-                    !GlobalConstants.BannedRandomMoves[mv.Number] &&
-                    !allBanned.Contains(mv.Number))
+                if (mv == null || GlobalConstants.BannedRandomMoves[mv.Number] || allBanned.Contains(mv.Number))
+                    continue;
+
+                validMoves.Add(mv);
+
+                if (mv.Type != null)
                 {
-                    validMoves.Add(mv);
-                    if (mv.Type != null)
-                    {
-                        if (!validTypeMoves.ContainsKey(mv.Type))
-                            validTypeMoves[mv.Type] = new List<Move>();
+                    if (!validTypeMoves.ContainsKey(mv.Type))
+                        validTypeMoves[mv.Type] = new List<Move>();
 
-                        validTypeMoves[mv.Type].Add(mv);
-                    }
-
-                    if (!GlobalConstants.BannedForDamagingMove[mv.Number])
-                        if (mv.Power >= 2 * GlobalConstants.MinDamagingMovePower ||
-                            mv.Power >= GlobalConstants.MinDamagingMovePower && mv.Hitratio >= 90)
-                        {
-                            validDamagingMoves.Add(mv);
-                            if (mv.Type != null)
-                            {
-                                if (!validTypeDamagingMoves.ContainsKey(mv.Type))
-                                    validTypeDamagingMoves[mv.Type] = new List<Move>();
-
-                                validTypeDamagingMoves[mv.Type].Add(mv);
-                            }
-                        }
+                    validTypeMoves[mv.Type].Add(mv);
                 }
+
+                if (GlobalConstants.BannedForDamagingMove[mv.Number])
+                    continue;
+
+                if (mv.Power < 2 * GlobalConstants.MinDamagingMovePower && (mv.Power < GlobalConstants.MinDamagingMovePower || !(mv.Hitratio >= 90)))
+                    continue;
+
+                validDamagingMoves.Add(mv);
+
+                if (mv.Type == null)
+                    continue;
+
+                if (!validTypeDamagingMoves.ContainsKey(mv.Type))
+                    validTypeDamagingMoves[mv.Type] = new List<Move>();
+
+                validTypeDamagingMoves[mv.Type].Add(mv);
             }
 
-            foreach (var pokemon in RomHandler.ValidPokemons)
+            foreach (var pokemon in ValidPokemons)
             {
                 var learnt = new HashSet<int>();
                 var moves = pokemon.MovesLearnt;
@@ -351,8 +352,9 @@ namespace RandomizerSharp.Randomizers
             }
 
             //  Determine which moves are pickable
-            var usableMoves = new List<Move>(RomHandler.ValidMoves);
+            var usableMoves = ValidMoves.ToList();
             usableMoves.RemoveAt(0);
+
             //  remove null entry
             var unusableMoves = new HashSet<Move>();
             var unusableDamagingMoves = new HashSet<Move>();
@@ -367,7 +369,7 @@ namespace RandomizerSharp.Randomizers
                     unusableDamagingMoves.Add(mv);
             }
 
-            usableMoves.RemoveAll(unusableMoves.Contains);
+            usableMoves.RemoveAll(unusableMoves);
             var usableDamagingMoves = new List<Move>(usableMoves);
             usableDamagingMoves.RemoveAll(unusableDamagingMoves.Contains);
             //  pick (tmCount - preservedFieldMoveCount) moves
@@ -408,7 +410,7 @@ namespace RandomizerSharp.Randomizers
             //  that TM can be learned.
             var tmMoves = RomHandler.TmMoves;
 
-            foreach (var pokemon in RomHandler.ValidPokemons)
+            foreach (var pokemon in ValidPokemons)
             {
                 var moveset = pokemon.MovesLearnt;
                 var pkmnCompat = pokemon.TMHMCompatibility;
@@ -428,16 +430,16 @@ namespace RandomizerSharp.Randomizers
             //  Get current compatibility
             //  new: increase HM chances if required early on
             var requiredEarlyOn = RomHandler.EarlyRequiredHmMoves;
-            var tmHMs = new List<int>(RomHandler.TmMoves);
+            var tmHMs = RomHandler.TmMoves.ToList();
             tmHMs.AddRange(RomHandler.HmMoves);
 
-            foreach (var pkmn in RomHandler.ValidPokemons)
+            foreach (var pkmn in ValidPokemons)
             {
                 var flags = pkmn.TMHMCompatibility;
                 for (var i = 1; i <= tmHMs.Count; i++)
                 {
                     var move = tmHMs[i - 1];
-                    var mv = RomHandler.ValidMoves[move];
+                    var mv = ValidMoves[move];
                     var probability = 0.5;
                     if (compatibility == TmsHmsCompatibility.RandomPreferType)
                         if (pkmn.PrimaryType.Equals(mv.Type) ||
@@ -460,7 +462,7 @@ namespace RandomizerSharp.Randomizers
                 return;
 
             var tmCount = RomHandler.TmMoves.Length;
-            foreach (var pokemon in RomHandler.ValidPokemons)
+            foreach (var pokemon in ValidPokemons)
             {
                 var flags = pokemon.TMHMCompatibility;
                 for (var i = tmCount + 1; i < flags.Length; i++)
@@ -494,7 +496,7 @@ namespace RandomizerSharp.Randomizers
             }
 
             //  Determine which moves are pickable
-            var usableMoves = new List<Move>(RomHandler.ValidMoves);
+            var usableMoves = ValidMoves.ToList();
             usableMoves.RemoveAt(0);
             //  remove null entry
             var unusableMoves = new HashSet<Move>();
@@ -552,16 +554,14 @@ namespace RandomizerSharp.Randomizers
                 return;
 
             //  Get current compatibility
-            var compat = RomHandler.MoveTutorCompatibility;
             var mts = RomHandler.MoveTutorMoves;
-            foreach (var compatEntry in compat)
+            foreach (var pkmn in ValidPokemons)
             {
-                var pkmn = compatEntry.Key;
-                var flags = compatEntry.Value;
+                var flags = pkmn.MoveTutorCompatibility;
                 for (var i = 1; i <= mts.Length; i++)
                 {
                     var move = mts[i - 1];
-                    var mv = RomHandler.ValidMoves[move];
+                    var mv = ValidMoves[move];
                     var probability = 0.5;
                     if (preferSameType)
                         if (pkmn.PrimaryType.Equals(mv.Type) ||

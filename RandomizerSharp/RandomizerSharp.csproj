@@ -93,6 +93,7 @@
     <Compile Include="PokemonModel\GenRestrictions.cs" />
     <Compile Include="PokemonModel\HiddenHollow.cs" />
     <Compile Include="PokemonModel\IngameTrade.cs" />
+    <Compile Include="PokemonModel\Item.cs" />
     <Compile Include="PokemonModel\Move.cs" />
     <Compile Include="PokemonModel\MoveLearnt.cs" />
     <Compile Include="PokemonModel\ItemList.cs" />
@@ -112,7 +113,6 @@
     </Compile>
     <Compile Include="Randomizers\BaseRandomizer.cs" />
     <Compile Include="Randomizers\EncountersRandomization.cs" />
-    <Compile Include="Randomizers\Gen5Randomizer.cs" />
     <Compile Include="Randomizers\MoveRandomizer.cs" />
     <Compile Include="Randomizers\TmsHmsCompatibility.cs" />
     <Compile Include="Randomizers\TrainerRandomizer.cs" />

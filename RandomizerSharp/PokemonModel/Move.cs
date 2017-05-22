@@ -8,7 +8,8 @@
         public MoveCategory Category { get; set; }
         public double HitCount { get; set; } = 1;
         public double Hitratio { get; set; }
-        public int InternalId { get; set; }
+        public int Id { get; set; }
+        public bool IsFieldMove { get; set; }
 
         public string Name { get; set; }
         public int Number { get; set; }

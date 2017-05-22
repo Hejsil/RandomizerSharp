@@ -345,7 +345,7 @@ namespace RandomizerSharp.Randomizers
 
         public void StandardizeExpCurves()
         {
-            var pokes = RomHandler.ValidPokemons;
+            var pokes = ValidPokemons;
             foreach (var pkmn in pokes)
             {
                 if (pkmn == null)
@@ -357,7 +357,7 @@ namespace RandomizerSharp.Randomizers
 
         public void OrderDamagingMovesByDamage()
         {
-            foreach (var pkmn in RomHandler.ValidPokemons)
+            foreach (var pkmn in ValidPokemons)
             {
                 var moves = pkmn.MovesLearnt;
                 //  Build up a list of damaging moves and their positions
@@ -365,7 +365,7 @@ namespace RandomizerSharp.Randomizers
                 var damagingMoves = new List<Move>();
                 for (var i = 0; i < moves.Count; i++)
                 {
-                    var mv = RomHandler.ValidMoves[moves[i].Move];
+                    var mv = ValidMoves[moves[i].Move];
                     if (mv.Power > 1)
                     {
                         //  considered a damaging move for this purpose
@@ -400,7 +400,7 @@ namespace RandomizerSharp.Randomizers
                 Level = 1,
                 Move = GlobalConstants.MetronomeMove
             };
-            foreach (var pkmn in RomHandler.ValidPokemons)
+            foreach (var pkmn in ValidPokemons)
             {
                 pkmn.MovesLearnt.Clear();
                 pkmn.MovesLearnt.Add(metronomeMl);
@@ -426,12 +426,12 @@ namespace RandomizerSharp.Randomizers
             }
 
             //  move tweaks
-            var metronome = RomHandler.ValidMoves[GlobalConstants.MetronomeMove];
+            var metronome = ValidMoves[GlobalConstants.MetronomeMove];
             metronome.Pp = 40;
             var hms = RomHandler.HmMoves;
             foreach (var hm in hms)
             {
-                var thisHm = RomHandler.ValidMoves[hm];
+                var thisHm = ValidMoves[hm];
                 thisHm.Pp = 0;
             }
         }
@@ -440,11 +440,10 @@ namespace RandomizerSharp.Randomizers
         {
             if (!RomHandler.HasMoveTutors)
                 return;
-
-            var compat = RomHandler.MoveTutorCompatibility;
-            foreach (var compatEntry in compat)
+            
+            foreach (var pkmn in ValidPokemons)
             {
-                var flags = compatEntry.Value;
+                var flags = pkmn.MoveTutorCompatibility;
                 for (var i = 1; i < flags.Length; i++)
                     flags[i] = true;
             }
@@ -459,12 +458,11 @@ namespace RandomizerSharp.Randomizers
             //  if a pokemon learns a move in its moveset
             //  and there is a tutor of that move, make sure
             //  that tutor can be learned.
-            var compat = RomHandler.MoveTutorCompatibility;
             var mtMoves = RomHandler.MoveTutorMoves;
-            foreach (var pkmn in RomHandler.ValidPokemons)
+            foreach (var pkmn in ValidPokemons)
             {
                 var moveset = pkmn.MovesLearnt;
-                var pkmnCompat = compat[pkmn];
+                var pkmnCompat = pkmn.MoveTutorCompatibility;
                 foreach (var ml in moveset)
                 {
                     if (!mtMoves.Contains(ml.Move))
@@ -479,7 +477,7 @@ namespace RandomizerSharp.Randomizers
 
         public void MinimumCatchRate(int rateNonLegendary, int rateLegendary)
         {
-            var pokes = RomHandler.ValidPokemons;
+            var pokes = ValidPokemons;
             foreach (var pkmn in pokes)
             {
                 if (pkmn == null)
@@ -493,7 +491,7 @@ namespace RandomizerSharp.Randomizers
 
         public void CondenseLevelEvolutions(int maxLevel, int maxIntermediateLevel)
         {
-            var allPokemon = RomHandler.ValidPokemons;
+            var allPokemon = ValidPokemons;
             var changedEvos = new HashSet<Evolution>();
             //  search for level evolutions
             foreach (var pk in allPokemon)
@@ -530,7 +528,7 @@ namespace RandomizerSharp.Randomizers
 
         protected void ApplyCamelCaseNames()
         {
-            var pokes = RomHandler.ValidPokemons;
+            var pokes = ValidPokemons;
             foreach (var pkmn in pokes)
             {
                 if (pkmn == null)
@@ -543,7 +541,7 @@ namespace RandomizerSharp.Randomizers
         public void RemoveBrokenMoves()
         {
             var allBanned = new HashSet<int>(RomHandler.GameBreakingMoves);
-            foreach (var pokemon in RomHandler.ValidPokemons)
+            foreach (var pokemon in ValidPokemons)
                 pokemon.MovesLearnt.RemoveAll(move => allBanned.Contains(move.Move));
         }
 
@@ -613,9 +611,9 @@ namespace RandomizerSharp.Randomizers
 
         public void UpdateMovesToGen5()
         {
-            foreach (var move in RomHandler.ValidMoves)
+            foreach (var move in ValidMoves)
             {
-                var id = move.InternalId;
+                var id = move.Id;
 
                 if (Gen5UpdateMoveType.TryGetValue(id, out var type))
                     move.Type = type;
@@ -636,9 +634,9 @@ namespace RandomizerSharp.Randomizers
         {
             UpdateMovesToGen5();
 
-            foreach (var move in RomHandler.ValidMoves)
+            foreach (var move in ValidMoves)
             {
-                var id = move.InternalId;
+                var id = move.Id;
 
                 if (Gen6UpdateMoveAccuracy.TryGetValue(id, out var accuracy))
                     if (Math.Abs(move.Hitratio - accuracy) >= 1)
@@ -655,7 +653,7 @@ namespace RandomizerSharp.Randomizers
         public void RemoveTradeEvolutions(bool changeMoveEvos)
         {
             var extraEvolutions = new HashSet<Evolution>();
-            foreach (var pkmn in RomHandler.ValidPokemons)
+            foreach (var pkmn in ValidPokemons)
             {
                 if (pkmn == null)
                     continue;
@@ -689,7 +687,7 @@ namespace RandomizerSharp.Randomizers
                         evo.Type1 = EvolutionType.Level;
                         evo.ExtraInfo = 37;
                     }
-                    // Trade w/ Item
+                    // Trade w/ TM
                     if (evo.Type1 == EvolutionType.TradeItem)
                     {
                         // Get the current item & evolution
@@ -697,7 +695,7 @@ namespace RandomizerSharp.Randomizers
                         if (evo.From.Id == Gen5Constants.SlowpokeIndex)
                         {
                             // Slowpoke is awkward - he already has a level evo
-                            // So we can't do Level up w/ Held Item for him
+                            // So we can't do Level up w/ Held TM for him
                             // Put Water Stone instead
                             evo.Type1 = EvolutionType.Stone;
                             evo.ExtraInfo = Gen5Constants.WaterStoneIndex; // water
@@ -705,10 +703,10 @@ namespace RandomizerSharp.Randomizers
                         else
                         {
                             // Replace, for this entry, w/
-                            // Level up w/ Held Item at Day
+                            // Level up w/ Held TM at Day
                             evo.Type1 = EvolutionType.LevelItemDay;
                             // now add an extra evo for
-                            // Level up w/ Held Item at Night
+                            // Level up w/ Held TM at Night
                             var extraEntry = new Evolution(
                                 evo.From,
                                 evo.To,

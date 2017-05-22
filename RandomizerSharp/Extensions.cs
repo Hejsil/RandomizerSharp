@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using RandomizerSharp.PokemonModel;
 
 namespace RandomizerSharp
@@ -60,7 +61,8 @@ namespace RandomizerSharp
         public static void RemoveAll<T>(this ICollection<T> col, IEnumerable<T> items)
         {
             var table = new HashSet<T>(items);
-            foreach (var item in col)
+            
+            foreach (var item in col.ToArray())
             {
                 if (table.Contains(item))
                     col.Remove(item);
@@ -105,7 +107,7 @@ namespace RandomizerSharp
         public static void RetainAll<T>(this ICollection<T> col, IEnumerable<T> items)
         {
             var table = new HashSet<T>(items);
-            foreach (var item in col)
+            foreach (var item in col.ToArray())
             {
                 if (!table.Contains(item))
                     col.Remove(item);

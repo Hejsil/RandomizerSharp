@@ -17,8 +17,6 @@ namespace RandomizerSharp.RomHandlers
             LoadedFilename = filename;
             HasPhysicalSpecialSplit = true;
             DefaultExtension = "nds";
-            IsYellow = false;
-            IsRomHack = false;
         }
 
         protected byte[] Get3Byte(int amount)

@@ -9,32 +9,33 @@ namespace RandomizerSharp
 {
     public class RomFunctions
     {
-        public static ISet<Pokemon> GetBasicOrNoCopyPokemon(AbstractRomHandler baseRom)
+        public static ISet<Pokemon> GetBasicOrNoCopyPokemon(IList<Pokemon> validPokemons)
         {
-            var allPokes = baseRom.ValidPokemons;
             ISet<Pokemon> dontCopyPokes = new SortedSet<Pokemon>();
-            foreach (var pkmn in allPokes)
+
+            foreach (var pkmn in validPokemons)
             {
-                if (pkmn != null)
-                    if (pkmn.EvolutionsTo.Count != 1)
-                    {
+                if (pkmn == null)
+                    continue;
+
+                if (pkmn.EvolutionsTo.Count != 1)
+                {
+                    dontCopyPokes.Add(pkmn);
+                }
+                else
+                {
+                    var onlyEvo = pkmn.EvolutionsTo[0];
+                    if (!onlyEvo.CarryStats)
                         dontCopyPokes.Add(pkmn);
-                    }
-                    else
-                    {
-                        var onlyEvo = pkmn.EvolutionsTo[0];
-                        if (!onlyEvo.CarryStats)
-                            dontCopyPokes.Add(pkmn);
-                    }
+                }
             }
             return dontCopyPokes;
         }
 
-        public static ISet<Pokemon> GetMiddleEvolutions(AbstractRomHandler baseRom)
+        public static ISet<Pokemon> GetMiddleEvolutions(IList<Pokemon> validPokemons)
         {
-            var allPokes = baseRom.ValidPokemons;
             ISet<Pokemon> middleEvolutions = new SortedSet<Pokemon>();
-            foreach (var pkmn in allPokes)
+            foreach (var pkmn in validPokemons)
             {
                 if (pkmn.EvolutionsTo.Count != 1 || pkmn.EvolutionsFrom.Count <= 0)
                     continue;
@@ -46,11 +47,10 @@ namespace RandomizerSharp
             return middleEvolutions;
         }
 
-        public static ISet<Pokemon> GetFinalEvolutions(AbstractRomHandler baseRom)
+        public static ISet<Pokemon> GetFinalEvolutions(IList<Pokemon> validPokemons)
         {
-            var allPokes = baseRom.ValidPokemons;
             ISet<Pokemon> finalEvolutions = new SortedSet<Pokemon>();
-            foreach (var pkmn in allPokes)
+            foreach (var pkmn in validPokemons)
             {
                 if (pkmn.EvolutionsTo.Count != 1 || pkmn.EvolutionsFrom.Count != 0)
                     continue;

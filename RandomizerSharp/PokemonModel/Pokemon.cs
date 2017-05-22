@@ -98,6 +98,7 @@ namespace RandomizerSharp.PokemonModel
 
         // ReSharper disable once InconsistentNaming
         public bool[] TMHMCompatibility { get; set; } = Array.Empty<bool>();
+        public bool[] MoveTutorCompatibility { get; set; } = Array.Empty<bool>();
 
         public Pokemon(int id) => Id = id;
 

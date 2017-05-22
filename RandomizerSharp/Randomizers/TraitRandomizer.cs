@@ -29,7 +29,7 @@ namespace RandomizerSharp.Randomizers
             }
             else
             {
-                var allPokes = RomHandler.ValidPokemons;
+                var allPokes = ValidPokemons;
                 foreach (var pk in allPokes)
                 {
                     if (pk != null)
@@ -104,7 +104,7 @@ namespace RandomizerSharp.Randomizers
             }
             else
             {
-                var allPokes = RomHandler.ValidPokemons;
+                var allPokes = ValidPokemons;
                 foreach (var pk in allPokes)
                     pk?.ShuffleStats(Random);
             }
@@ -112,7 +112,7 @@ namespace RandomizerSharp.Randomizers
 
         public void RandomizePokemonTypes(bool evolutionSanity)
         {
-            var allPokes = RomHandler.ValidPokemons;
+            var allPokes = ValidPokemons;
             if (evolutionSanity)
             {
                 CopyUpEvolutionsHelper(
@@ -188,18 +188,18 @@ namespace RandomizerSharp.Randomizers
         public Pokemon Random2EvosPokemon()
         {
             var twoEvoPokes =
-                RomHandler.ValidPokemons
+                ValidPokemons
                     .Where(
                         pk => pk.EvolutionsTo.Count == 0 &&
                               pk.EvolutionsFrom.Any(ev => ev.To.EvolutionsFrom.Count > 0))
-                    .ToList();
+                    .ToArray();
 
-            return twoEvoPokes[Random.Next(twoEvoPokes.Count)];
+            return twoEvoPokes[Random.Next(twoEvoPokes.Length)];
         }
 
         public void RandomizeEvolutions(bool similarStrength, bool sameType, bool limitToThreeStages, bool forceChange)
         {
-            var pokemonPool = new List<Pokemon>(RomHandler.ValidPokemons);
+            var pokemonPool = new List<Pokemon>(ValidPokemons);
             var stageLimit = limitToThreeStages ? 3 : 10;
 
             //  Cache old evolutions for data later
@@ -237,7 +237,7 @@ namespace RandomizerSharp.Randomizers
                         //  Pick a Pokemon as replacement
                         replacements.Clear();
                         //  Step 1: base filters
-                        foreach (var pk in RomHandler.ValidPokemons)
+                        foreach (var pk in ValidPokemons)
                         {
                             //  Prevent evolving into oneself (mandatory)
                             if (ReferenceEquals(pk, fromPk))

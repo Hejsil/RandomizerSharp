@@ -61,7 +61,7 @@ namespace RandomizerSharp.Randomizers
                 //  us 0 1 2 => them 0+n 1+n 2+n
                 var starters = RomHandler.Starters;
                 //  Yellow needs its own case, unfortunately.
-                if (RomHandler.IsYellow)
+                if (RomHandler.Game == Game.Yellow)
                 {
                     //  The rival's starter is index 1
                     var rivalStarter = starters[1].Pokemon;
@@ -402,7 +402,7 @@ namespace RandomizerSharp.Randomizers
             bool noLegendaries,
             bool wonderGuardAllowed)
         {
-            var pickFrom = RomHandler.ValidPokemons;
+            var pickFrom = ValidPokemons;
 
             if (type != null)
                 pickFrom = pickFrom.Where(pk => pk.PrimaryType.Equals(type) || pk.SecondaryType.Equals(type)).ToArray();

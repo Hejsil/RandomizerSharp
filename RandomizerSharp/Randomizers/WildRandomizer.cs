@@ -30,8 +30,7 @@ namespace RandomizerSharp.Randomizers
             {
                 case EncountersRandomization.CatchEmAll:
                     // Clone, so we don't modify original
-                    var allPokes = noLegendaries ? RomHandler.NonLegendaryPokemons.ToList()
-                        : RomHandler.ValidPokemons.ToList();
+                    var allPokes = (noLegendaries ? NonLegendaryPokemon : ValidPokemons).ToList();
                     allPokes.RemoveAll(banned);
 
                     foreach (var area in currentEncounters)
@@ -50,8 +49,7 @@ namespace RandomizerSharp.Randomizers
                             if (pickablePokemon.Count == 0)
                             {
                                 // Clone, so we don't modify original
-                                var tempPickable = noLegendaries ? RomHandler.NonLegendaryPokemons.ToList()
-                                    : RomHandler.ValidPokemons.ToList();
+                                var tempPickable = (noLegendaries ? NonLegendaryPokemon : ValidPokemons).ToList();
                                 tempPickable.RemoveAll(banned);
                                 tempPickable.RemoveAll(area.BannedPokemon);
 
@@ -73,8 +71,7 @@ namespace RandomizerSharp.Randomizers
                                 if (allPokes.Count != 0)
                                     continue;
 
-                                allPokes.AddRange(
-                                    noLegendaries ? RomHandler.NonLegendaryPokemons : RomHandler.ValidPokemons);
+                                allPokes.AddRange(noLegendaries ? NonLegendaryPokemon : ValidPokemons);
                                 allPokes.RemoveAll(banned);
 
                                 if (pickablePokemon == allPokes)
@@ -128,8 +125,7 @@ namespace RandomizerSharp.Randomizers
                     }
                     break;
                 case EncountersRandomization.UsePowerLevel:
-                    var allowedPokes = noLegendaries ? RomHandler.NonLegendaryPokemons.ToList()
-                        : RomHandler.ValidPokemons.ToList();
+                    var allowedPokes = (noLegendaries ? NonLegendaryPokemon : ValidPokemons).ToList();
                     allowedPokes.RemoveAll(banned);
 
                     foreach (var area in currentEncounters)
@@ -166,10 +162,8 @@ namespace RandomizerSharp.Randomizers
         {
             //  Build the full 1-to-1 map
             var translateMap = new Dictionary<Pokemon, Pokemon>();
-            var remainingLeft = RomHandler.ValidPokemons.ToList();
-            var remainingRight = noLegendaries
-                ? new List<Pokemon>(RomHandler.NonLegendaryPokemons)
-                : new List<Pokemon>(RomHandler.ValidPokemons);
+            var remainingLeft = ValidPokemons.ToList();
+            var remainingRight = (noLegendaries ? NonLegendaryPokemon : ValidPokemons).ToList();
 
             var banned = RomHandler.BannedForWildEncounters;
 
@@ -218,12 +212,12 @@ namespace RandomizerSharp.Randomizers
                 if (remainingRight.Count != 0)
                     continue;
 
-                remainingRight.AddRange(noLegendaries ? RomHandler.NonLegendaryPokemons : RomHandler.ValidPokemons);
+                remainingRight.AddRange(noLegendaries ? NonLegendaryPokemon : ValidPokemons);
                 remainingRight.RemoveAll(banned.Contains);
             }
 
             //  Map remaining to themselves just in case
-            var allPokes = RomHandler.ValidPokemons;
+            var allPokes = ValidPokemons;
             foreach (var poke in allPokes)
             {
                 if (!translateMap.ContainsKey(poke))
@@ -240,9 +234,7 @@ namespace RandomizerSharp.Randomizers
                     continue;
 
                 //  Ignore the map and put a random non-banned poke
-                var tempPickable = noLegendaries
-                    ? new List<Pokemon>(RomHandler.NonLegendaryPokemons)
-                    : new List<Pokemon>(RomHandler.ValidPokemons);
+                var tempPickable = (noLegendaries ? NonLegendaryPokemon : ValidPokemons).ToList();
 
                 tempPickable.RemoveAll(banned.Contains);
                 tempPickable.RemoveAll(area.BannedPokemon.Contains);
@@ -279,11 +271,8 @@ namespace RandomizerSharp.Randomizers
             //  Assume EITHER catch em all OR type themed for now
             if (catchEmAll)
             {
-                var allPokes = noLegendaries
-                    ? new List<Pokemon>(RomHandler.NonLegendaryPokemons)
-                    : new List<Pokemon>(RomHandler.ValidPokemons);
-
-                allPokes.RemoveAll(banned.Contains);
+                var allPokes = (noLegendaries ? NonLegendaryPokemon : ValidPokemons).ToList();
+                allPokes.RemoveAll(banned);
 
                 foreach (var area in scrambledEncounters)
                 {
@@ -303,12 +292,11 @@ namespace RandomizerSharp.Randomizers
                         if (pickablePokemon.Count == 0)
                         {
                             //  No more pickable pokes left, take a random one
-                            var tempPickable = noLegendaries
-                                ? new List<Pokemon>(RomHandler.NonLegendaryPokemons)
-                                : new List<Pokemon>(RomHandler.ValidPokemons);
+                            var tempPickable = (noLegendaries ? NonLegendaryPokemon : ValidPokemons).ToList();
 
                             tempPickable.RemoveAll(banned.Contains);
                             tempPickable.RemoveAll(area.BannedPokemon.Contains);
+
                             if (tempPickable.Count == 0)
                                 throw new NotImplementedException("ERROR: Couldn\'t replace a wild Pokemon!");
 
@@ -328,8 +316,7 @@ namespace RandomizerSharp.Randomizers
                             if (allPokes.Count != 0)
                                 continue;
 
-                            allPokes.AddRange(
-                                noLegendaries ? RomHandler.NonLegendaryPokemons : RomHandler.ValidPokemons);
+                            allPokes.AddRange(noLegendaries ? NonLegendaryPokemon : ValidPokemons);
                             allPokes.AddRange(banned);
 
                             if (pickablePokemon == allPokes)
@@ -396,19 +383,19 @@ namespace RandomizerSharp.Randomizers
             }
             else if (usePowerLevels)
             {
-                var allowedPokes = noLegendaries
-                    ? new List<Pokemon>(RomHandler.NonLegendaryPokemons)
-                    : new List<Pokemon>(RomHandler.ValidPokemons);
+                var allowedPokes = (noLegendaries ? NonLegendaryPokemon : ValidPokemons).ToList();
 
                 allowedPokes.RemoveAll(banned.Contains);
                 foreach (var area in scrambledEncounters)
                 {
                     //  Poke-set
                     var inArea = PokemonInArea(area);
+
                     //  Build area map using randoms
                     var areaMap = new Dictionary<Pokemon, Pokemon>();
                     var usedPks = new List<Pokemon>();
                     var localAllowed = allowedPokes;
+
                     if (area.BannedPokemon.Count > 0)
                     {
                         localAllowed = new List<Pokemon>(allowedPokes);
@@ -422,8 +409,8 @@ namespace RandomizerSharp.Randomizers
                         usedPks.Add(picked);
                     }
 
+                    //  Apply the map
                     foreach (var enc in area.Encounters)
-                        //  Apply the map
                         enc.Pokemon1 = areaMap[enc.Pokemon1];
                 }
             }
@@ -456,9 +443,9 @@ namespace RandomizerSharp.Randomizers
 
         public void RandomizeMoveTypes()
         {
-            foreach (var mv in RomHandler.ValidMoves)
+            foreach (var mv in ValidMoves)
             {
-                if (mv.InternalId != Move.StruggleId && mv.Type != null)
+                if (mv.Id != Move.StruggleId && mv.Type != null)
                     mv.Type = RandomType();
             }
         }
@@ -561,8 +548,7 @@ namespace RandomizerSharp.Randomizers
             }
             else
             {
-                var allPokes = RomHandler.ValidPokemons;
-                foreach (var pk in allPokes)
+                foreach (var pk in ValidPokemons)
                 {
                     if (pk == null)
                         continue;
@@ -609,7 +595,7 @@ namespace RandomizerSharp.Randomizers
 
         private List<Pokemon> PokemonOfType(Typing type, bool noLegendaries)
         {
-            return RomHandler.ValidPokemons
+            return ValidPokemons
                 .Where(
                     pk => pk != null &&
                           (!noLegendaries || !pk.Legendary) &&
@@ -619,7 +605,7 @@ namespace RandomizerSharp.Randomizers
 
         public void RandomizeWildHeldItems(bool banBadItems)
         {
-            var pokemon = RomHandler.ValidPokemons;
+            var pokemon = ValidPokemons;
             var possibleItems = banBadItems ? RomHandler.NonBadItems : RomHandler.AllowedItems;
 
             foreach (var pk in pokemon)
