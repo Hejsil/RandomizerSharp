@@ -479,8 +479,7 @@ namespace RandomizerSharp.Randomizers
             var tries = 0;
             //  Init the translation map and new list
             var translation = new Dictionary<string, string>();
-
-            var tcNameLengths = RomHandler.TcNameLengthsByTrainer;
+            
             //  loop until we successfully pick names that fit
             //  should always succeed first attempt except for gen2.
             while (!success &&
@@ -521,8 +520,7 @@ namespace RandomizerSharp.Randomizers
                             changeTo = pickFrom[Random.Next(pickFrom.Count)];
                             ctl = RomHandler.InternalStringLength(changeTo);
                             while (mode == TrainerNameMode.MaxLength && ctl > maxLength ||
-                                   mode == TrainerNameMode.MaxLengthWithClass &&
-                                   ctl + tcNameLengths[i] > maxLength)
+                                   mode == TrainerNameMode.MaxLengthWithClass)
                             {
                                 innerTries++;
                                 if (innerTries == 100)

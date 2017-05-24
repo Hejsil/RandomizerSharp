@@ -32,12 +32,12 @@ namespace RandomizerSharp.Constants
             BsTmhmCompatOffset = 40,
             BsMtCompatOffset = 60;
 
-        public static readonly IReadOnlyList<int> Bw1EarlyRequiredHmMoves = new[] { 15 };
+        public static readonly int[] Bw1EarlyRequiredHmMoves = new[] { 15 };
 
         public const string Bw1ItemPalettesPrefix = "E903EA03020003000400050006000700",
             Bw2ItemPalettesPrefix = "FD03FE03020003000400050006000700";
 
-        public static readonly IReadOnlyList<byte> Bw1NewStarterScript = new byte[]
+        public static readonly byte[] Bw1NewStarterScript = new byte[]
         {
             0x24,
             0x00,
@@ -57,7 +57,7 @@ namespace RandomizerSharp.Constants
             0x00
         };
 
-        public static readonly IReadOnlyList<int> Bw1RequiredFieldTMs = new[]
+        public static readonly int[] Bw1RequiredFieldTMs = new[]
         {
             2,
             3,
@@ -102,10 +102,9 @@ namespace RandomizerSharp.Constants
         public const string Bw1StarterScriptMagic = "2400A702";
 
         public const int Bw1StarterTextOffset = 18, Bw1CherenText1Offset = 26, Bw1CherenText2Offset = 53;
-        public static readonly IReadOnlyList<int> Bw2EarlyRequiredHmMoves = new int[0];
+        public static readonly int[] Bw2EarlyRequiredHmMoves = new int[0];
 
-        public static readonly IReadOnlyList<int> Bw2HiddenHollowUnovaPokemon = new[]
-        {
+        public static readonly int[] Bw2HiddenHollowUnovaPokemon = {
             505,
             507,
             510,
@@ -163,7 +162,7 @@ namespace RandomizerSharp.Constants
 
         public const int Bw2MoveTutorCount = 60, Bw2MoveTutorBytesPerEntry = 12;
 
-        public static readonly IReadOnlyList<byte> Bw2NewStarterScript = new byte[]
+        public static readonly byte[] Bw2NewStarterScript = new byte[]
         {
             0x28,
             0x00,
@@ -181,7 +180,7 @@ namespace RandomizerSharp.Constants
             0x00
         };
 
-        public static readonly IReadOnlyList<int> Bw2RequiredFieldTMs = new[]
+        public static readonly int[] Bw2RequiredFieldTMs = new[]
         {
             1,
             2,
@@ -232,9 +231,9 @@ namespace RandomizerSharp.Constants
 
         public const int Bw2StarterTextOffset = 37, Bw2RivalTextOffset = 60;
 
-        public static readonly IReadOnlyList<int> EncountersOfEachType = new[] { 12, 12, 12, 5, 5, 5, 5 };
+        public static readonly int[] EncountersOfEachType = new[] { 12, 12, 12, 5, 5, 5, 5 };
 
-        public static readonly IReadOnlyList<string> EncounterTypeNames = new[]
+        public static readonly string[] EncounterTypeNames = new[]
         {
             "Grass/Cave",
             "Doubles Grass",
@@ -246,15 +245,15 @@ namespace RandomizerSharp.Constants
         };
 
         public const int EvolutionMethodCount = 27;
-        public static readonly IReadOnlyList<int> FieldMoves = new[] { 15, 19, 57, 70, 148, 91, 100, 127, 230, 291 };
+        public static readonly int[] FieldMoves = new[] { 15, 19, 57, 70, 148, 91, 100, 127, 230, 291 };
 
-        public static readonly IReadOnlyList<int> HabitatClassificationOfEachType = new[] { 0, 0, 0, 1, 1, 2, 2 };
+        public static readonly int[] HabitatClassificationOfEachType = new[] { 0, 0, 0, 1, 1, 2, 2 };
 
         public const int HighestAbilityIndex = 123;
 
         public const int LuckyEggIndex = 0xE7;
 
-        public static readonly IReadOnlyList<MoveCategory> MoveCategoryIndices = new[]
+        public static readonly MoveCategory[] MoveCategoryIndices = new[]
         {
             MoveCategory.Status,
             MoveCategory.Physical,
@@ -288,7 +287,7 @@ namespace RandomizerSharp.Constants
         public const int TypeBw = 0;
         public const int TypeBw2 = 1;
 
-        public static readonly IReadOnlyList<Typing> TypeTable = new[]
+        public static readonly Typing[] TypeTable = new[]
         {
             Typing.Normal,
             Typing.Fighting,
@@ -317,7 +316,7 @@ namespace RandomizerSharp.Constants
 
         public const int WaterStoneIndex = 84;
 
-        public static readonly IReadOnlyList<int> WildFileToAreaMap = new[]
+        public static readonly int[] WildFileToAreaMap = new[]
         {
             2,
             4,
@@ -459,7 +458,7 @@ namespace RandomizerSharp.Constants
         private static readonly ItemList AllowedItems1;
 
         // ReSharper disable once UnusedMember.Local
-        private static readonly IReadOnlyList<IReadOnlyList<int>> HabitatListEntries = new[]
+        private static readonly int[][] HabitatListEntries = new[]
         {
             new[] { 104, 105 }, // Route 4
             new[] { 124 }, // Route 15

@@ -25,15 +25,15 @@ namespace RandomizerSharp
             {
                 for (var q = strReader.ReadLine(); q != null; q = strReader.ReadLine())
                 {
-                    if (q.Trim().Length > 0)
-                    {
-                        var r = q.Split(new[] { '=' }, 2);
-                        if (r[1].EndsWith("\r\n", StringComparison.Ordinal))
-                            r[1] = r[1].Substring(0, r[1].Length - 2);
-                        PokeToText[Convert.ToString((char) Convert.ToInt32(r[0], 16))] =
-                            r[1].Replace("\\", "\\\\").Replace("$", "\\$");
-                        TextToPoke[r[1]] = "\\\\x" + r[0];
-                    }
+                    if (q.Trim().Length <= 0)
+                        continue;
+
+                    var r = q.Split(new[] { '=' }, 2);
+                    if (r[1].EndsWith("\r\n", StringComparison.Ordinal))
+                        r[1] = r[1].Substring(0, r[1].Length - 2);
+                    PokeToText[Convert.ToString((char) Convert.ToInt32(r[0], 16))] =
+                        r[1].Replace("\\", "\\\\").Replace("$", "\\$");
+                    TextToPoke[r[1]] = "\\\\x" + r[0];
                 }
 
                 PokeToTextPattern = MakePattern(PokeToText.Keys);

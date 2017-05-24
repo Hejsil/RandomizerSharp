@@ -78,7 +78,7 @@ namespace RandomizerSharp
             to - from,
             from);
 
-        public static T[] ToArray<T>(this ArraySlice<T> slice, int count, int offset = 0)
+        public static T[] CopyToArray<T>(this ArraySlice<T> slice, int count, int offset = 0)
         {
             var result = new T[count];
             Buffer.BlockCopy(slice.Array, slice.Offset + offset, result, 0, count);

@@ -119,7 +119,7 @@ namespace RandomizerSharp.Randomizers
 
         public void RandomizeMoveCategory()
         {
-            if (!RomHandler.HasPhysicalSpecialSplit)
+            if (!RomHandler.Game.HasPhysicalSpecialSplit())
                 return;
 
             foreach (var mv in ValidMoves)
@@ -138,9 +138,8 @@ namespace RandomizerSharp.Randomizers
             //  Get current sets
             var hms = RomHandler.HmMoves;
 
-            var allBanned = new HashSet<int>(noBroken ? RomHandler.GameBreakingMoves : Enumerable.Empty<int>());
+            var allBanned = new HashSet<int>(noBroken ? Move.GameBreaking : Enumerable.Empty<int>());
             allBanned.UnionWith(hms);
-            allBanned.UnionWith(RomHandler.MovesBannedFromLevelup);
 
             //  Build sets of moves
             var validMoves = new List<Move>();
@@ -339,7 +338,7 @@ namespace RandomizerSharp.Randomizers
             var hms = RomHandler.HmMoves;
             var oldTMs = RomHandler.TmMoves;
 
-            var banned = new List<int>(noBroken ? RomHandler.GameBreakingMoves : Enumerable.Empty<int>());
+            var banned = new List<int>(noBroken ? Move.GameBreaking : Enumerable.Empty<int>());
             //  field moves?
             var fieldMoves = RomHandler.FieldMoves;
             var preservedFieldMoveCount = 0;
@@ -473,16 +472,13 @@ namespace RandomizerSharp.Randomizers
 
         public void RandomizeMoveTutorMoves(bool noBroken, bool preserveField, double goodDamagingProbability)
         {
-            if (!RomHandler.HasMoveTutors)
-                return;
-
             //  Pick some random Move Tutor moves, excluding TMs.
             var tms = RomHandler.TmMoves;
             var oldMTs = RomHandler.MoveTutorMoves;
             var mtCount = oldMTs.Length;
             var hms = RomHandler.HmMoves;
 
-            var banned = new List<int>(noBroken ? RomHandler.GameBreakingMoves : Enumerable.Empty<int>());
+            var banned = new List<int>(noBroken ? Move.GameBreaking : Enumerable.Empty<int>());
 
             //  field moves?
             var fieldMoves = RomHandler.FieldMoves;
@@ -550,9 +546,6 @@ namespace RandomizerSharp.Randomizers
 
         public void RandomizeMoveTutorCompatibility(bool preferSameType)
         {
-            if (!RomHandler.HasMoveTutors)
-                return;
-
             //  Get current compatibility
             var mts = RomHandler.MoveTutorMoves;
             foreach (var pkmn in ValidPokemons)

@@ -1,7 +1,11 @@
-﻿namespace RandomizerSharp.PokemonModel
+﻿using System.Collections.Generic;
+
+namespace RandomizerSharp.PokemonModel
 {
     public class Move
     {
+        public static IReadOnlyList<int> GameBreaking { get; } = new [] { 49, 82 };
+
         public const int StruggleId = 165;
         public int EffectIndex { get; }
 

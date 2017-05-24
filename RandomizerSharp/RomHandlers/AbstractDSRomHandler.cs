@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using RandomizerSharp.NDS;
 using RandomizerSharp.PokemonModel;
@@ -15,8 +16,6 @@ namespace RandomizerSharp.RomHandlers
         {
             BaseRom = new NdsRom(filename);
             LoadedFilename = filename;
-            HasPhysicalSpecialSplit = true;
-            DefaultExtension = "nds";
         }
 
         protected byte[] Get3Byte(int amount)
@@ -28,80 +27,30 @@ namespace RandomizerSharp.RomHandlers
             return ret;
         }
 
-        public NarcArchive ReadNarc(string subpath) => new NarcArchive(ReadFile(subpath));
-
-        public void WriteNarc(string subpath, NarcArchive narc)
-        {
-            WriteFile(subpath, narc.Bytes);
-        }
-
         protected static string GetRomCodeFromFile(string filename)
         {
             var fis = new FileStream(filename, FileMode.Open, FileAccess.Read);
             fis.Seek(0x0C, SeekOrigin.Current);
             var sig = FileFunctions.ReadFullyIntoBuffer(fis, 4);
             fis.Close();
-            var ndsCode = Encoding.GetEncoding("US-ASCII").GetString(sig, 0, sig.Length);
+            var ndsCode = Encoding.ASCII.GetString(sig, 0, sig.Length);
             return ndsCode;
         }
 
-        protected int ReadWord(IList<byte> data, int offset) =>
-            (data[offset] & 0xFF) | ((data[offset + 1] & 0xFF) << 8);
-
-        protected int ReadLong(IList<byte> data, int offset) => (data[offset] & 0xFF) |
-                                                                ((data[offset + 1] & 0xFF) << 8) |
-                                                                ((data[offset + 2] & 0xFF) << 16) |
-                                                                ((data[offset + 3] & 0xFF) << 24);
-
-        protected int ReadRelativePointer(IList<byte> data, int offset) => ReadLong(data, offset) + offset + 4;
-
-        protected void WriteWord(IList<byte> data, int offset, int value)
-        {
-            data[offset] = unchecked((byte) (value & 0xFF));
-            data[offset + 1] = unchecked((byte) ((value >> 8) & 0xFF));
-        }
-
-        protected void WriteLong(IList<byte> data, int offset, int value)
-        {
-            data[offset] = unchecked((byte) (value & 0xFF));
-            data[offset + 1] = unchecked((byte) ((value >> 8) & 0xFF));
-            data[offset + 2] = unchecked((byte) ((value >> 16) & 0xFF));
-            data[offset + 3] = unchecked((byte) ((value >> 24) & 0xFF));
-        }
+        protected int ReadRelativePointer(IList<byte> data, int offset) => PpTxtHandler.ReadInt(data, offset) + offset + 4;
 
         protected void WriteRelativePointer(IList<byte> data, int offset, int pointer)
         {
             var relPointer = pointer - (offset + 4);
-            WriteLong(data, offset, relPointer);
+            PpTxtHandler.WriteInt(data, offset, relPointer);
         }
 
-        protected ArraySlice<byte> ReadFile(string location) => BaseRom.GetFile(location);
-
-        protected void WriteFile(string location, byte[] data)
-        {
-            WriteFile(location, data, 0, data.Length);
-        }
-
-        protected void WriteFile(string location, byte[] data, int offset, int length)
+        protected void WriteFile(string location, byte[] data, int length, int offset = 0)
         {
             if (offset != 0 || length != data.Length)
-                data = data.Slice(length, offset);
+                data = data.Slice(length, offset).ToArray();
 
             BaseRom.WriteFile(location, data);
-        }
-
-        protected byte[] ReadArm9() => BaseRom.GetArm9();
-
-        protected void WriteArm9(byte[] data)
-        {
-            BaseRom.WriteArm9(data);
-        }
-
-        protected byte[] ReadOverlay(int number) => BaseRom.GetOverlay(number);
-
-        protected void WriteOverlay(int number, byte[] data)
-        {
-            BaseRom.WriteOverlay(number, data);
         }
 
         protected void ReadByteIntoFlags(IList<byte> data, IList<bool> flags, int offsetIntoFlags, int offsetIntoData)

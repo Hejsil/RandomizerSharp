@@ -3,35 +3,9 @@ using System.Text;
 
 namespace RandomizerSharp.PokemonModel
 {
-    /*----------------------------------------------------------------------------*/
-    /*--  Trainer.java - represents a Trainer's pokemon set/other details.      --*/
-    /*--                                                                        --*/
-    /*--  Part of "Universal Pokemon Randomizer" by Dabomstew                   --*/
-    /*--  Pokemon and any associated names and the like are                     --*/
-    /*--  trademark and (C) Nintendo 1996-2012.                                 --*/
-    /*--                                                                        --*/
-    /*--  The custom code written here is licensed under the terms of the GPL:  --*/
-    /*--                                                                        --*/
-    /*--  This program is free software: you can redistribute it and/or modify  --*/
-    /*--  it under the terms of the GNU General Public License as published by  --*/
-    /*--  the Free Software Foundation, either version 3 of the License, or     --*/
-    /*--  (at your option) any later version.                                   --*/
-    /*--                                                                        --*/
-    /*--  This program is distributed in the hope that it will be useful,       --*/
-    /*--  but WITHOUT ANY WARRANTY; without even the implied warranty of        --*/
-    /*--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          --*/
-    /*--  GNU General Public License for more details.                          --*/
-    /*--                                                                        --*/
-    /*--  You should have received a copy of the GNU General Public License     --*/
-    /*--  along with this program. If not, see <http://www.gnu.org/licenses/>.  --*/
-    /*----------------------------------------------------------------------------*/
-
-
     public class Trainer : IComparable<Trainer>, IEquatable<Trainer>
     {
         public bool ImportantTrainer { get; }
-        public string Name { get; }
-        public string FullDisplayName { get; set; }
         public int Offset { get; set; }
         public TrainerPokemon[] Pokemon { get; set; }
         public int Poketype { get; set; }
@@ -43,12 +17,7 @@ namespace RandomizerSharp.PokemonModel
         public override string ToString()
         {
             var sb = new StringBuilder("[");
-
-            if (!ReferenceEquals(FullDisplayName, null))
-                sb.Append(FullDisplayName + " ");
-            else if (!ReferenceEquals(Name, null))
-                sb.Append(Name + " ");
-
+            
             if (Trainerclass != 0)
                 sb.Append("(" + Trainerclass + ") - ");
 

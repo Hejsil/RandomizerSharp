@@ -418,12 +418,9 @@ namespace RandomizerSharp.Randomizers
                 tmMoves[i] = GlobalConstants.MetronomeMove;
 
             //  movetutors
-            if (RomHandler.HasMoveTutors)
-            {
-                var mtMoves = RomHandler.MoveTutorMoves;
-                for (var i = 0; i < mtMoves.Length; i++)
-                    mtMoves[i] = GlobalConstants.MetronomeMove;
-            }
+            var mtMoves = RomHandler.MoveTutorMoves;
+            for (var i = 0; i < mtMoves.Length; i++)
+                mtMoves[i] = GlobalConstants.MetronomeMove;
 
             //  move tweaks
             var metronome = ValidMoves[GlobalConstants.MetronomeMove];
@@ -438,9 +435,6 @@ namespace RandomizerSharp.Randomizers
 
         public void FullMoveTutorCompatibility()
         {
-            if (!RomHandler.HasMoveTutors)
-                return;
-            
             foreach (var pkmn in ValidPokemons)
             {
                 var flags = pkmn.MoveTutorCompatibility;
@@ -452,9 +446,6 @@ namespace RandomizerSharp.Randomizers
 
         public void EnsureMoveTutorCompatSanity()
         {
-            if (!RomHandler.HasMoveTutors)
-                return;
-
             //  if a pokemon learns a move in its moveset
             //  and there is a tutor of that move, make sure
             //  that tutor can be learned.
@@ -540,9 +531,8 @@ namespace RandomizerSharp.Randomizers
 
         public void RemoveBrokenMoves()
         {
-            var allBanned = new HashSet<int>(RomHandler.GameBreakingMoves);
             foreach (var pokemon in ValidPokemons)
-                pokemon.MovesLearnt.RemoveAll(move => allBanned.Contains(move.Move));
+                pokemon.MovesLearnt.RemoveAll(move => Move.GameBreaking.Contains(move.Move));
         }
 
         public void LevelModifyTrainers(int levelModifier)

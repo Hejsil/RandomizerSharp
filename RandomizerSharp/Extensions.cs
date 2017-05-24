@@ -104,6 +104,8 @@ namespace RandomizerSharp
                 thisDictionary.Add(pair);
         }
 
+        public static IEnumerator<T> GetEnumerator<T>(this T[] arr) => ((IEnumerable<T>) arr).GetEnumerator();
+
         public static void RetainAll<T>(this ICollection<T> col, IEnumerable<T> items)
         {
             var table = new HashSet<T>(items);

@@ -23,13 +23,10 @@ namespace RandomizerSharp.Randomizers
         {
             //  Load
             var currentStaticPokemon = RomHandler.StaticPokemon;
-            var banned = RomHandler.BannedForStaticPokemon;
             if (legendForLegend)
             {
                 var legendariesLeft = LegendaryPokemon.ToList();
                 var nonlegsLeft = NonLegendaryPokemon.ToList();
-                legendariesLeft.RemoveAll(banned.Contains);
-                nonlegsLeft.RemoveAll(banned.Contains);
 
                 for (var i = 0; i < currentStaticPokemon.Length; ++i)
                 {
@@ -43,7 +40,6 @@ namespace RandomizerSharp.Randomizers
                             continue;
 
                         legendariesLeft.AddRange(LegendaryPokemon);
-                        legendariesLeft.RemoveAll(banned.Contains);
                     }
                     else
                     {
@@ -55,14 +51,12 @@ namespace RandomizerSharp.Randomizers
                             continue;
 
                         nonlegsLeft.AddRange(NonLegendaryPokemon);
-                        nonlegsLeft.RemoveAll(banned.Contains);
                     }
                 }
             }
             else
             {
                 var pokemonLeft = ValidPokemons.ToList();
-                pokemonLeft.RemoveAll(banned.Contains);
                 for (var i = 0; i < currentStaticPokemon.Length; i++)
                 {
                     var num = Random.Next(pokemonLeft.Count);
@@ -73,7 +67,6 @@ namespace RandomizerSharp.Randomizers
                     if (pokemonLeft.Count == 0)
                     {
                         pokemonLeft.AddRange(ValidPokemons);
-                        pokemonLeft.RemoveAll(banned.Contains);
                     }
                 }
             }
@@ -197,7 +190,7 @@ namespace RandomizerSharp.Randomizers
             var requiredTMs = RomHandler.RequiredFieldTMs;
             var fieldItemCount = currentItems.Length;
             var fieldTmCount = currentTMs.Length;
-            var reqTmCount = requiredTMs.Count;
+            var reqTmCount = requiredTMs.Length;
             var totalTmCount = RomHandler.TmMoves.Length;
             var newItems = new List<int>();
             var newTMs = new List<int>();
@@ -235,7 +228,7 @@ namespace RandomizerSharp.Randomizers
             {
                 case Gen5RomHandler gen5:
                     var allowedUnovaPokemon = Gen5Constants.Bw2HiddenHollowUnovaPokemon;
-                    var randomSize = Gen5Constants.NonUnovaPokemonCount + allowedUnovaPokemon.Count;
+                    var randomSize = Gen5Constants.NonUnovaPokemonCount + allowedUnovaPokemon.Length;
 
                     foreach (var hollow in gen5.HiddenHollows)
                     {
