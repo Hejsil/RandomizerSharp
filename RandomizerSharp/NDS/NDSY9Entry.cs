@@ -1,80 +1,94 @@
 ﻿using System;
+using System.IO;
+using RandomizerSharp;
+using RandomizerSharp.NDS;
 
-namespace RandomizerSharp.NDS
+public class NDSY9Entry
 {
-    public class Ndsy9Entry
+    private bool _decompressedData;
+    private readonly NdsRom _parent;
+    public int Offset { get; set; }
+    public int Size { get; set; }
+    public int OriginalSize { get; set; }
+    public int FileId { get; set; }
+    public int OverlayId { get; set; }
+    public int RamAddress { get; set; }
+    public int RamSize { get; set; }
+    public int BssSize { get; set; }
+    public int StaticStart { get; set; }
+    public int StaticEnd { get; set; }
+    public int CompressedSize { get; set; }
+    public int CompressFlag { get; set; }
+    public string ExtFilename { get; }
+    public byte[] Data { get; set; }
+
+    public NDSY9Entry(NdsRom parent)
     {
-        private readonly NdsRom _parent;
-        private bool _decompressedData;
-        public string ExtFilename { get; }
-        public int BssSize { get; set; }
-        public int CompressedSize { get; set; }
-        public int CompressFlag { get; set; }
-        public byte[] Data { get; set; }
-        public int FileId { get; set; }
-        public int Offset { get; set; }
-        public int OriginalSize { get; set; }
-        public int OverlayId { get; set; }
-        public int RamAddress { get; set; }
-        public int RamSize { get; set; }
-        public int Size { get; set; }
-        public int StaticEnd { get; set; }
-        public int StaticStart { get; set; }
+        _parent = parent;
+    }
+    
+    public byte[] GetContents()
+    {
+        if (Data == null)
+            Data = Read();
 
-        public Ndsy9Entry(NdsRom parent) => _parent = parent;
-
-        // returns null if no override
-        public ArraySlice<byte> OverrideContents()
-        {
-            var buf = GetContents();
-
-            if (!_decompressedData)
-                return buf;
-
-            Data = BlzCoder.Encode(buf, false, "overlay " + OverlayId);
-            _decompressedData = false;
-
-            // update our compressed size
-            CompressedSize = Data.Length;
+        // Compression?
+        if (CompressFlag == 0 || OriginalSize != CompressedSize || CompressedSize == 0)
             return Data;
-        }
 
-        public ArraySlice<byte> GetContents()
-        {
-            if (Data != null)
-                return Data;
+        Data = BlzCoder.Decode(Data, "overlay " + OverlayId);
+        _decompressedData = true;
 
-            var rom = _parent.BaseRom;
-            Data = new byte[OriginalSize];
-            rom.Seek(Offset);
-            rom.ReadFully(Data);
-
-            return Data;
-        }
-
-        public virtual void WriteOverride(ArraySlice<byte> data)
-        {
+        return Data;
+    }
+    
+    public void WriteOverride(byte[] data)
+    {
+        if (Data == null || CompressFlag == 0 || OriginalSize != CompressedSize || CompressedSize == 0)
             GetContents();
 
-            Size = data.Length;
+        Size = data.Length;
 
-            // Compression?
-            if (CompressFlag != 0 && OriginalSize == CompressedSize && CompressedSize != 0)
-                Data = BlzCoder.Decode(Data, "overlay " + OverlayId);
-
-            _decompressedData = true;
-
+        {
             if (Data.Length == data.Length)
             {
-                data.CopyTo(Data, 0);
+                // copy new in
+                Array.Copy(data, 0, Data, 0, data.Length);
             }
             else
             {
-                var newData = new byte[data.Length];
+                // make new array
+                Data = null;
+                Data = new byte[data.Length];
                 Array.Copy(data, 0, Data, 0, data.Length);
-
-                Data = newData;
             }
         }
     }
+    
+    public byte[] GetOverrideContents()
+    {
+        if (Data == null)
+            Data = Read();
+
+        if (!_decompressedData)
+            return Data;
+
+        Data = BlzCoder.Encode(Data, false, "overlay " + OverlayId);
+        // update our compressed size
+        CompressedSize = Data.Length;
+
+        return Data;
+    }
+
+    private byte[] Read()
+    {
+        // extract file
+        Stream rom = _parent.BaseRom;
+        byte[] buf = new byte[OriginalSize];
+        rom.Seek(Offset);
+        rom.ReadFully(buf);
+
+        return buf;
+    }
+
 }

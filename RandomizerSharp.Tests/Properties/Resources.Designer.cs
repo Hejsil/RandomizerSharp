@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace RandomizerSharp.UI.Properties {
+namespace RandomizerSharp.Tests.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace RandomizerSharp.UI.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("RandomizerSharp.UI.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("RandomizerSharp.Tests.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -57,6 +57,15 @@ namespace RandomizerSharp.UI.Properties {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A:\Mega\ProgramDataDump\RandomizerSettings\PokemonBlack2.nds.
+        /// </summary>
+        internal static string Gen5Rom {
+            get {
+                return ResourceManager.GetString("Gen5Rom", resourceCulture);
             }
         }
     }

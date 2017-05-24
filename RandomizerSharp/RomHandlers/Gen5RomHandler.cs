@@ -1372,7 +1372,7 @@ namespace RandomizerSharp.RomHandlers
             var countsPersonalOrder = new[] { 15, 17, 13, 15 };
             var countsMoveOrder = new[] { 13, 15, 15, 17 };
             var personalToMoveOrder = new[] { 1, 3, 0, 2 };
-            for (var i = 1; i <= Gen5Constants.PokemonCount; i++)
+            for (var i = 0; i < AllPokemons.Length; i++)
             {
                 var data = _pokeNarc.Files[i];
                 var pkmn = AllPokemons[i];
@@ -1458,14 +1458,14 @@ namespace RandomizerSharp.RomHandlers
         {
             foreach (var pkmn in AllPokemons)
             {
-                if (pkmn != null)
-                {
-                    pkmn.EvolutionsFrom.Clear();
-                    pkmn.EvolutionsTo.Clear();
-                }
+                if (pkmn == null)
+                    continue;
+
+                pkmn.EvolutionsFrom.Clear();
+                pkmn.EvolutionsTo.Clear();
             }
 
-            for (var i = 1; i <= Gen5Constants.PokemonCount; i++)
+            for (var i = 0; i < AllPokemons.Length; i++)
             {
                 var pk = AllPokemons[i];
                 var evoEntry = _evoNarc.Files[i];
@@ -1496,7 +1496,7 @@ namespace RandomizerSharp.RomHandlers
 
         private void SaveEvolutions()
         {
-            for (var i = 1; i <= Gen5Constants.PokemonCount; i++)
+            for (var i = 0; i < AllPokemons.Length; i++)
             {
                 var evoEntry = _evoNarc.Files[i];
                 var pk = AllPokemons[i];

@@ -11,7 +11,7 @@ namespace RandomizerSharp.NDS
 
         private const int BannerAlign = 0x1FF, FileAlign = 0x1FF;
         private const int FntAlign = 0x1FF, FatAlign = 0x1FF;
-        private readonly Dictionary<int, Ndsy9Entry> _arm9OverlaysByFileId = new Dictionary<int, Ndsy9Entry>();
+        private readonly Dictionary<int, NDSY9Entry> _arm9OverlaysByFileId = new Dictionary<int, NDSY9Entry>();
 
         private readonly Dictionary<string, NdsFile> _files = new Dictionary<string, NdsFile>();
         private readonly Dictionary<int, NdsFile> _filesById = new Dictionary<int, NdsFile>();
@@ -19,7 +19,7 @@ namespace RandomizerSharp.NDS
         private bool _arm9Compressed;
         private byte[] _arm9Footer;
         private bool _arm9Open, _arm9Changed, _arm9HasFooter;
-        private Ndsy9Entry[] _arm9Overlays;
+        private NDSY9Entry[] _arm9Overlays;
         private byte[] _arm9Ramstored;
         private int _arm9Szmode, _arm9Szoffset;
         private byte[] _fat;
@@ -173,7 +173,7 @@ namespace RandomizerSharp.NDS
             var arm9OvlCount = arm9OvlTableSize / 32;
             var y9Table = new byte[arm9OvlTableSize];
 
-            _arm9Overlays = new Ndsy9Entry[arm9OvlCount];
+            _arm9Overlays = new NDSY9Entry[arm9OvlCount];
             _arm9OverlaysByFileId.Clear();
 
             BaseRom.Seek(arm9OvlTableOffset, SeekOrigin.Begin);
@@ -181,23 +181,26 @@ namespace RandomizerSharp.NDS
 
             for (var i = 0; i < arm9OvlCount; i++)
             {
-                var overlay = new Ndsy9Entry(this);
                 var fileId = ReadFromByteArr(y9Table, i * 32 + 24, 4);
                 var start = ReadFromByteArr(_fat, fileId * 8, 4);
                 var end = ReadFromByteArr(_fat, fileId * 8 + 4, 4);
 
-                overlay.Offset = start;
-                overlay.Size = end - start;
-                overlay.OriginalSize = end - start;
-                overlay.FileId = fileId;
-                overlay.OverlayId = i;
-                overlay.RamAddress = ReadFromByteArr(y9Table, i * 32 + 4, 4);
-                overlay.RamSize = ReadFromByteArr(y9Table, i * 32 + 8, 4);
-                overlay.BssSize = ReadFromByteArr(y9Table, i * 32 + 12, 4);
-                overlay.StaticStart = ReadFromByteArr(y9Table, i * 32 + 16, 4);
-                overlay.StaticEnd = ReadFromByteArr(y9Table, i * 32 + 20, 4);
-                overlay.CompressedSize = ReadFromByteArr(y9Table, i * 32 + 28, 3);
-                overlay.CompressFlag = y9Table[i * 32 + 31] & 0xFF;
+                var overlay = new NDSY9Entry(this)
+                {
+                    Offset = start,
+                    Size = end - start,
+                    OriginalSize = end - start,
+                    FileId = fileId,
+                    OverlayId = i,
+                    RamAddress = ReadFromByteArr(y9Table, i * 32 + 4, 4),
+                    RamSize = ReadFromByteArr(y9Table, i * 32 + 8, 4),
+                    BssSize = ReadFromByteArr(y9Table, i * 32 + 12, 4),
+                    StaticStart = ReadFromByteArr(y9Table, i * 32 + 16, 4),
+                    StaticEnd = ReadFromByteArr(y9Table, i * 32 + 20, 4),
+                    CompressedSize = ReadFromByteArr(y9Table, i * 32 + 28, 3),
+                    CompressFlag = y9Table[i * 32 + 31] & 0xFF
+                };
+
                 _arm9Overlays[i] = overlay;
                 _arm9OverlaysByFileId[fileId] = overlay;
             }
@@ -303,7 +306,7 @@ namespace RandomizerSharp.NDS
                     {
                         var entry = _arm9OverlaysByFileId[fid];
                         var overlayId = entry.OverlayId;
-                        var customContents = entry.OverrideContents();
+                        var customContents = entry.GetOverrideContents();
 
                         fNew.Seek(offsetOfFile, SeekOrigin.Begin);
                         fNew.Write(customContents, 0, customContents.Length);

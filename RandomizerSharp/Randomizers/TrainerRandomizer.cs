@@ -262,7 +262,7 @@ namespace RandomizerSharp.Randomizers
             bool weightByFrequency,
             bool noLegendaries,
             bool noEarlyWonderGuard,
-            int levelModifier)
+            int levelModifier = 0)
         {
             var currentTrainers = RomHandler.Trainers;
 
@@ -405,7 +405,7 @@ namespace RandomizerSharp.Randomizers
             var pickFrom = ValidPokemons;
 
             if (type != null)
-                pickFrom = pickFrom.Where(pk => pk.PrimaryType.Equals(type) || pk.SecondaryType.Equals(type)).ToArray();
+                pickFrom = pickFrom.Where(pk => Equals(pk.PrimaryType, type) || Equals(pk.SecondaryType, type)).ToArray();
             if (noLegendaries)
                 pickFrom = pickFrom.Where(pk => !pk.Legendary).ToArray();
 
@@ -423,16 +423,13 @@ namespace RandomizerSharp.Randomizers
                 {
                     foreach (var pk in pickFrom)
                     {
-                        if (pk == null)
-                            continue;
-
                         var hasWonderGuard = pk.Ability1 == GlobalConstants.WonderGuardIndex ||
                                              pk.Ability2 == GlobalConstants.WonderGuardIndex ||
                                              pk.Ability3 == GlobalConstants.WonderGuardIndex;
 
-                        if (pk.BstForPowerLevels() >= minTarget &&
-                            pk.BstForPowerLevels() <= maxTarget &&
-                            (wonderGuardAllowed || hasWonderGuard))
+                        var bst = pk.BstForPowerLevels();
+
+                        if (bst >= minTarget && bst <= maxTarget && (wonderGuardAllowed || !hasWonderGuard))
                             canPick.Add(pk);
                     }
 
