@@ -11,7 +11,7 @@ namespace RandomizerSharp.NDS
         private byte[] _bytes;
 
 
-        public virtual byte[] Bytes
+        public byte[] Bytes
         {
             get
             {
@@ -162,7 +162,7 @@ namespace RandomizerSharp.NDS
             }
         }
 
-        private static Dictionary<string, ArraySlice<byte>> ReadNitroFrames(ArraySlice<byte> data)
+        private static Dictionary<string, ArraySlice<byte>> ReadNitroFrames(byte[] data)
         {
             var frameCount = ReadWord(data, 0x0E);
             var offset = 0x10;

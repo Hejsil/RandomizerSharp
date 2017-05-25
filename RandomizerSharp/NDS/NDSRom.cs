@@ -156,7 +156,7 @@ namespace RandomizerSharp.NDS
                 if (dirPath.Length > 0)
                     fullFilename = dirPath + "/" + filename;
 
-                var nf = new NdsFile(this);
+                var nf = new NdsFile();
                 var start = ReadFromByteArr(_fat, fileId * 8, 4);
                 var end = ReadFromByteArr(_fat, fileId * 8 + 4, 4);
 
@@ -164,6 +164,13 @@ namespace RandomizerSharp.NDS
                 nf.Size = end - start;
                 nf.FullPath = fullFilename;
                 nf.FileId = fileId;
+
+                var buf = new byte[nf.Size];
+
+                BaseRom.Seek(nf.Offset);
+                BaseRom.ReadFully(buf);
+                nf.Data = buf;
+
                 _files[fullFilename] = nf;
                 _filesById[fileId] = nf;
             }
@@ -185,7 +192,7 @@ namespace RandomizerSharp.NDS
                 var start = ReadFromByteArr(_fat, fileId * 8, 4);
                 var end = ReadFromByteArr(_fat, fileId * 8 + 4, 4);
 
-                var overlay = new NDSY9Entry(this)
+                var overlay = new NDSY9Entry()
                 {
                     Offset = start,
                     Size = end - start,
@@ -200,6 +207,14 @@ namespace RandomizerSharp.NDS
                     CompressedSize = ReadFromByteArr(y9Table, i * 32 + 28, 3),
                     CompressFlag = y9Table[i * 32 + 31] & 0xFF
                 };
+
+                // extract file
+                var buf = new byte[overlay.OriginalSize];
+                BaseRom.Seek(overlay.Offset);
+                BaseRom.ReadFully(buf);
+
+                overlay.Data = buf;
+
 
                 _arm9Overlays[i] = overlay;
                 _arm9OverlaysByFileId[fileId] = overlay;

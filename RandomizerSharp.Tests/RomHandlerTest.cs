@@ -1,12 +1,6 @@
 ﻿using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NUnit.Framework.Interfaces;
-using NUnit.Framework.Internal;
 using RandomizerSharp.PokemonModel;
 using RandomizerSharp.RomHandlers;
 using RandomizerSharp.Tests.Properties;
@@ -23,14 +17,14 @@ namespace RandomizerSharp.Tests
 
         private static readonly Func<string, AbstractRomHandler>[] RomHandlerCreators =
         {
-            (filename) => new Gen5RomHandler(filename)
+            filename => new Gen5RomHandler(filename)
         };
 
         private static void TestOnAll(Action<AbstractRomHandler> edit, Action<AbstractRomHandler, AbstractRomHandler> varify)
         {
             foreach (var (creator, filePath) in RomHandlerCreators.Zip(RomPaths, (func, s) => (func, s)))
             {
-                var newPath = Guid.NewGuid().ToString("N");
+                var newPath = Guid.NewGuid().ToString("N");  
                 var handler = creator(filePath);
                 edit(handler);
                 handler.SaveRom(newPath);

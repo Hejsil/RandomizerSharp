@@ -23,7 +23,7 @@ namespace RandomizerSharp.NDS
             var incLen = ReadUnsigned(pakBuffer, pakLen - 4);
             if (incLen < 1)
             {
-                Console.Write(@", WARNING: not coded file!");
+                Console.Write($@"{reference}, WARNING: not coded file!");
                 decLen = pakLen;
                 pakLen = 0;
                 rawLen = decLen;

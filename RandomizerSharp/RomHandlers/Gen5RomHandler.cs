@@ -428,14 +428,6 @@ namespace RandomizerSharp.RomHandlers
 
         public override bool SaveRom(string filename)
         {
-            BaseRom.WriteArm9(Arm9);
-
-            SetStrings(false, _romEntry.GetInt("TrainerClassesTextOffset"), TrainerClassNames);
-
-            BaseRom.WriteFile(_romEntry.GetString("TextStrings"), _stringsNarc.Bytes);
-            BaseRom.WriteFile(_romEntry.GetString("TextStory"), _storyTextNarc.Bytes);
-            BaseRom.WriteFile(_romEntry.GetString("Scripts"), _scriptNarc.Bytes);
-
             SaveTrainerNames();
             SaveIngameTrades();
             SaveFieldItems();
@@ -449,6 +441,13 @@ namespace RandomizerSharp.RomHandlers
             SaveMoves();
             SaveStarters();
 
+            SetStrings(false, _romEntry.GetInt("TrainerClassesTextOffset"), TrainerClassNames);
+            
+            BaseRom.WriteFile(_romEntry.GetString("TextStrings"), _stringsNarc.Bytes);
+            BaseRom.WriteFile(_romEntry.GetString("TextStory"), _storyTextNarc.Bytes);
+            BaseRom.WriteFile(_romEntry.GetString("Scripts"), _scriptNarc.Bytes);
+
+            BaseRom.WriteArm9(Arm9);
             BaseRom.SaveTo(filename);
             return true;
         }

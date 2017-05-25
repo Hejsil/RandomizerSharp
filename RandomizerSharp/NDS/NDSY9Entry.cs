@@ -6,7 +6,6 @@ using RandomizerSharp.NDS;
 public class NDSY9Entry
 {
     private bool _decompressedData;
-    private readonly NdsRom _parent;
     public int Offset { get; set; }
     public int Size { get; set; }
     public int OriginalSize { get; set; }
@@ -21,17 +20,9 @@ public class NDSY9Entry
     public int CompressFlag { get; set; }
     public string ExtFilename { get; }
     public byte[] Data { get; set; }
-
-    public NDSY9Entry(NdsRom parent)
-    {
-        _parent = parent;
-    }
     
     public byte[] GetContents()
     {
-        if (Data == null)
-            Data = Read();
-
         // Compression?
         if (CompressFlag == 0 || OriginalSize != CompressedSize || CompressedSize == 0)
             return Data;
@@ -44,8 +35,7 @@ public class NDSY9Entry
     
     public void WriteOverride(byte[] data)
     {
-        if (Data == null || CompressFlag == 0 || OriginalSize != CompressedSize || CompressedSize == 0)
-            GetContents();
+        GetContents();
 
         Size = data.Length;
 
@@ -67,9 +57,6 @@ public class NDSY9Entry
     
     public byte[] GetOverrideContents()
     {
-        if (Data == null)
-            Data = Read();
-
         if (!_decompressedData)
             return Data;
 
@@ -79,16 +66,4 @@ public class NDSY9Entry
 
         return Data;
     }
-
-    private byte[] Read()
-    {
-        // extract file
-        Stream rom = _parent.BaseRom;
-        byte[] buf = new byte[OriginalSize];
-        rom.Seek(Offset);
-        rom.ReadFully(buf);
-
-        return buf;
-    }
-
 }
