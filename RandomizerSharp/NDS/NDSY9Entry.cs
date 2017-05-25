@@ -33,28 +33,6 @@ public class NDSY9Entry
         return Data;
     }
     
-    public void WriteOverride(byte[] data)
-    {
-        GetContents();
-
-        Size = data.Length;
-
-        {
-            if (Data.Length == data.Length)
-            {
-                // copy new in
-                Array.Copy(data, 0, Data, 0, data.Length);
-            }
-            else
-            {
-                // make new array
-                Data = null;
-                Data = new byte[data.Length];
-                Array.Copy(data, 0, Data, 0, data.Length);
-            }
-        }
-    }
-    
     public byte[] GetOverrideContents()
     {
         if (!_decompressedData)

@@ -545,7 +545,7 @@ namespace RandomizerSharp.NDS
         public void WriteOverlay(int number, byte[] data)
         {
             if (number >= 0 && number <= _arm9Overlays.Length)
-                _arm9Overlays[number].WriteOverride(data);
+                _arm9Overlays[number].Data = data;
         }
 
         public void WriteArm9(byte[] arm9)

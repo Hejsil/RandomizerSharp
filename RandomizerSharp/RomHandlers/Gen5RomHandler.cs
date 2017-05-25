@@ -1445,7 +1445,7 @@ namespace RandomizerSharp.RomHandlers
             return PpTxtHandler.ReadTexts(rawFile);
         }
 
-        private void SetStrings(bool isStoryText, int index, IEnumerable<string> strings)
+        private void SetStrings(bool isStoryText, int index, IList<string> strings)
         {
             var baseNarc = isStoryText ? _storyTextNarc : _stringsNarc;
             var oldRawFile = baseNarc.Files[index];

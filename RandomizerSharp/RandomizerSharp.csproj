@@ -68,6 +68,15 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="Tools, Version=1.5.4.50001, Culture=neutral, PublicKeyToken=373c02ac923768e6, processorArchitecture=MSIL">
+      <HintPath>..\packages\Tools.Main.1.5.4.50001\lib\net46\Tools.dll</HintPath>
+    </Reference>
+    <Reference Include="Tools.Hardcore, Version=1.5.4.50000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Tools.Hardcore.1.5.4.50001\lib\net46\Tools.Hardcore.dll</HintPath>
+    </Reference>
+    <Reference Include="Tools.Runtime.CompilerServices, Version=1.5.4.50001, Culture=neutral, PublicKeyToken=373c02ac923768e6, processorArchitecture=MSIL">
+      <HintPath>..\packages\Tools.Runtime.CompilerServices.1.5.4.50001\lib\net46\Tools.Runtime.CompilerServices.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\GlobalConstants.cs" />
@@ -189,6 +198,11 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="CodeDom\AddDoc.xslt" />
+    <Content Include="CodeDom\XmlNames.xslt" />
+    <Content Include="Collections\Specialized\SpecializedWrappers.xslt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.2.0.9\build\netstandard1.4\Fody.targets" Condition="Exists('..\packages\Fody.2.0.9\build\netstandard1.4\Fody.targets')" />

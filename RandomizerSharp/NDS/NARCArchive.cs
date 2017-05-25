@@ -15,9 +15,6 @@ namespace RandomizerSharp.NDS
         {
             get
             {
-                if (_bytes != null)
-                    return _bytes;
-
                 var offset = 0;
 
                 var bytesRequired = Files.Sum(file => (int) Math.Ceiling(file.Length / 4.0) * 4);
