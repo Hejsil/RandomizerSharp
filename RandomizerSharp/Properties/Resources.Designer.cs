@@ -455,36 +455,6 @@ namespace RandomizerSharp.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] Generation41 {
-            get {
-                object obj = ResourceManager.GetObject("Generation41", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] Generation5 {
-            get {
-                object obj = ResourceManager.GetObject("Generation5", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] Generation51 {
-            get {
-                object obj = ResourceManager.GetObject("Generation51", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] green_translation {
             get {
                 object obj = ResourceManager.GetObject("green_translation", resourceCulture);

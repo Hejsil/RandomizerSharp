@@ -8,15 +8,12 @@ using RandomizerSharp.PokemonModel;
 
 namespace RandomizerSharp.RomHandlers
 {
-    public abstract class AbstractDsRomHandler : AbstractRomHandler
+    public abstract class AbstractDsRomHandler : AbstractRomHandler, IDisposable
     {
         protected NdsRom BaseRom { get; }
 
-        protected AbstractDsRomHandler(string filename)
-        {
-            BaseRom = new NdsRom(filename);
-            LoadedFilename = filename;
-        }
+        protected AbstractDsRomHandler(Stream stream) => BaseRom = new NdsRom(stream);
+        protected AbstractDsRomHandler(string filename) => BaseRom = new NdsRom(filename);
 
         protected byte[] Get3Byte(int amount)
         {
@@ -112,6 +109,11 @@ namespace RandomizerSharp.RomHandlers
                 default:
                     return 411;
             }
+        }
+
+        public void Dispose()
+        {
+            BaseRom?.Dispose();
         }
     }
 }

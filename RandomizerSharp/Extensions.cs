@@ -2,61 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using RandomizerSharp.PokemonModel;
 
 namespace RandomizerSharp
 {
     public static class Extensions
     {
-        public static int Generation(this Game game)
-        {
-            switch (game)
-            {
-                case Game.Red:
-                case Game.Blue:
-                case Game.Green:
-                case Game.Yellow:
-                    return 1;
-
-                case Game.Silver:
-                case Game.Gold:
-                case Game.Crystal:
-                    return 2;
-
-                case Game.Ruby:
-                case Game.Sapphire:
-                case Game.Emerald:
-                case Game.FireRed:
-                case Game.LeafGreen:
-                    return 3;
-
-                case Game.Diamond:
-                case Game.Pearl:
-                case Game.Platinum:
-                case Game.HeartGold:
-                case Game.SoulSilver:
-                    return 4;
-
-                case Game.Black:
-                case Game.White:
-                case Game.Black2:
-                case Game.White2:
-                    return 5;
-
-                case Game.X:
-                case Game.Y:
-                case Game.OmegaRuby:
-                case Game.AlphaSapphire:
-                    return 6;
-
-                case Game.Sun:
-                case Game.Moon:
-                    return 7;
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(game), game, null);
-            }
-        }
 
         public static void RemoveAll<T>(this ICollection<T> col, IEnumerable<T> items)
         {
@@ -103,6 +55,9 @@ namespace RandomizerSharp
             foreach (var pair in other)
                 thisDictionary.Add(pair);
         }
+
+        public static IEnumerable<(T1, T2)> Zip<T1, T2>(this IEnumerable<T1> enu1, IEnumerable<T2> enu2) => 
+            enu1.Zip(enu2, (arg1, arg2) => (arg1, arg2));
 
         public static IEnumerator<T> GetEnumerator<T>(this T[] arr) => ((IEnumerable<T>) arr).GetEnumerator();
 

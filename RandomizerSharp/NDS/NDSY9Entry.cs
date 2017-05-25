@@ -6,6 +6,10 @@ using RandomizerSharp.NDS;
 public class NDSY9Entry
 {
     private bool _decompressedData;
+    private readonly Stream _baseRom;
+
+    public NDSY9Entry(Stream baseRom) => _baseRom = baseRom;
+
     public int Offset { get; set; }
     public int Size { get; set; }
     public int OriginalSize { get; set; }
@@ -23,6 +27,9 @@ public class NDSY9Entry
     
     public byte[] GetContents()
     {
+        if (Data == null)
+            LoadIn();
+
         // Compression?
         if (CompressFlag == 0 || OriginalSize != CompressedSize || CompressedSize == 0)
             return Data;
@@ -43,5 +50,14 @@ public class NDSY9Entry
         CompressedSize = Data.Length;
 
         return Data;
+    }
+
+    public void LoadIn()
+    {
+        // extract file
+        var buf = new byte[OriginalSize];
+        _baseRom.Seek(Offset);
+        _baseRom.ReadFully(buf);
+        Data = buf;
     }
 }

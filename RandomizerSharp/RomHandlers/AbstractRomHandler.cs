@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using RandomizerSharp.PokemonModel;
 
 namespace RandomizerSharp.RomHandlers
@@ -42,7 +43,6 @@ namespace RandomizerSharp.RomHandlers
         public TrainerNameMode TrainerNameMode { get; protected set; }
 
         public Game Game { get; set; }
-        public string LoadedFilename { get; protected set; } = "";
         
         public EncounterSet[] Encounters { get; protected set; } = Array.Empty<EncounterSet>();
         
@@ -50,6 +50,7 @@ namespace RandomizerSharp.RomHandlers
 
         public abstract int InternalStringLength(string @string);
         public virtual bool TypeInGame(Typing type) => type.IsHackOnly == false;
-        public abstract bool SaveRom(string filename);
+        public abstract void SaveRom(Stream stream);
+        public abstract void SaveRom(string filename);
     }
 }

@@ -1,4 +1,5 @@
-﻿using RandomizerSharp.Randomizers;
+﻿using System.IO;
+using RandomizerSharp.Randomizers;
 using RandomizerSharp.RomHandlers;
 
 namespace RandomizerSharp
@@ -40,6 +41,9 @@ namespace RandomizerSharp
             util.ApplyFastestText();
             util.RemoveBrokenMoves();
             util.RemoveTradeEvolutions(false);
+
+            if (File.Exists(radomized))
+                File.Delete(radomized);
 
             romHandler.SaveRom(radomized);
         }

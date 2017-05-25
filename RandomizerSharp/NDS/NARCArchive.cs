@@ -8,9 +8,6 @@ namespace RandomizerSharp.NDS
 {
     public class NarcArchive
     {
-        private byte[] _bytes;
-
-
         public byte[] Bytes
         {
             get
@@ -85,21 +82,21 @@ namespace RandomizerSharp.NDS
                 }
                 var nitrolength = 16 + fatbFrame.Length + fntbFrame.Length + fimgFrame.Length;
 
-                _bytes = new byte[nitrolength];
-                _bytes[0] = (byte) 'N';
-                _bytes[1] = (byte) 'A';
-                _bytes[2] = (byte) 'R';
-                _bytes[3] = (byte) 'C';
-                WriteWord(_bytes, 4, 0xFFFE);
-                WriteWord(_bytes, 6, 0x0100);
-                WriteLong(_bytes, 8, nitrolength);
-                WriteWord(_bytes, 12, 0x10);
-                WriteWord(_bytes, 14, 3);
-                Array.Copy(fatbFrame, 0, _bytes, 16, fatbFrame.Length);
-                Array.Copy(fntbFrame, 0, _bytes, 16 + fatbFrame.Length, fntbFrame.Length);
-                Array.Copy(fimgFrame, 0, _bytes, 16 + fatbFrame.Length + fntbFrame.Length, fimgFrame.Length);
+                var bytes = new byte[nitrolength];
+                bytes[0] = (byte) 'N';
+                bytes[1] = (byte) 'A';
+                bytes[2] = (byte) 'R';
+                bytes[3] = (byte) 'C';
+                WriteWord(bytes, 4, 0xFFFE);
+                WriteWord(bytes, 6, 0x0100);
+                WriteLong(bytes, 8, nitrolength);
+                WriteWord(bytes, 12, 0x10);
+                WriteWord(bytes, 14, 3);
+                Array.Copy(fatbFrame, 0, bytes, 16, fatbFrame.Length);
+                Array.Copy(fntbFrame, 0, bytes, 16 + fatbFrame.Length, fntbFrame.Length);
+                Array.Copy(fimgFrame, 0, bytes, 16 + fatbFrame.Length + fntbFrame.Length, fimgFrame.Length);
 
-                return _bytes;
+                return bytes;
             }
         }
 
@@ -113,7 +110,6 @@ namespace RandomizerSharp.NDS
 
         public NarcArchive(byte[] data)
         {
-            _bytes = data;
             var frames = ReadNitroFrames(data);
 
             if (!frames.ContainsKey("FATB") || !frames.ContainsKey("FNTB") || !frames.ContainsKey("FIMG"))

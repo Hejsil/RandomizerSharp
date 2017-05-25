@@ -76,7 +76,7 @@ namespace RandomizerSharp.PokemonModel
         public int Defense { get; set; }
         public int Spatk { get; set; }
         public int Spdef { get; set; }
-        public int Special { get; set; }
+        public int Special => (Spatk + Spdef) / 2;
         public int Speed { get; set; }
 
         public int Ability1 { get; set; }
@@ -87,13 +87,8 @@ namespace RandomizerSharp.PokemonModel
 
         public int CommonHeldItem { get; set; }
         public int DarkGrassHeldItem { get; set; }
-
-        public int ExpYield { get; set; }
-        public int FrontSpritePointer { get; set; }
-        public int GenderRatio { get; set; }
+        
         public ExpCurve GrowthExpCurve { get; set; }
-        public int GuaranteedHeldItem { get; set; }
-        public int PicDimensions { get; set; }
         public Typing PrimaryType { get; set; }
         public int RareHeldItem { get; set; }
         public Typing SecondaryType { get; set; }
@@ -131,7 +126,6 @@ namespace RandomizerSharp.PokemonModel
             Spatk = stats[ShuffledStatsOrder[3]];
             Spdef = stats[ShuffledStatsOrder[4]];
             Speed = stats[ShuffledStatsOrder[5]];
-            Special = (int) Math.Ceiling((Spatk + Spdef) / 2.0f);
         }
 
         public int Bst() => Hp + Attack + Defense + Spatk + Spdef + Speed;

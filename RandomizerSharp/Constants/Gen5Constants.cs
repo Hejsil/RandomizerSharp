@@ -556,21 +556,6 @@ namespace RandomizerSharp.Constants
             NonBadItems1.BanRange(0x104, 5); // contest scarves
         }
 
-        public static byte MoveCategoryToByte(MoveCategory cat)
-        {
-            switch (cat)
-            {
-                case MoveCategory.Physical:
-                    return 1;
-                case MoveCategory.Special:
-                    return 2;
-                case MoveCategory.Status:
-                    return 0;
-                default:
-                    return 0;
-            }
-        }
-
         public static byte TypeToByte(Typing type)
         {
             switch (type.InnerEnumValue)

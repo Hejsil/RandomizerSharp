@@ -1,6 +1,9 @@
 ﻿using NUnit.Framework;
 using System;
+using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Security.AccessControl;
 using RandomizerSharp.PokemonModel;
 using RandomizerSharp.RomHandlers;
 using RandomizerSharp.Tests.Properties;
@@ -15,26 +18,34 @@ namespace RandomizerSharp.Tests
             Resources.Gen5Rom
         };
 
-        private static readonly Func<string, AbstractRomHandler>[] RomHandlerCreators =
+        private static readonly Func<Stream, AbstractRomHandler>[] RomHandlerCreators =
         {
-            filename => new Gen5RomHandler(filename)
+            Stream => new Gen5RomHandler(Stream)
         };
 
-        private static void TestOnAll(Action<AbstractRomHandler> edit, Action<AbstractRomHandler, AbstractRomHandler> varify)
+        private static void TestOnAll(Action<AbstractRomHandler> edit, Action<AbstractRomHandler, AbstractRomHandler> varify, [CallerMemberName] string id = "")
         {
+            var folder = TestContext.CurrentContext.TestDirectory;
+
             foreach (var (creator, filePath) in RomHandlerCreators.Zip(RomPaths, (func, s) => (func, s)))
             {
-                var newPath = Guid.NewGuid().ToString("N");  
-                var handler = creator(filePath);
-                edit(handler);
-                handler.SaveRom(newPath);
-                var newHandler = creator(newPath);
-                varify(handler, newHandler);
+                using (var file = File.OpenRead(filePath))
+                {
+                    var handler = creator(file);
+                    edit(handler);
+
+                    using (var newFile = File.Create(id, 10_000, FileOptions.DeleteOnClose))
+                    {
+                        handler.SaveRom(newFile);
+                        var newHandler = creator(newFile);
+                        varify(handler, newHandler);
+                    }
+                }
             }
         }
 
         [Test]
-        public void TestChangeStarters()
+        public void TestStarters()
         {
             TestOnAll(
                 handler =>
@@ -47,17 +58,17 @@ namespace RandomizerSharp.Tests
                 },
                 (handler, newHandler) =>
                 {
-                    foreach (var (oldStarter, newStarter) in handler.Starters.Zip(newHandler.Starters, (oldStarer, newStarter) => (oldStarer, newStarter)))
+                    foreach (var (oldS, newS) in handler.Starters.Zip(newHandler.Starters, (oldStarer, newStarter) => (oldStarer, newStarter)))
                     {
-                        Assert.AreEqual(oldStarter.Pokemon.Id, newStarter.Pokemon.Id);
-                        Assert.AreEqual(oldStarter.HeldItem, newStarter.HeldItem);
+                        Assert.AreEqual(oldS.Pokemon.Id, newS.Pokemon.Id);
+                        Assert.AreEqual(oldS.HeldItem, newS.HeldItem);
                     }
                 }
             );
         }
 
         [Test]
-        public void TestChangeAllPokemons()
+        public void TestAllPokemons()
         {
             TestOnAll(
                 handler =>
@@ -75,21 +86,15 @@ namespace RandomizerSharp.Tests
                         starter.Defense = 0;
                         starter.Spatk = 0;
                         starter.Spdef = 0;
-                        starter.Special = 0;
                         starter.Speed = 0;
                         starter.CatchRate = 0;
                         starter.CommonHeldItem = 0;
+                        starter.RareHeldItem = 0;
                         starter.DarkGrassHeldItem = 0;
-                        starter.ExpYield = 0;
-                        starter.FrontSpritePointer = 0;
-                        starter.GenderRatio = 0;
-                        starter.GrowthExpCurve = 0;
-                        starter.GuaranteedHeldItem = 0;
+                        starter.GrowthExpCurve = ExpCurve.Slow;
                         starter.Name = "";
-                        starter.PicDimensions = 0;
                         starter.PrimaryType = Typing.Bug;
                         starter.SecondaryType = Typing.Bug;
-                        starter.RareHeldItem = 0;
                         starter.TMHMCompatibility.Populate(false);
                         starter.MoveTutorCompatibility.Populate(false);
 
@@ -97,7 +102,7 @@ namespace RandomizerSharp.Tests
                 },
                 (handler, newHandler) =>
                 {
-                    foreach (var (oldP, newP) in handler.AllPokemons.Zip(newHandler.AllPokemons, (oldP, newP) => (oldP, newP)))
+                    foreach (var (oldP, newP) in handler.AllPokemons.Zip(newHandler.AllPokemons))
                     {
                         Assert.AreEqual(oldP.EvolutionsFrom.Count, newP.EvolutionsTo.Count);
                         Assert.AreEqual(oldP.EvolutionsTo.Count, newP.EvolutionsTo.Count);
@@ -116,13 +121,8 @@ namespace RandomizerSharp.Tests
                         Assert.AreEqual(oldP.CatchRate, newP.CatchRate);
                         Assert.AreEqual(oldP.CommonHeldItem, newP.CommonHeldItem);
                         Assert.AreEqual(oldP.DarkGrassHeldItem, newP.DarkGrassHeldItem);
-                        Assert.AreEqual(oldP.ExpYield, newP.ExpYield);
-                        Assert.AreEqual(oldP.FrontSpritePointer, newP.FrontSpritePointer);
-                        Assert.AreEqual(oldP.GenderRatio, newP.GenderRatio);
                         Assert.AreEqual(oldP.GrowthExpCurve, newP.GrowthExpCurve);
-                        Assert.AreEqual(oldP.GuaranteedHeldItem, newP.GuaranteedHeldItem);
                         Assert.AreEqual(oldP.Name, newP.Name);
-                        Assert.AreEqual(oldP.PicDimensions, newP.PicDimensions);
                         Assert.AreEqual(oldP.PrimaryType, newP.PrimaryType);
                         Assert.AreEqual(oldP.SecondaryType, newP.SecondaryType);
                         Assert.AreEqual(oldP.RareHeldItem, newP.RareHeldItem);
@@ -131,6 +131,229 @@ namespace RandomizerSharp.Tests
                     }
                 }
             );
+        }
+
+        [Test]
+        public void TestStaticPokemon()
+        {
+            TestOnAll(
+                handler =>
+                {
+                    handler.StaticPokemon.Populate(handler.AllPokemons[0]);
+                },
+                (handler, newHandler) =>
+                {
+                    foreach (var (oldS, newS) in handler.StaticPokemon.Zip(newHandler.StaticPokemon))
+                    {
+                        Assert.AreEqual(oldS.Id, newS.Id);
+                    }
+                }
+            );
+        }
+
+        [Test]
+        public void TestAbilityNames()
+        {
+            TestOnAll(
+                handler =>
+                {
+                    handler.AbilityNames.Populate("");
+                },
+                (handler, newHandler) =>
+                {
+                    foreach (var (oldN, newN) in handler.AbilityNames.Zip(newHandler.AbilityNames))
+                    {
+                        Assert.AreEqual(oldN, newN);
+                    }
+                }
+            );
+        }
+
+        [Test]
+        public void TestRequiredFiledTMs()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void TestAllMoves()
+        {
+            TestOnAll(
+                handler =>
+                {
+                    foreach (var move in handler.AllMoves)
+                    {
+                        move.Category = MoveCategory.Physical;
+                        move.Hitratio = 0;
+                        move.Name = "";
+                        move.Power = 0;
+                        move.Pp = 0;
+                        move.Type = Typing.Bug;
+                    }
+                },
+                (handler, newHandler) =>
+                {
+                    foreach (var (oldM, newM) in handler.AllMoves.Zip(newHandler.AllMoves))
+                    {
+                        Assert.AreEqual(oldM.Category, newM.Category);
+                        Assert.AreEqual(oldM.Hitratio, newM.Hitratio);
+                        Assert.AreEqual(oldM.Name, newM.Name);
+                        Assert.AreEqual(oldM.Power, newM.Power);
+                        Assert.AreEqual(oldM.Pp, newM.Pp);
+                        Assert.AreEqual(oldM.Type, newM.Type);
+                    }
+                }
+            );
+        }
+
+        [Test]
+        public void TestFieldMoves()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void TestEarlyRequiredHmMoves()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void TestMoveTutorMoves()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void TestCurrentFieldTMs()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void TestFieldItems()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void TestHmMoves()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void TestTmMoves()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void TestAllowedItems()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void TestNonBadItems()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void TestItemNames()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void TestRegularFieldItems()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void TestCanChangeTrainerText()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void TestFixedTrainerClassNamesLength()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void TestDoublesTrainerClasses()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void TestTrainerClassNames()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void TestTrainerNames()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void TestTrainers()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void TestMaxSumOfTrainerNameLengths()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void TestMaxTrainerClassNameLength()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void TestMaxTrainerNameLength()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void TestTrainerNameMode()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void TestGame()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void TestLoadedFilename()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void TestEncounters()
+        {
+            Assert.Fail();
+        }
+
+        [Test]
+        public void TestIngameTrades()
+        {
+            Assert.Fail();
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RandomizerSharp.NDS
 {
-    public class NdsRom
+    public class NdsRom : IDisposable
     {
         private const int Arm9Align = 0x1FF, Arm7Align = 0x1FF;
 
@@ -24,19 +24,23 @@ namespace RandomizerSharp.NDS
         private int _arm9Szmode, _arm9Szoffset;
         private byte[] _fat;
 
-        public FileStream BaseRom { get; }
+        public Stream BaseRom { get; }
 
         public string Code { get; private set; }
 
-        public NdsRom(string filename)
+        public NdsRom(Stream stream)
         {
-            BaseRom = new FileStream(filename, FileMode.Open, FileAccess.Read);
+            BaseRom = stream;
 
             ReadFileSystem();
             _arm9Open = false;
             _arm9Changed = false;
             _arm9Ramstored = null;
         }
+
+        public NdsRom(string filename)
+            : this(File.OpenRead(filename))
+        { }
 
         private void ReadFileSystem()
         {
@@ -156,7 +160,7 @@ namespace RandomizerSharp.NDS
                 if (dirPath.Length > 0)
                     fullFilename = dirPath + "/" + filename;
 
-                var nf = new NdsFile();
+                var nf = new NdsFile(BaseRom);
                 var start = ReadFromByteArr(_fat, fileId * 8, 4);
                 var end = ReadFromByteArr(_fat, fileId * 8 + 4, 4);
 
@@ -164,12 +168,6 @@ namespace RandomizerSharp.NDS
                 nf.Size = end - start;
                 nf.FullPath = fullFilename;
                 nf.FileId = fileId;
-
-                var buf = new byte[nf.Size];
-
-                BaseRom.Seek(nf.Offset);
-                BaseRom.ReadFully(buf);
-                nf.Data = buf;
 
                 _files[fullFilename] = nf;
                 _filesById[fileId] = nf;
@@ -192,7 +190,7 @@ namespace RandomizerSharp.NDS
                 var start = ReadFromByteArr(_fat, fileId * 8, 4);
                 var end = ReadFromByteArr(_fat, fileId * 8 + 4, 4);
 
-                var overlay = new NDSY9Entry()
+                var overlay = new NDSY9Entry(BaseRom)
                 {
                     Offset = start,
                     Size = end - start,
@@ -208,219 +206,226 @@ namespace RandomizerSharp.NDS
                     CompressFlag = y9Table[i * 32 + 31] & 0xFF
                 };
 
-                // extract file
-                var buf = new byte[overlay.OriginalSize];
-                BaseRom.Seek(overlay.Offset);
-                BaseRom.ReadFully(buf);
-
-                overlay.Data = buf;
-
 
                 _arm9Overlays[i] = overlay;
                 _arm9OverlaysByFileId[fileId] = overlay;
             }
         }
 
+        public void SaveTo(Stream fNew)
+        {
+            var copyBuffer = new byte[256 * 1024];
+            var headersize = ReadFromFile(BaseRom, 0x84, 4);
+
+            BaseRom.Seek(0, SeekOrigin.Begin);
+            Copy(BaseRom, fNew, copyBuffer, headersize);
+
+            var arm9Offset = (int)(fNew.Position + Arm9Align) & ~Arm9Align;
+            var oldArm9Offset = ReadFromFile(BaseRom, 0x20, 4);
+            var arm9Size = ReadFromFile(BaseRom, 0x2C, 4);
+
+            if (_arm9Open && _arm9Changed)
+            {
+                var newArm9 = GetArm9();
+
+                if (_arm9Compressed)
+                {
+                    newArm9 = BlzCoder.Encode(newArm9, true, "arm9.bin");
+                    if (_arm9Szoffset > 0)
+                    {
+                        var newValue = _arm9Szmode == 1 ? newArm9.Length : newArm9.Length + 0x4000;
+                        WriteToByteArr(newArm9, _arm9Szoffset, 3, newValue);
+                    }
+                }
+
+                arm9Size = newArm9.Length;
+                fNew.Seek(arm9Offset, SeekOrigin.Begin);
+                fNew.Write(newArm9, 0, newArm9.Length);
+
+                if (_arm9HasFooter)
+                    fNew.Write(newArm9, 0, newArm9.Length);
+            }
+            else
+            {
+                BaseRom.Seek(oldArm9Offset, SeekOrigin.Begin);
+                fNew.Seek(arm9Offset, SeekOrigin.Begin);
+                Copy(BaseRom, fNew, copyBuffer, arm9Size + 12);
+            }
+
+            var arm9OvlOffset = (int)fNew.Position;
+            var arm9OvlSize = _arm9Overlays.Length * 32;
+            var arm7Offset = (arm9OvlOffset + arm9OvlSize + Arm7Align) & ~Arm7Align;
+            var oldArm7Offset = ReadFromFile(BaseRom, 0x30, 4);
+            var arm7Size = ReadFromFile(BaseRom, 0x3C, 4);
+
+            BaseRom.Seek(oldArm7Offset, SeekOrigin.Begin);
+            fNew.Seek(arm7Offset, SeekOrigin.Begin);
+            Copy(BaseRom, fNew, copyBuffer, arm7Size);
+
+            var arm7OvlOffset = (int)fNew.Position;
+            var oldArm7OvlOffset = ReadFromFile(BaseRom, 0x58, 4);
+            var arm7OvlSize = ReadFromFile(BaseRom, 0x5C, 4);
+            BaseRom.Seek(oldArm7OvlOffset, SeekOrigin.Begin);
+
+            fNew.Seek(arm7OvlOffset, SeekOrigin.Begin);
+            Copy(BaseRom, fNew, copyBuffer, arm7OvlSize);
+
+            var bannerOffset = (int)(fNew.Position + BannerAlign) & ~BannerAlign;
+            var oldBannerOffset = ReadFromFile(BaseRom, 0x68, 4);
+            var bannerSize = 0x840;
+
+            BaseRom.Seek(oldBannerOffset, SeekOrigin.Begin);
+            fNew.Seek(bannerOffset, SeekOrigin.Begin);
+            Copy(BaseRom, fNew, copyBuffer, bannerSize);
+
+            var fntOffset = (int)(fNew.Position + FntAlign) & ~FntAlign;
+            var oldFntOffset = ReadFromFile(BaseRom, 0x40, 4);
+            var fntSize = ReadFromFile(BaseRom, 0x44, 4);
+
+            BaseRom.Seek(oldFntOffset, SeekOrigin.Begin);
+            fNew.Seek(fntOffset, SeekOrigin.Begin);
+            Copy(BaseRom, fNew, copyBuffer, fntSize);
+
+            var fatOffset = (int)(fNew.Position + FatAlign) & ~FatAlign;
+            var fatSize = _fat.Length;
+            var newfat = new byte[_fat.Length];
+            var y9Table = new byte[_arm9Overlays.Length * 32];
+            var baseOffset = fatOffset + fatSize;
+            var filecount = _fat.Length / 8;
+
+            for (var fid = 0; fid < filecount; fid++)
+            {
+                var offsetOfFile = (baseOffset + FileAlign) & ~FileAlign;
+                var fileLen = 0;
+                var copiedCustom = false;
+                if (_filesById.ContainsKey(fid))
+                {
+                    var customContents = _filesById[fid].GetWithoutLoad();
+
+                    if (customContents != null)
+                    {
+                        fNew.Seek(offsetOfFile, SeekOrigin.Begin);
+                        fNew.Write(customContents, 0, customContents.Length);
+
+                        copiedCustom = true;
+                        fileLen = customContents.Length;
+                    }
+                }
+                if (_arm9OverlaysByFileId.ContainsKey(fid))
+                {
+                    var entry = _arm9OverlaysByFileId[fid];
+                    var overlayId = entry.OverlayId;
+                    var customContents = entry.GetOverrideContents();
+
+                    if (customContents != null)
+                    {
+                        fNew.Seek(offsetOfFile, SeekOrigin.Begin);
+                        fNew.Write(customContents, 0, customContents.Length);
+
+                        copiedCustom = true;
+                        fileLen = customContents.Length;
+                    }
+
+
+                    WriteToByteArr(y9Table, overlayId * 32, 4, overlayId);
+                    WriteToByteArr(y9Table, overlayId * 32 + 4, 4, entry.RamAddress);
+                    WriteToByteArr(y9Table, overlayId * 32 + 8, 4, entry.RamSize);
+                    WriteToByteArr(y9Table, overlayId * 32 + 12, 4, entry.BssSize);
+                    WriteToByteArr(y9Table, overlayId * 32 + 16, 4, entry.StaticStart);
+                    WriteToByteArr(y9Table, overlayId * 32 + 20, 4, entry.StaticEnd);
+                    WriteToByteArr(y9Table, overlayId * 32 + 24, 4, fid);
+                    WriteToByteArr(y9Table, overlayId * 32 + 28, 3, entry.CompressedSize);
+                    WriteToByteArr(y9Table, overlayId * 32 + 31, 1, entry.CompressFlag);
+                }
+                if (!copiedCustom)
+                {
+                    var fileStarts = ReadFromByteArr(_fat, fid * 8, 4);
+                    var fileEnds = ReadFromByteArr(_fat, fid * 8 + 4, 4);
+                    fileLen = fileEnds - fileStarts;
+                    BaseRom.Seek(fileStarts, SeekOrigin.Begin);
+                    fNew.Seek(offsetOfFile, SeekOrigin.Begin);
+                    Copy(BaseRom, fNew, copyBuffer, fileLen);
+                }
+
+                WriteToByteArr(newfat, fid * 8, 4, offsetOfFile);
+                WriteToByteArr(newfat, fid * 8 + 4, 4, offsetOfFile + fileLen);
+                baseOffset = offsetOfFile + fileLen;
+            }
+
+            fNew.Seek(fatOffset, SeekOrigin.Begin);
+            fNew.Write(newfat, 0, newfat.Length);
+            fNew.Seek(arm9OvlOffset, SeekOrigin.Begin);
+            fNew.Write(y9Table, 0, y9Table.Length);
+
+            var newfilesize = baseOffset;
+
+            newfilesize = (newfilesize + 3) & ~3;
+
+            var applicationEndOffset = newfilesize;
+
+            if (newfilesize != baseOffset)
+            {
+                fNew.Seek(newfilesize - 1, SeekOrigin.Begin);
+                fNew.WriteByte(0);
+            }
+
+            newfilesize |= newfilesize >> 16;
+            newfilesize |= newfilesize >> 8;
+            newfilesize |= newfilesize >> 4;
+            newfilesize |= newfilesize >> 2;
+            newfilesize |= newfilesize >> 1;
+            newfilesize++;
+
+            if (newfilesize <= 128 * 1024)
+                newfilesize = 128 * 1024;
+
+            var devcap = -18;
+            var x = newfilesize;
+
+            while (x != 0)
+            {
+                x >>= 1;
+                devcap++;
+            }
+
+            var devicecap = devcap < 0 ? 0 : devcap;
+
+            WriteToFile(fNew, 0x20, 4, arm9Offset);
+            WriteToFile(fNew, 0x2C, 4, arm9Size);
+            WriteToFile(fNew, 0x30, 4, arm7Offset);
+            WriteToFile(fNew, 0x3C, 4, arm7Size);
+            WriteToFile(fNew, 0x40, 4, fntOffset);
+            WriteToFile(fNew, 0x48, 4, fatOffset);
+            WriteToFile(fNew, 0x50, 4, arm9OvlOffset);
+            WriteToFile(fNew, 0x58, 4, arm7OvlOffset);
+            WriteToFile(fNew, 0x68, 4, bannerOffset);
+            WriteToFile(fNew, 0x80, 4, applicationEndOffset);
+            WriteToFile(fNew, 0x14, 1, devicecap);
+            fNew.Seek(0, SeekOrigin.Begin);
+
+            var headerForCrc = new byte[0x15E];
+            fNew.Read(headerForCrc, 0, headerForCrc.Length);
+
+            var crc = Crc16.Calculate(headerForCrc, 0, 0x15E);
+            WriteToFile(fNew, 0x15E, 2, crc & 0xFFFF);
+        }
+
         public void SaveTo(string filename)
         {
-            using (var fNew = new FileStream(filename, FileMode.Create, FileAccess.ReadWrite))
+            using (var fNew = File.Create(filename))
             {
-                var headersize = ReadFromFile(BaseRom, 0x84, 4);
-
-                BaseRom.Seek(0, SeekOrigin.Begin);
-                Copy(BaseRom, fNew, headersize);
-
-                var arm9Offset = (int) (fNew.Position + Arm9Align) & ~Arm9Align;
-                var oldArm9Offset = ReadFromFile(BaseRom, 0x20, 4);
-                var arm9Size = ReadFromFile(BaseRom, 0x2C, 4);
-
-                if (_arm9Open && _arm9Changed)
-                {
-                    var newArm9 = GetArm9();
-
-                    if (_arm9Compressed)
-                    {
-                        newArm9 = BlzCoder.Encode(newArm9, true, "arm9.bin");
-                        if (_arm9Szoffset > 0)
-                        {
-                            var newValue = _arm9Szmode == 1 ? newArm9.Length : newArm9.Length + 0x4000;
-                            WriteToByteArr(newArm9, _arm9Szoffset, 3, newValue);
-                        }
-                    }
-
-                    arm9Size = newArm9.Length;
-                    fNew.Seek(arm9Offset, SeekOrigin.Begin);
-                    fNew.Write(newArm9, 0, newArm9.Length);
-
-                    if (_arm9HasFooter)
-                        fNew.Write(newArm9, 0, newArm9.Length);
-                }
-                else
-                {
-                    BaseRom.Seek(oldArm9Offset, SeekOrigin.Begin);
-                    fNew.Seek(arm9Offset, SeekOrigin.Begin);
-                    Copy(BaseRom, fNew, arm9Size + 12);
-                }
-
-                var arm9OvlOffset = (int) fNew.Position;
-                var arm9OvlSize = _arm9Overlays.Length * 32;
-                var arm7Offset = (arm9OvlOffset + arm9OvlSize + Arm7Align) & ~Arm7Align;
-                var oldArm7Offset = ReadFromFile(BaseRom, 0x30, 4);
-                var arm7Size = ReadFromFile(BaseRom, 0x3C, 4);
-
-                BaseRom.Seek(oldArm7Offset, SeekOrigin.Begin);
-                fNew.Seek(arm7Offset, SeekOrigin.Begin);
-                Copy(BaseRom, fNew, arm7Size);
-
-                var arm7OvlOffset = (int) fNew.Position;
-                var oldArm7OvlOffset = ReadFromFile(BaseRom, 0x58, 4);
-                var arm7OvlSize = ReadFromFile(BaseRom, 0x5C, 4);
-                BaseRom.Seek(oldArm7OvlOffset, SeekOrigin.Begin);
-
-                fNew.Seek(arm7OvlOffset, SeekOrigin.Begin);
-                Copy(BaseRom, fNew, arm7OvlSize);
-
-                var bannerOffset = (int) (fNew.Position + BannerAlign) & ~BannerAlign;
-                var oldBannerOffset = ReadFromFile(BaseRom, 0x68, 4);
-                var bannerSize = 0x840;
-
-                BaseRom.Seek(oldBannerOffset, SeekOrigin.Begin);
-                fNew.Seek(bannerOffset, SeekOrigin.Begin);
-                Copy(BaseRom, fNew, bannerSize);
-
-                var fntOffset = (int) (fNew.Position + FntAlign) & ~FntAlign;
-                var oldFntOffset = ReadFromFile(BaseRom, 0x40, 4);
-                var fntSize = ReadFromFile(BaseRom, 0x44, 4);
-
-                BaseRom.Seek(oldFntOffset, SeekOrigin.Begin);
-                fNew.Seek(fntOffset, SeekOrigin.Begin);
-                Copy(BaseRom, fNew, fntSize);
-
-                var fatOffset = (int) (fNew.Position + FatAlign) & ~FatAlign;
-                var fatSize = _fat.Length;
-                var newfat = new byte[_fat.Length];
-                var y9Table = new byte[_arm9Overlays.Length * 32];
-                var baseOffset = fatOffset + fatSize;
-                var filecount = _fat.Length / 8;
-
-                for (var fid = 0; fid < filecount; fid++)
-                {
-                    var offsetOfFile = (baseOffset + FileAlign) & ~FileAlign;
-                    var fileLen = 0;
-                    var copiedCustom = false;
-                    if (_filesById.ContainsKey(fid))
-                    {
-                        var customContents = _filesById[fid].LoadContents();
-
-                        fNew.Seek(offsetOfFile, SeekOrigin.Begin);
-                        fNew.Write(customContents, 0, customContents.Length);
-                        copiedCustom = true;
-                        fileLen = customContents.Length;
-                    }
-                    if (_arm9OverlaysByFileId.ContainsKey(fid))
-                    {
-                        var entry = _arm9OverlaysByFileId[fid];
-                        var overlayId = entry.OverlayId;
-                        var customContents = entry.GetOverrideContents();
-
-                        fNew.Seek(offsetOfFile, SeekOrigin.Begin);
-                        fNew.Write(customContents, 0, customContents.Length);
-                        copiedCustom = true;
-                        fileLen = customContents.Length;
-
-                        WriteToByteArr(y9Table, overlayId * 32, 4, overlayId);
-                        WriteToByteArr(y9Table, overlayId * 32 + 4, 4, entry.RamAddress);
-                        WriteToByteArr(y9Table, overlayId * 32 + 8, 4, entry.RamSize);
-                        WriteToByteArr(y9Table, overlayId * 32 + 12, 4, entry.BssSize);
-                        WriteToByteArr(y9Table, overlayId * 32 + 16, 4, entry.StaticStart);
-                        WriteToByteArr(y9Table, overlayId * 32 + 20, 4, entry.StaticEnd);
-                        WriteToByteArr(y9Table, overlayId * 32 + 24, 4, fid);
-                        WriteToByteArr(y9Table, overlayId * 32 + 28, 3, entry.CompressedSize);
-                        WriteToByteArr(y9Table, overlayId * 32 + 31, 1, entry.CompressFlag);
-                    }
-                    if (!copiedCustom)
-                    {
-                        var fileStarts = ReadFromByteArr(_fat, fid * 8, 4);
-                        var fileEnds = ReadFromByteArr(_fat, fid * 8 + 4, 4);
-                        fileLen = fileEnds - fileStarts;
-                        BaseRom.Seek(fileStarts, SeekOrigin.Begin);
-                        fNew.Seek(offsetOfFile, SeekOrigin.Begin);
-                        Copy(BaseRom, fNew, fileLen);
-                    }
-
-                    WriteToByteArr(newfat, fid * 8, 4, offsetOfFile);
-                    WriteToByteArr(newfat, fid * 8 + 4, 4, offsetOfFile + fileLen);
-                    baseOffset = offsetOfFile + fileLen;
-                }
-
-                fNew.Seek(fatOffset, SeekOrigin.Begin);
-                fNew.Write(newfat, 0, newfat.Length);
-                fNew.Seek(arm9OvlOffset, SeekOrigin.Begin);
-                fNew.Write(y9Table, 0, y9Table.Length);
-
-                var newfilesize = baseOffset;
-
-                newfilesize = (newfilesize + 3) & ~3;
-
-                var applicationEndOffset = newfilesize;
-
-                if (newfilesize != baseOffset)
-                {
-                    fNew.Seek(newfilesize - 1, SeekOrigin.Begin);
-                    fNew.WriteByte(0);
-                }
-
-                newfilesize |= newfilesize >> 16;
-                newfilesize |= newfilesize >> 8;
-                newfilesize |= newfilesize >> 4;
-                newfilesize |= newfilesize >> 2;
-                newfilesize |= newfilesize >> 1;
-                newfilesize++;
-
-                if (newfilesize <= 128 * 1024)
-                    newfilesize = 128 * 1024;
-
-                var devcap = -18;
-                var x = newfilesize;
-
-                while (x != 0)
-                {
-                    x >>= 1;
-                    devcap++;
-                }
-
-                var devicecap = devcap < 0 ? 0 : devcap;
-
-                WriteToFile(fNew, 0x20, 4, arm9Offset);
-                WriteToFile(fNew, 0x2C, 4, arm9Size);
-                WriteToFile(fNew, 0x30, 4, arm7Offset);
-                WriteToFile(fNew, 0x3C, 4, arm7Size);
-                WriteToFile(fNew, 0x40, 4, fntOffset);
-                WriteToFile(fNew, 0x48, 4, fatOffset);
-                WriteToFile(fNew, 0x50, 4, arm9OvlOffset);
-                WriteToFile(fNew, 0x58, 4, arm7OvlOffset);
-                WriteToFile(fNew, 0x68, 4, bannerOffset);
-                WriteToFile(fNew, 0x80, 4, applicationEndOffset);
-                WriteToFile(fNew, 0x14, 1, devicecap);
-                fNew.Seek(0, SeekOrigin.Begin);
-
-                var headerForCrc = new byte[0x15E];
-                fNew.Read(headerForCrc, 0, headerForCrc.Length);
-
-                var crc = Crc16.Calculate(headerForCrc, 0, 0x15E);
-                WriteToFile(fNew, 0x15E, 2, crc & 0xFFFF);
+                SaveTo(fNew);
             }
         }
 
-        private void Copy(FileStream from, FileStream to, int bytes)
+        private void Copy(Stream from, Stream to, byte[] buffer, int bytes)
         {
             var sizeofCopybuf = Math.Min(256 * 1024, bytes);
-            var copybuf = new byte[sizeofCopybuf];
             while (bytes > 0)
             {
                 var size2 = bytes >= sizeofCopybuf ? sizeofCopybuf : bytes;
-                var read = from.Read(copybuf, 0, size2);
-                to.Write(copybuf, 0, read);
+                var read = from.Read(buffer, 0, size2);
+                to.Write(buffer, 0, read);
                 bytes -= read;
             }
         }
@@ -584,9 +589,9 @@ namespace RandomizerSharp.NDS
                 data[offset + i] = unchecked((byte) ((value >> (i * 8)) & 0xFF));
         }
 
-        public int ReadFromFile(FileStream file, int size) => ReadFromFile(file, -1, size);
+        public int ReadFromFile(Stream file, int size) => ReadFromFile(file, -1, size);
 
-        public int ReadFromFile(FileStream file, int offset, int size)
+        public int ReadFromFile(Stream file, int offset, int size)
         {
             var
                 buf = new byte[size];
@@ -599,12 +604,12 @@ namespace RandomizerSharp.NDS
             return result;
         }
 
-        public void WriteToFile(FileStream file, int size, int value)
+        public void WriteToFile(Stream file, int size, int value)
         {
             WriteToFile(file, -1, size, value);
         }
 
-        public void WriteToFile(FileStream file, int offset, int size, int value)
+        public void WriteToFile(Stream file, int offset, int size, int value)
         {
             var
                 buf = new byte[size];
@@ -613,6 +618,11 @@ namespace RandomizerSharp.NDS
             if (offset >= 0)
                 file.Seek(offset);
             file.Write(buf, 0, buf.Length);
+        }
+
+        public void Dispose()
+        {
+            BaseRom?.Dispose();
         }
     }
 }

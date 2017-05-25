@@ -38,16 +38,6 @@ namespace RandomizerSharp.Randomizers
                     if (Random.Next(100) == 0)
                         mv.Power += 50;
                 }
-
-                // ReSharper disable once CompareOfFloatsByEqualityOperator
-                if (mv.HitCount == 1)
-                    continue;
-
-                //  Divide randomized power by average hit count, round to
-                //  nearest 5
-                mv.Power = (int) (Math.Round(mv.Power / (mv.HitCount / 5)) * 5);
-                if (mv.Power < 5)
-                    mv.Power = 5;
             }
         }
 
@@ -148,7 +138,7 @@ namespace RandomizerSharp.Randomizers
             var validTypeDamagingMoves = new Dictionary<Typing, List<Move>>();
             foreach (var mv in ValidMoves)
             {
-                if (mv == null || GlobalConstants.BannedRandomMoves[mv.Number] || allBanned.Contains(mv.Number))
+                if (mv == null || GlobalConstants.BannedRandomMoves[mv.Id] || allBanned.Contains(mv.Id))
                     continue;
 
                 validMoves.Add(mv);
@@ -161,7 +151,7 @@ namespace RandomizerSharp.Randomizers
                     validTypeMoves[mv.Type].Add(mv);
                 }
 
-                if (GlobalConstants.BannedForDamagingMove[mv.Number])
+                if (GlobalConstants.BannedForDamagingMove[mv.Id])
                     continue;
 
                 if (mv.Power < 2 * GlobalConstants.MinDamagingMovePower && (mv.Power < GlobalConstants.MinDamagingMovePower || !(mv.Hitratio >= 90)))
@@ -304,15 +294,15 @@ namespace RandomizerSharp.Randomizers
 
                     //  now pick a move until we get a valid one
                     var mv = pickList[Random.Next(pickList.Count)];
-                    while (learnt.Contains(mv.Number))
+                    while (learnt.Contains(mv.Id))
                         mv = pickList[Random.Next(pickList.Count)];
 
                     //  write it
-                    moves[i].Move = mv.Number;
+                    moves[i].Move = mv.Id;
                     if (i == lv1Index)
                         moves[i].Level = 1;
 
-                    learnt.Add(mv.Number);
+                    learnt.Add(mv.Id);
                 }
             }
 
@@ -320,7 +310,7 @@ namespace RandomizerSharp.Randomizers
             {
                 foreach (var mv in potentialList)
                 {
-                    if (!alreadyUsed.Contains(mv.Number))
+                    if (!alreadyUsed.Contains(mv.Id))
                         return true;
                 }
 
@@ -359,11 +349,11 @@ namespace RandomizerSharp.Randomizers
             var unusableDamagingMoves = new HashSet<Move>();
             foreach (var mv in usableMoves)
             {
-                if (GlobalConstants.BannedRandomMoves[mv.Number] ||
-                    hms.Contains(mv.Number) ||
-                    banned.Contains(mv.Number))
+                if (GlobalConstants.BannedRandomMoves[mv.Id] ||
+                    hms.Contains(mv.Id) ||
+                    banned.Contains(mv.Id))
                     unusableMoves.Add(mv);
-                else if (GlobalConstants.BannedForDamagingMove[mv.Number] ||
+                else if (GlobalConstants.BannedForDamagingMove[mv.Id] ||
                          mv.Power < GlobalConstants.MinDamagingMovePower)
                     unusableDamagingMoves.Add(mv);
             }
@@ -382,7 +372,7 @@ namespace RandomizerSharp.Randomizers
                 else
                     chosenMove = usableMoves[Random.Next(usableMoves.Count)];
 
-                pickedMoves.Add(chosenMove.Number);
+                pickedMoves.Add(chosenMove.Id);
                 usableMoves.Remove(chosenMove);
                 usableDamagingMoves.Remove(chosenMove);
             }
@@ -499,12 +489,12 @@ namespace RandomizerSharp.Randomizers
             var unusableDamagingMoves = new HashSet<Move>();
             foreach (var mv in usableMoves)
             {
-                if (GlobalConstants.BannedRandomMoves[mv.Number] ||
-                    tms.Contains(mv.Number) ||
-                    hms.Contains(mv.Number) ||
-                    banned.Contains(mv.Number))
+                if (GlobalConstants.BannedRandomMoves[mv.Id] ||
+                    tms.Contains(mv.Id) ||
+                    hms.Contains(mv.Id) ||
+                    banned.Contains(mv.Id))
                     unusableMoves.Add(mv);
-                else if (GlobalConstants.BannedForDamagingMove[mv.Number] ||
+                else if (GlobalConstants.BannedForDamagingMove[mv.Id] ||
                          mv.Power < GlobalConstants.MinDamagingMovePower)
                     unusableDamagingMoves.Add(mv);
             }
@@ -525,7 +515,7 @@ namespace RandomizerSharp.Randomizers
                 else
                     chosenMove = usableMoves[Random.Next(usableMoves.Count)];
 
-                pickedMoves.Add(chosenMove.Number);
+                pickedMoves.Add(chosenMove.Id);
                 usableMoves.Remove(chosenMove);
                 usableDamagingMoves.Remove(chosenMove);
             }

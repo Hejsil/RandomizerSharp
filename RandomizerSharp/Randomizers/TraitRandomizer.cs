@@ -67,7 +67,6 @@ namespace RandomizerSharp.Randomizers
                 pokemon.Spatk = (int) Math.Max(1, Math.Round(spaW / totW * baseStat)) + 10;
                 pokemon.Spdef = (int) Math.Max(1, Math.Round(spdW / totW * baseStat)) + 10;
                 pokemon.Speed = (int) Math.Max(1, Math.Round(speW / totW * baseStat)) + 10;
-                pokemon.Special = (int) Math.Ceiling((pokemon.Spatk + pokemon.Spdef) / 2.0f);
 
                 if (pokemon.Hp > 255 ||
                     pokemon.Attack > 255 ||
@@ -89,7 +88,6 @@ namespace RandomizerSharp.Randomizers
                 evTo.Speed = (int) Math.Min(255, Math.Max(1, Math.Round(evolvesFrom.Speed * bstRatio)));
                 evTo.Spatk = (int) Math.Min(255, Math.Max(1, Math.Round(evolvesFrom.Spatk * bstRatio)));
                 evTo.Spdef = (int) Math.Min(255, Math.Max(1, Math.Round(evolvesFrom.Spdef * bstRatio)));
-                evTo.Special = (int) Math.Ceiling((evTo.Spatk + evTo.Spdef) / 2.0f);
             }
         }
 

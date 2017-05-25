@@ -380,16 +380,16 @@ namespace RandomizerSharp.Randomizers
                 damagingMoves.Sort(
                     (m1, m2) =>
                     {
-                        if (m1.Power * m1.HitCount < m2.Power * m2.HitCount)
+                        if (m1.Power < m2.Power)
                             return -1;
-                        if (m1.Power * m1.HitCount > m2.Power * m2.HitCount)
+                        if (m1.Power > m2.Power)
                             return 1;
                         return 0;
                     });
 
                 //  Reassign damaging moves in the ordered positions
                 for (var i = 0; i < damagingMoves.Count; i++)
-                    moves[damagingMoveIndices[i]].Move = damagingMoves[i].Number;
+                    moves[damagingMoveIndices[i]].Move = damagingMoves[i].Id;
             }
         }
 

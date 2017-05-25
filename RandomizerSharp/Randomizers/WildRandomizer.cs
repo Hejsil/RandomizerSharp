@@ -579,106 +579,49 @@ namespace RandomizerSharp.Randomizers
 
             foreach (var pk in pokemon)
             {
-                if (pk.GuaranteedHeldItem == -1 &&
-                    pk.CommonHeldItem == -1 &&
+                if (pk.CommonHeldItem == -1 &&
                     pk.RareHeldItem == -1 &&
                     pk.DarkGrassHeldItem == -1)
                     return;
 
                 var canHaveDarkGrass = pk.DarkGrassHeldItem != -1;
-                if (pk.GuaranteedHeldItem != -1)
+
+                //  No guaranteed item atm
+                var decision = Random.NextDouble();
+                if (decision < 0.5)
                 {
-                    //  Guaranteed held items are supported.
-                    if (pk.GuaranteedHeldItem > 0)
-                    {
-                        //  Currently have a guaranteed item
-                        var decision = Random.NextDouble();
-                        if (decision < 0.9)
-                        {
-                            //  Stay as guaranteed
-                            canHaveDarkGrass = false;
-                            pk.GuaranteedHeldItem = possibleItems.RandomItem(Random);
-                        }
-                        else
-                        {
-                            //  Change to 25% or 55% chance
-                            pk.GuaranteedHeldItem = 0;
-                            pk.CommonHeldItem = possibleItems.RandomItem(Random);
-                            pk.RareHeldItem = possibleItems.RandomItem(Random);
-                            while (pk.RareHeldItem == pk.CommonHeldItem)
-                                pk.RareHeldItem = possibleItems.RandomItem(Random);
-                        }
-                    }
-                    else
-                    {
-                        //  No guaranteed item atm
-                        var decision = Random.NextDouble();
-                        if (decision < 0.5)
-                        {
-                            //  No held item at all
-                            pk.CommonHeldItem = 0;
-                            pk.RareHeldItem = 0;
-                        }
-                        else if (decision < 0.65)
-                        {
-                            //  Just a rare item
-                            pk.CommonHeldItem = 0;
-                            pk.RareHeldItem = possibleItems.RandomItem(Random);
-                        }
-                        else if (decision < 0.8)
-                        {
-                            //  Just a common item
-                            pk.CommonHeldItem = possibleItems.RandomItem(Random);
-                            pk.RareHeldItem = 0;
-                        }
-                        else if (decision < 0.95)
-                        {
-                            //  Both a common and rare item
-                            pk.CommonHeldItem = possibleItems.RandomItem(Random);
-                            pk.RareHeldItem = possibleItems.RandomItem(Random);
-                            while (pk.RareHeldItem == pk.CommonHeldItem)
-                                pk.RareHeldItem = possibleItems.RandomItem(Random);
-                        }
-                        else
-                        {
-                            //  Guaranteed item
-                            canHaveDarkGrass = false;
-                            pk.GuaranteedHeldItem = possibleItems.RandomItem(Random);
-                            pk.CommonHeldItem = 0;
-                            pk.RareHeldItem = 0;
-                        }
-                    }
+                    //  No held item at all
+                    pk.CommonHeldItem = 0;
+                    pk.RareHeldItem = 0;
+                }
+                else if (decision < 0.65)
+                {
+                    //  Just a rare item
+                    pk.CommonHeldItem = 0;
+                    pk.RareHeldItem = possibleItems.RandomItem(Random);
+                }
+                else if (decision < 0.8)
+                {
+                    //  Just a common item
+                    pk.CommonHeldItem = possibleItems.RandomItem(Random);
+                    pk.RareHeldItem = 0;
+                }
+                else if (decision < 0.95)
+                {
+                    //  Both a common and rare item
+                    pk.CommonHeldItem = possibleItems.RandomItem(Random);
+                    pk.RareHeldItem = possibleItems.RandomItem(Random);
+
+                    while (pk.RareHeldItem == pk.CommonHeldItem)
+                        pk.RareHeldItem = possibleItems.RandomItem(Random);
                 }
                 else
                 {
-                    //  Code for no guaranteed items
-                    var decision = Random.NextDouble();
-                    if (decision < 0.5)
-                    {
-                        //  No held item at all
-                        pk.CommonHeldItem = 0;
-                        pk.RareHeldItem = 0;
-                    }
-                    else if (decision < 0.65)
-                    {
-                        //  Just a rare item
-                        pk.CommonHeldItem = 0;
-                        pk.RareHeldItem = possibleItems.RandomItem(Random);
-                    }
-                    else if (decision < 0.8)
-                    {
-                        //  Just a common item
-                        pk.CommonHeldItem = possibleItems.RandomItem(Random);
-                        pk.RareHeldItem = 0;
-                    }
-                    else
-                    {
-                        //  Both a common and rare item
-                        pk.CommonHeldItem = possibleItems.RandomItem(Random);
-                        pk.RareHeldItem = possibleItems.RandomItem(Random);
-                        while (pk.RareHeldItem == pk.CommonHeldItem)
-                            pk.RareHeldItem = possibleItems.RandomItem(Random);
-                    }
+                    //  Guaranteed item
+                    canHaveDarkGrass = false;
+                    var guaranteed = possibleItems.RandomItem(Random);
+                    pk.CommonHeldItem = guaranteed;
+                    pk.RareHeldItem = guaranteed;
                 }
 
                 if (canHaveDarkGrass)
