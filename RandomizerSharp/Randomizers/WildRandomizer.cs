@@ -457,7 +457,7 @@ namespace RandomizerSharp.Randomizers
         public void RandomizeAbilities(bool evolutionSanity, bool allowWonderGuard, bool banTrappingAbilities, bool banNegativeAbilities)
         {
 
-            var abilitiesPerPokemon = RomHandler.Game.AbilitiesPerPokemon();
+            var abilitiesPerPokemon = RomHandler.Game.AbilitiesPerPokemon;
 
             //  Abilities don't exist in some games...
             if (abilitiesPerPokemon == 0)

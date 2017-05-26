@@ -3,25 +3,20 @@ using System.Text;
 
 namespace RandomizerSharp.PokemonModel
 {
-    public class Trainer : IComparable<Trainer>, IEquatable<Trainer>
+    public class Trainer : IEquatable<Trainer>
     {
-        public bool ImportantTrainer { get; }
-        public int Offset { get; set; }
         public TrainerPokemon[] Pokemon { get; set; }
         public int Poketype { get; set; }
         public string Tag { get; set; }
         public int Trainerclass { get; set; }
-
-        public virtual int CompareTo(Trainer o) => Offset - o.Offset;
 
         public override string ToString()
         {
             var sb = new StringBuilder("[");
             
             if (Trainerclass != 0)
-                sb.Append("(" + Trainerclass + ") - ");
+                sb.Append("(" + Trainerclass + ")");
 
-            sb.Append($"{Offset:x}");
             sb.Append(" => ");
 
             var first = true;
@@ -47,7 +42,7 @@ namespace RandomizerSharp.PokemonModel
             var result = 1;
 
             // ReSharper disable once NonReadonlyMemberInGetHashCode
-            result = prime * result + Offset;
+            result = prime * result;
 
             return result;
         }
@@ -57,7 +52,7 @@ namespace RandomizerSharp.PokemonModel
             if (ReferenceEquals(this, trainer))
                 return true;
 
-            return Offset == trainer?.Offset;
+            return false;
         }
 
         public override bool Equals(object obj) => Equals(obj as Trainer);

@@ -151,7 +151,7 @@ namespace RandomizerSharp.RomHandlers
                     if (q.StartsWith("[") && q.EndsWith("]"))
                     {
                         // New rom
-                        current = new RomEntry { Name = q.Substring(1, q.Length - 1) };
+                        current = new RomEntry { Name = q.Substring(1, q.Length - 2) };
                         Roms.Add(current);
                     }
                     else
@@ -396,7 +396,6 @@ namespace RandomizerSharp.RomHandlers
             }
 
             AllMoves = allMoves;
-            FieldMoves = Gen5Constants.FieldMoves;
         }
 
         public override void SaveRom(Stream stream)
@@ -984,7 +983,6 @@ namespace RandomizerSharp.RomHandlers
                 var tr = new Trainer
                 {
                     Poketype = trainer[0] & 0xFF,
-                    Offset = i,
                     Trainerclass = trainer[1] & 0xFF,
                     Pokemon = new TrainerPokemon[numPokes]
                 };
@@ -1052,7 +1050,6 @@ namespace RandomizerSharp.RomHandlers
                     var tr = new Trainer
                     {
                         Poketype = 3,
-                        Offset = 0,
                         Pokemon = new TrainerPokemon[3]
                     };
 
@@ -1242,9 +1239,6 @@ namespace RandomizerSharp.RomHandlers
             {
                 TmMoves[i + Gen5Constants.TmBlockOneCount] = PpTxtHandler.ReadWord(Arm9, offset + i * 2);
             }
-
-
-            RequiredFieldTMs = IsBw2 ? Gen5Constants.Bw2RequiredFieldTMs : Gen5Constants.Bw1RequiredFieldTMs;
         }
 
         private void SaveTmMoves()
@@ -1325,17 +1319,13 @@ namespace RandomizerSharp.RomHandlers
             }
 
             HmMoves = hmMoves;
-            EarlyRequiredHmMoves = IsBw2 ? Gen5Constants.Bw2EarlyRequiredHmMoves : Gen5Constants.Bw1EarlyRequiredHmMoves;
         }
 
 
         private void LoadMoveTutorMoves()
         {
-            if (!Game.HasMoveTutors())
-            {
-                MoveTutorMoves = Array.Empty<int>();
+            if (!Game.HasMoveTutors)
                 return;
-            }
 
             var baseOffset = _romEntry.GetInt("MoveTutorDataOffset");
 
@@ -1349,8 +1339,9 @@ namespace RandomizerSharp.RomHandlers
 
         private void SaveMoveTutorMoves()
         {
-            if (!Game.HasMoveTutors())
+            if (!Game.HasMoveTutors)
                 return;
+
             var baseOffset = _romEntry.GetInt("MoveTutorDataOffset");
             var amount = Gen5Constants.Bw2MoveTutorCount;
             var bytesPer = Gen5Constants.Bw2MoveTutorBytesPerEntry;
@@ -1368,7 +1359,7 @@ namespace RandomizerSharp.RomHandlers
 
         private void LoadMoveTutorCompatibility()
         {
-            if (!Game.HasMoveTutors())
+            if (!Game.HasMoveTutors)
                 return;
 
 
@@ -1397,7 +1388,7 @@ namespace RandomizerSharp.RomHandlers
 
         private void SaveMoveTutorCompatibility()
         {
-            if (!Game.HasMoveTutors())
+            if (!Game.HasMoveTutors)
                 return;
 
             // BW2 move tutor flags aren't using the same order as the move tutor

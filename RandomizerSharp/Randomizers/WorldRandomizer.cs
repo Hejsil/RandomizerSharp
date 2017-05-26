@@ -116,7 +116,7 @@ namespace RandomizerSharp.Randomizers
 
                 if (randomIVs)
                 {
-                    var maxIv = RomHandler.Game.Generation() == 1 ? 16 : 32;
+                    var maxIv = RomHandler.Game.Generation == 1 ? 16 : 32;
 
                     for (var i = 0; i < trade.Ivs.Length; i++)
                     {
@@ -187,7 +187,7 @@ namespace RandomizerSharp.Randomizers
 
             var currentItems = RomHandler.RegularFieldItems;
             var currentTMs = RomHandler.CurrentFieldTMs;
-            var requiredTMs = RomHandler.RequiredFieldTMs;
+            var requiredTMs = RomHandler.Game.RequiredFieldTMs;
             var fieldItemCount = currentItems.Length;
             var fieldTmCount = currentTMs.Length;
             var reqTmCount = requiredTMs.Length;

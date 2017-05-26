@@ -55,7 +55,7 @@ namespace RandomizerSharp.Tests
                 },
                 (handler, newHandler) =>
                 {
-                    foreach (var (oldS, newS) in handler.Starters.Zip(newHandler.Starters, (oldStarer, newStarter) => (oldStarer, newStarter)))
+                    foreach (var (oldS, newS) in handler.Starters.Zip(newHandler.Starters))
                     {
                         Assert.AreEqual(oldS.Pokemon.Id, newS.Pokemon.Id);
                         Assert.AreEqual(oldS.HeldItem, newS.HeldItem);
@@ -167,12 +167,6 @@ namespace RandomizerSharp.Tests
         }
 
         [Test]
-        public void TestRequiredFiledTMs()
-        {
-            Assert.Fail();
-        }
-
-        [Test]
         public void TestAllMoves()
         {
             TestOnAll(
@@ -202,131 +196,183 @@ namespace RandomizerSharp.Tests
                 }
             );
         }
-
-        [Test]
-        public void TestFieldMoves()
-        {
-            Assert.Fail();
-        }
-
-        [Test]
-        public void TestEarlyRequiredHmMoves()
-        {
-            Assert.Fail();
-        }
-
+        
         [Test]
         public void TestMoveTutorMoves()
         {
-            Assert.Fail();
+            TestOnAll(
+                handler =>
+                {
+                    handler.MoveTutorMoves.Populate(0);
+                },
+                (handler, newHandler) =>
+                {
+                    foreach (var (oldM, newM) in handler.MoveTutorMoves.Zip(newHandler.MoveTutorMoves))
+                    {
+                        Assert.AreEqual(oldM, newM);
+                    }
+                }
+            );
         }
-
-        [Test]
-        public void TestCurrentFieldTMs()
-        {
-            Assert.Fail();
-        }
-
+        
         [Test]
         public void TestFieldItems()
         {
-            Assert.Fail();
+            TestOnAll(
+                handler =>
+                {
+                    handler.FieldItems.Populate(0);
+                },
+                (handler, newHandler) =>
+                {
+                    foreach (var (oldItem, newItem) in handler.FieldItems.Zip(newHandler.FieldItems))
+                    {
+                        Assert.AreEqual(oldItem, newItem);
+                    }
+                }
+            );
         }
 
         [Test]
         public void TestHmMoves()
         {
-            Assert.Fail();
+            TestOnAll(
+                handler =>
+                {
+                    handler.HmMoves.Populate(0);
+                },
+                (handler, newHandler) =>
+                {
+                    foreach (var (oldHm, newHm) in handler.HmMoves.Zip(newHandler.HmMoves))
+                    {
+                        Assert.AreEqual(oldHm, newHm);
+                    }
+                }
+            );
         }
 
         [Test]
         public void TestTmMoves()
         {
-            Assert.Fail();
-        }
-
-        [Test]
-        public void TestAllowedItems()
-        {
-            Assert.Fail();
-        }
-
-        [Test]
-        public void TestNonBadItems()
-        {
-            Assert.Fail();
+            TestOnAll(
+                handler =>
+                {
+                    handler.TmMoves.Populate(0);
+                },
+                (handler, newHandler) =>
+                {
+                    foreach (var (oldTm, newTm) in handler.TmMoves.Zip(newHandler.TmMoves))
+                    {
+                        Assert.AreEqual(oldTm, newTm);
+                    }
+                }
+            );
         }
 
         [Test]
         public void TestItemNames()
         {
-            Assert.Fail();
-        }
-
-        [Test]
-        public void TestRegularFieldItems()
-        {
-            Assert.Fail();
-        }
-
-        [Test]
-        public void TestCanChangeTrainerText()
-        {
-            Assert.Fail();
-        }
-
-        [Test]
-        public void TestFixedTrainerClassNamesLength()
-        {
-            Assert.Fail();
+            TestOnAll(
+                handler =>
+                {
+                    handler.ItemNames.Populate("");
+                },
+                (handler, newHandler) =>
+                {
+                    foreach (var (oldName, newName) in handler.ItemNames.Zip(newHandler.ItemNames))
+                    {
+                        Assert.AreEqual(oldName, newName);
+                    }
+                }
+            );
         }
 
         [Test]
         public void TestDoublesTrainerClasses()
         {
-            Assert.Fail();
+            TestOnAll(
+                handler =>
+                {
+                    handler.DoublesTrainerClasses.Populate(0);
+                },
+                (handler, newHandler) =>
+                {
+                    foreach (var (oldClass, newClass) in handler.DoublesTrainerClasses.Zip(newHandler.DoublesTrainerClasses))
+                    {
+                        Assert.AreEqual(oldClass, newClass);
+                    }
+                }
+            );
         }
 
         [Test]
         public void TestTrainerClassNames()
         {
-            Assert.Fail();
+            TestOnAll(
+                handler =>
+                {
+                    handler.TrainerClassNames.Populate("");
+                },
+                (handler, newHandler) =>
+                {
+                    foreach (var (oldClass, newClass) in handler.TrainerClassNames.Zip(newHandler.TrainerClassNames))
+                    {
+                        Assert.AreEqual(oldClass, newClass);
+                    }
+                }
+            );
         }
 
         [Test]
         public void TestTrainerNames()
         {
-            Assert.Fail();
+            TestOnAll(
+                handler =>
+                {
+                    handler.TrainerNames.Populate("");
+                },
+                (handler, newHandler) =>
+                {
+                    foreach (var (oldName, newName) in handler.TrainerNames.Zip(newHandler.TrainerNames))
+                    {
+                        Assert.AreEqual(oldName, newName);
+                    }
+                }
+            );
         }
 
         [Test]
         public void TestTrainers()
         {
-            Assert.Fail();
-        }
-
-        [Test]
-        public void TestMaxSumOfTrainerNameLengths()
-        {
-            Assert.Fail();
-        }
-
-        [Test]
-        public void TestMaxTrainerClassNameLength()
-        {
-            Assert.Fail();
-        }
-
-        [Test]
-        public void TestMaxTrainerNameLength()
-        {
-            Assert.Fail();
-        }
-
-        [Test]
-        public void TestTrainerNameMode()
-        {
-            Assert.Fail();
+            TestOnAll(
+                handler =>
+                {
+                    // TODO: Not done
+                    foreach (var trainer in handler.Trainers)
+                    {
+                        foreach (var pokemon in trainer.Pokemon)
+                        {
+                            pokemon.Pokemon = handler.AllPokemons[0];
+                            pokemon.Ability = 0;
+                            pokemon.AiLevel = 0;
+                            pokemon.HeldItem = 0;
+                            pokemon.Level = 0;
+                            pokemon.Move1 = 0;
+                            pokemon.Move2 = 0;
+                            pokemon.Move3 = 0;
+                            pokemon.Move4 = 0;
+                            pokemon.ResetMoves = false;
+                        }
+                    }
+                },
+                (handler, newHandler) =>
+                {
+                    foreach (var (oldName, newName) in handler.TrainerNames.Zip(newHandler.TrainerNames))
+                    {
+                        Assert.AreEqual(oldName, newName);
+                    }
+                }
+            );
         }
 
         [Test]

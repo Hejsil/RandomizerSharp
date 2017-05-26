@@ -480,8 +480,7 @@ namespace RandomizerSharp.Randomizers
             
             //  loop until we successfully pick names that fit
             //  should always succeed first attempt except for gen2.
-            while (!success &&
-                   tries < 10000)
+            while (!success && tries < 10000)
             {
                 success = true;
                 translation.Clear();

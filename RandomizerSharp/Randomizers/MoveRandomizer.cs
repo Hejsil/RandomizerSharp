@@ -109,7 +109,7 @@ namespace RandomizerSharp.Randomizers
 
         public void RandomizeMoveCategory()
         {
-            if (!RomHandler.Game.HasPhysicalSpecialSplit())
+            if (!RomHandler.Game.HasPhysicalSpecialSplit)
                 return;
 
             foreach (var mv in ValidMoves)
@@ -330,7 +330,7 @@ namespace RandomizerSharp.Randomizers
 
             var banned = new List<int>(noBroken ? Move.GameBreaking : Enumerable.Empty<int>());
             //  field moves?
-            var fieldMoves = RomHandler.FieldMoves;
+            var fieldMoves = RomHandler.Game.FieldMoves;
             var preservedFieldMoveCount = 0;
             if (preserveField)
             {
@@ -418,7 +418,7 @@ namespace RandomizerSharp.Randomizers
         {
             //  Get current compatibility
             //  new: increase HM chances if required early on
-            var requiredEarlyOn = RomHandler.EarlyRequiredHmMoves;
+            var requiredEarlyOn = RomHandler.Game.EarlyRequiredHmMoves;
             var tmHMs = RomHandler.TmMoves.ToList();
             tmHMs.AddRange(RomHandler.HmMoves);
 
@@ -471,7 +471,7 @@ namespace RandomizerSharp.Randomizers
             var banned = new List<int>(noBroken ? Move.GameBreaking : Enumerable.Empty<int>());
 
             //  field moves?
-            var fieldMoves = RomHandler.FieldMoves;
+            var fieldMoves = RomHandler.Game.FieldMoves;
             var preservedFieldMoveCount = 0;
             if (preserveField)
             {

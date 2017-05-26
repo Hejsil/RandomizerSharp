@@ -644,7 +644,7 @@ namespace RandomizerSharp.Constants
             Tag(trs, 0x197, "CHAMPION"); // Alder
 
             // Ubers?
-            Tag(trs, 0x21E, "UBER"); // Game Freak Guy
+            Tag(trs, 0x21E, "UBER"); // GameEnum Freak Guy
             Tag(trs, 0x237, "UBER"); // Cynthia
             Tag(trs, 0xE8, "UBER"); // Ghetsis
             Tag(trs, 0x24A, "UBER"); // N-White
@@ -745,7 +745,7 @@ namespace RandomizerSharp.Constants
 
             // Uber-Trainers
             // There are *fourteen* ubers of 17 allowed (incl. the champion)
-            // It's a rather stacked game...
+            // It's a rather stacked gameEnum...
             Tag(trs, 0x246, "UBER"); // Alder
             Tag(trs, 0x1c8, "UBER"); // Cynthia
             Tag(trs, 0xca, "UBER"); // Benga/BlackTower
@@ -757,8 +757,8 @@ namespace RandomizerSharp.Constants
             Tag(trs, 0x310, "UBER"); // N/Autumn
             Tag(trs, 0x311, "UBER"); // N/Winter
             Tag(trs, 0x159, "UBER"); // Ghetsis
-            Tag(trs, 0x8c, "UBER"); // Game Freak Guy
-            Tag(trs, 0x24f, "UBER"); // Game Freak Leftovers Guy
+            Tag(trs, 0x8c, "UBER"); // GameEnum Freak Guy
+            Tag(trs, 0x24f, "UBER"); // GameEnum Freak Leftovers Guy
         }
 
         private static void TagRivalBw(IList<Trainer> allTrainers, string tag, int offset)

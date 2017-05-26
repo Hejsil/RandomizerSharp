@@ -27,38 +27,38 @@ namespace RandomizerSharp.Randomizers
             RomHandler = romHandler;
             Random = random;
 
-            switch (RomHandler.Game)
+            switch (RomHandler.Game.GameKind)
             {
-                case Game.Red:
-                case Game.Blue:
-                case Game.Green:
-                case Game.Yellow:
-                case Game.Silver:
-                case Game.Gold:
-                case Game.Crystal:
-                case Game.Ruby:
-                case Game.Sapphire:
-                case Game.Emerald:
-                case Game.FireRed:
-                case Game.LeafGreen:
-                case Game.Diamond:
-                case Game.Pearl:
-                case Game.Platinum:
-                case Game.HeartGold:
-                case Game.SoulSilver:
-                case Game.X:
-                case Game.Y:
-                case Game.OmegaRuby:
-                case Game.AlphaSapphire:
-                case Game.Sun:
-                case Game.Moon:
+                case GameEnum.Red:
+                case GameEnum.Blue:
+                case GameEnum.Green:
+                case GameEnum.Yellow:
+                case GameEnum.Silver:
+                case GameEnum.Gold:
+                case GameEnum.Crystal:
+                case GameEnum.Ruby:
+                case GameEnum.Sapphire:
+                case GameEnum.Emerald:
+                case GameEnum.FireRed:
+                case GameEnum.LeafGreen:
+                case GameEnum.Diamond:
+                case GameEnum.Pearl:
+                case GameEnum.Platinum:
+                case GameEnum.HeartGold:
+                case GameEnum.SoulSilver:
+                case GameEnum.X:
+                case GameEnum.Y:
+                case GameEnum.OmegaRuby:
+                case GameEnum.AlphaSapphire:
+                case GameEnum.Sun:
+                case GameEnum.Moon:
                 default:
                     throw new NotImplementedException();
 
-                case Game.Black:
-                case Game.White:
-                case Game.Black2:
-                case Game.White2:
+                case GameEnum.Black:
+                case GameEnum.White:
+                case GameEnum.Black2:
+                case GameEnum.White2:
                     ValidPokemons = RomHandler.AllPokemons.SliceFrom(1, Gen5Constants.PokemonCount);
                     ValidMoves = RomHandler.AllMoves.SliceFrom(1, Gen5Constants.MoveCount);
                     break;

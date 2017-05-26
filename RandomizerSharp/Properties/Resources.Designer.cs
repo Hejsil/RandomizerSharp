@@ -162,7 +162,7 @@ namespace RandomizerSharp.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to [Red (U)]
-        ///Game=POKEMON RED
+        ///GameEnum=POKEMON RED
         ///Version=0
         ///NonJapanese=1
         ///Type=RB
@@ -193,7 +193,7 @@ namespace RandomizerSharp.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to [Red (U)]
-        ///Game=POKEMON RED
+        ///GameEnum=POKEMON RED
         ///Version=0
         ///NonJapanese=1
         ///Type=RB
@@ -224,7 +224,7 @@ namespace RandomizerSharp.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to [Gold (U)]
-        ///Game=AAUE
+        ///GameEnum=AAUE
         ///Version=0
         ///NonJapanese=1
         ///Type=GS
@@ -254,7 +254,7 @@ namespace RandomizerSharp.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to [Gold (U)]
-        ///Game=AAUE
+        ///GameEnum=AAUE
         ///Version=0
         ///NonJapanese=1
         ///Type=GS
@@ -284,7 +284,7 @@ namespace RandomizerSharp.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to [Ruby (U)]
-        ///Game=AXVE
+        ///GameEnum=AXVE
         ///Version=0
         ///Type=Ruby
         ///TableFile=gba_english
@@ -316,7 +316,7 @@ namespace RandomizerSharp.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to [Ruby (U)]
-        ///Game=AXVE
+        ///GameEnum=AXVE
         ///Version=0
         ///Type=Ruby
         ///TableFile=gba_english
@@ -348,7 +348,7 @@ namespace RandomizerSharp.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to [Diamond (U)]
-        ///Game=ADAE
+        ///GameEnum=ADAE
         ///Type=DP
         ///PokemonStats=poketool/personal/personal.narc
         ///PokemonMovesets=poketool/personal/wotbl.narc
@@ -371,7 +371,7 @@ namespace RandomizerSharp.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to [Diamond (U)]
-        ///Game=ADAE
+        ///GameEnum=ADAE
         ///Type=DP
         ///PokemonStats=poketool/personal/personal.narc
         ///PokemonMovesets=poketool/personal/wotbl.narc
@@ -394,7 +394,7 @@ namespace RandomizerSharp.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to [Black (U)]
-        ///Game=IRBO
+        ///GameEnum=IRBO
         ///Type=BW1
         ///PokemonStats=a/0/1/6
         ///PokemonMovesets=a/0/1/8
@@ -419,7 +419,7 @@ namespace RandomizerSharp.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to [Black (U)]
-        ///Game=IRBO
+        ///GameEnum=IRBO
         ///Type=BW1
         ///PokemonStats=a/0/1/6
         ///PokemonMovesets=a/0/1/8

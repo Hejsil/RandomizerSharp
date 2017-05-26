@@ -1,307 +1,406 @@
 ﻿using System;
+using RandomizerSharp.Constants;
 
 namespace RandomizerSharp.PokemonModel
 {
-    public static class GameExtensions
+    public sealed class Game
     {
-        public static bool HasMoveTutors(this Game game)
+        // TODO: For some reason, the old randomizer claims that some gen2 games can't change static pokemon. Gotta check if this is true
+        public static readonly Game Red = new Game(
+            gameKind: GameEnum.Red, 
+            hasPhysicalSpecialSplit: false,
+            canChangeStaticPokemon: true,
+            hasMoveTutors: true,
+            hasTimeBasedEncounters: false,
+            supportsFoarStartingMoves: true,
+            generation: 1,
+            abilitiesPerPokemon: 0,
+            requiredFieldTMs: Array.Empty<int>(),
+            fieldMoves: Array.Empty<int>(),
+            earlyRequiredHmMoves: Array.Empty<int>());
+
+        public static readonly Game Blue = new Game(
+            gameKind: GameEnum.Blue,
+            hasPhysicalSpecialSplit: false,
+            canChangeStaticPokemon: true,
+            hasMoveTutors: true,
+            hasTimeBasedEncounters: false,
+            supportsFoarStartingMoves: true,
+            generation: 1,
+            abilitiesPerPokemon: 0,
+            requiredFieldTMs: Array.Empty<int>(),
+            fieldMoves: Array.Empty<int>(),
+            earlyRequiredHmMoves: Array.Empty<int>());
+
+        public static readonly Game Green = new Game(
+            gameKind: GameEnum.Green,
+            hasPhysicalSpecialSplit: false,
+            canChangeStaticPokemon: true,
+            hasMoveTutors: true,
+            hasTimeBasedEncounters: false,
+            supportsFoarStartingMoves: true,
+            generation: 1,
+            abilitiesPerPokemon: 0,
+            requiredFieldTMs: Array.Empty<int>(),
+            fieldMoves: Array.Empty<int>(),
+            earlyRequiredHmMoves: Array.Empty<int>());
+
+        public static readonly Game Yellow = new Game(
+            gameKind: GameEnum.Yellow,
+            hasPhysicalSpecialSplit: false,
+            canChangeStaticPokemon: true,
+            hasMoveTutors: true,
+            hasTimeBasedEncounters: false,
+            supportsFoarStartingMoves: true,
+            generation: 1,
+            abilitiesPerPokemon: 0,
+            requiredFieldTMs: Array.Empty<int>(),
+            fieldMoves: Array.Empty<int>(),
+            earlyRequiredHmMoves: Array.Empty<int>());
+
+        public static readonly Game Silver = new Game(
+            gameKind: GameEnum.Silver,
+            hasPhysicalSpecialSplit: false,
+            canChangeStaticPokemon: false,
+            hasMoveTutors: true,
+            hasTimeBasedEncounters: true,
+            supportsFoarStartingMoves: false,
+            generation: 2,
+            abilitiesPerPokemon: 0,
+            requiredFieldTMs: Array.Empty<int>(),
+            fieldMoves: Array.Empty<int>(),
+            earlyRequiredHmMoves: Array.Empty<int>());
+
+        public static readonly Game Gold = new Game(
+            gameKind: GameEnum.Gold,
+            hasPhysicalSpecialSplit: false,
+            canChangeStaticPokemon: false,
+            hasMoveTutors: true,
+            hasTimeBasedEncounters: true,
+            supportsFoarStartingMoves: false,
+            generation: 2,
+            abilitiesPerPokemon: 0,
+            requiredFieldTMs: Array.Empty<int>(),
+            fieldMoves: Array.Empty<int>(),
+            earlyRequiredHmMoves: Array.Empty<int>());
+
+        public static readonly Game Crystal = new Game(
+            gameKind: GameEnum.Crystal,
+            hasPhysicalSpecialSplit: false,
+            canChangeStaticPokemon: false,
+            hasMoveTutors: true,
+            hasTimeBasedEncounters: true,
+            supportsFoarStartingMoves: false,
+            generation: 2,
+            abilitiesPerPokemon: 0,
+            requiredFieldTMs: Array.Empty<int>(),
+            fieldMoves: Array.Empty<int>(),
+            earlyRequiredHmMoves: Array.Empty<int>());
+
+        public static readonly Game Ruby = new Game(
+            gameKind: GameEnum.Ruby,
+            hasPhysicalSpecialSplit: false,
+            canChangeStaticPokemon: true,
+            hasMoveTutors: false,
+            hasTimeBasedEncounters: false,
+            supportsFoarStartingMoves: true,
+            generation: 3,
+            abilitiesPerPokemon: 2,
+            requiredFieldTMs: Array.Empty<int>(),
+            fieldMoves: Array.Empty<int>(),
+            earlyRequiredHmMoves: Array.Empty<int>());
+
+        public static readonly Game Sapphire = new Game(
+            gameKind: GameEnum.Sapphire,
+            hasPhysicalSpecialSplit: false,
+            canChangeStaticPokemon: true,
+            hasMoveTutors: false,
+            hasTimeBasedEncounters: false,
+            supportsFoarStartingMoves: true,
+            generation: 3,
+            abilitiesPerPokemon: 2,
+            requiredFieldTMs: Array.Empty<int>(),
+            fieldMoves: Array.Empty<int>(),
+            earlyRequiredHmMoves: Array.Empty<int>());
+
+        public static readonly Game Emerald = new Game(
+            gameKind: GameEnum.Emerald,
+            hasPhysicalSpecialSplit: false,
+            canChangeStaticPokemon: true,
+            hasMoveTutors: true,
+            hasTimeBasedEncounters: false,
+            supportsFoarStartingMoves: true,
+            generation: 3,
+            abilitiesPerPokemon: 2,
+            requiredFieldTMs: Array.Empty<int>(),
+            fieldMoves: Array.Empty<int>(),
+            earlyRequiredHmMoves: Array.Empty<int>());
+
+        public static readonly Game LeafGreen = new Game(
+            gameKind: GameEnum.LeafGreen,
+            hasPhysicalSpecialSplit: false,
+            canChangeStaticPokemon: true,
+            hasMoveTutors: true,
+            hasTimeBasedEncounters: false,
+            supportsFoarStartingMoves: true,
+            generation: 3,
+            abilitiesPerPokemon: 2,
+            requiredFieldTMs: Array.Empty<int>(),
+            fieldMoves: Array.Empty<int>(),
+            earlyRequiredHmMoves: Array.Empty<int>());
+
+        public static readonly Game FireRed = new Game(
+            gameKind: GameEnum.FireRed,
+            hasPhysicalSpecialSplit: false,
+            canChangeStaticPokemon: true,
+            hasMoveTutors: true,
+            hasTimeBasedEncounters: false,
+            supportsFoarStartingMoves: true,
+            generation: 3,
+            abilitiesPerPokemon: 2,
+            requiredFieldTMs: Array.Empty<int>(),
+            fieldMoves: Array.Empty<int>(),
+            earlyRequiredHmMoves: Array.Empty<int>());
+
+        // dppt technically do have hasTimeBasedEncounters but we ignore them completely
+        public static readonly Game Diamond = new Game(
+            gameKind: GameEnum.Diamond,
+            hasPhysicalSpecialSplit: true,
+            canChangeStaticPokemon: true,
+            hasMoveTutors: false,
+            hasTimeBasedEncounters: false,
+            supportsFoarStartingMoves: true,
+            generation: 4,
+            abilitiesPerPokemon: 2,
+            requiredFieldTMs: Array.Empty<int>(),
+            fieldMoves: Array.Empty<int>(),
+            earlyRequiredHmMoves: Array.Empty<int>());
+
+        public static readonly Game Pearl = new Game(
+            gameKind: GameEnum.Pearl,
+            hasPhysicalSpecialSplit: true,
+            canChangeStaticPokemon: true,
+            hasMoveTutors: false,
+            hasTimeBasedEncounters: false,
+            supportsFoarStartingMoves: true,
+            generation: 4,
+            abilitiesPerPokemon: 2,
+            requiredFieldTMs: Array.Empty<int>(),
+            fieldMoves: Array.Empty<int>(),
+            earlyRequiredHmMoves: Array.Empty<int>());
+
+        public static readonly Game Platinum = new Game(
+            gameKind: GameEnum.Platinum,
+            hasPhysicalSpecialSplit: true,
+            canChangeStaticPokemon: true,
+            hasMoveTutors: true,
+            hasTimeBasedEncounters: false,
+            supportsFoarStartingMoves: true,
+            generation: 4,
+            abilitiesPerPokemon: 2,
+            requiredFieldTMs: Array.Empty<int>(),
+            fieldMoves: Array.Empty<int>(),
+            earlyRequiredHmMoves: Array.Empty<int>());
+
+        public static readonly Game HeartGold = new Game(
+            gameKind: GameEnum.HeartGold,
+            hasPhysicalSpecialSplit: true,
+            canChangeStaticPokemon: true,
+            hasMoveTutors: false,
+            hasTimeBasedEncounters: true,
+            supportsFoarStartingMoves: true,
+            generation: 4,
+            abilitiesPerPokemon: 2,
+            requiredFieldTMs: Array.Empty<int>(),
+            fieldMoves: Array.Empty<int>(),
+            earlyRequiredHmMoves: Array.Empty<int>());
+
+        public static readonly Game SoulSilver = new Game(
+            gameKind: GameEnum.SoulSilver,
+            hasPhysicalSpecialSplit: true,
+            canChangeStaticPokemon: true,
+            hasMoveTutors: false,
+            hasTimeBasedEncounters: true,
+            supportsFoarStartingMoves: true,
+            generation: 4,
+            abilitiesPerPokemon: 2,
+            requiredFieldTMs: Array.Empty<int>(),
+            fieldMoves: Array.Empty<int>(),
+            earlyRequiredHmMoves: Array.Empty<int>());
+
+        public static readonly Game Black = new Game(
+            gameKind: GameEnum.Black,
+            hasPhysicalSpecialSplit: true,
+            canChangeStaticPokemon: true,
+            hasMoveTutors: false,
+            hasTimeBasedEncounters: true,
+            supportsFoarStartingMoves: true,
+            generation: 5,
+            abilitiesPerPokemon: 3,
+            requiredFieldTMs: Gen5Constants.Bw1RequiredFieldTMs,
+            fieldMoves: Gen5Constants.FieldMoves,
+            earlyRequiredHmMoves: Gen5Constants.Bw1EarlyRequiredHmMoves);
+
+        public static readonly Game White = new Game(
+            gameKind: GameEnum.White,
+            hasPhysicalSpecialSplit: true,
+            canChangeStaticPokemon: true,
+            hasMoveTutors: false,
+            hasTimeBasedEncounters: true,
+            supportsFoarStartingMoves: true,
+            generation: 5,
+            abilitiesPerPokemon: 3,
+            requiredFieldTMs: Gen5Constants.Bw1RequiredFieldTMs,
+            fieldMoves: Gen5Constants.FieldMoves,
+            earlyRequiredHmMoves: Gen5Constants.Bw1EarlyRequiredHmMoves);
+
+        public static readonly Game Black2 = new Game(
+            gameKind: GameEnum.Black2,
+            hasPhysicalSpecialSplit: true,
+            canChangeStaticPokemon: true,
+            hasMoveTutors: true,
+            hasTimeBasedEncounters: true,
+            supportsFoarStartingMoves: true,
+            generation: 5,
+            abilitiesPerPokemon: 3,
+            requiredFieldTMs: Gen5Constants.Bw2RequiredFieldTMs,
+            fieldMoves: Gen5Constants.FieldMoves,
+            earlyRequiredHmMoves: Gen5Constants.Bw2EarlyRequiredHmMoves);
+
+        public static readonly Game White2 = new Game(
+            gameKind: GameEnum.White2,
+            hasPhysicalSpecialSplit: true,
+            canChangeStaticPokemon: true,
+            hasMoveTutors: true,
+            hasTimeBasedEncounters: true,
+            supportsFoarStartingMoves: true,
+            generation: 5,
+            abilitiesPerPokemon: 3,
+            requiredFieldTMs: Gen5Constants.Bw2RequiredFieldTMs,
+            fieldMoves: Gen5Constants.FieldMoves,
+            earlyRequiredHmMoves: Gen5Constants.Bw2EarlyRequiredHmMoves);
+
+        public static readonly Game X = new Game(
+            gameKind: GameEnum.X,
+            hasPhysicalSpecialSplit: true,
+            canChangeStaticPokemon: true,
+            hasMoveTutors: false,
+            hasTimeBasedEncounters: false,
+            supportsFoarStartingMoves: true,
+            generation: 6,
+            abilitiesPerPokemon: 3,
+            requiredFieldTMs: Array.Empty<int>(),
+            fieldMoves: Array.Empty<int>(),
+            earlyRequiredHmMoves: Array.Empty<int>());
+
+        public static readonly Game Y = new Game(
+            gameKind: GameEnum.Y,
+            hasPhysicalSpecialSplit: true,
+            canChangeStaticPokemon: true,
+            hasMoveTutors: false,
+            hasTimeBasedEncounters: false,
+            supportsFoarStartingMoves: true,
+            generation: 6,
+            abilitiesPerPokemon: 3,
+            requiredFieldTMs: Array.Empty<int>(),
+            fieldMoves: Array.Empty<int>(),
+            earlyRequiredHmMoves: Array.Empty<int>());
+
+        public static readonly Game OmegaRuby = new Game(
+            gameKind: GameEnum.OmegaRuby,
+            hasPhysicalSpecialSplit: true,
+            canChangeStaticPokemon: true,
+            hasMoveTutors: false,
+            hasTimeBasedEncounters: false,
+            supportsFoarStartingMoves: true,
+            generation: 6,
+            abilitiesPerPokemon: 3,
+            requiredFieldTMs: Array.Empty<int>(),
+            fieldMoves: Array.Empty<int>(),
+            earlyRequiredHmMoves: Array.Empty<int>());
+
+        public static readonly Game AlphaSapphire = new Game(
+            gameKind: GameEnum.AlphaSapphire,
+            hasPhysicalSpecialSplit: true,
+            canChangeStaticPokemon: true,
+            hasMoveTutors: false,
+            hasTimeBasedEncounters: false,
+            supportsFoarStartingMoves: true,
+            generation: 6,
+            abilitiesPerPokemon: 3,
+            requiredFieldTMs: Array.Empty<int>(),
+            fieldMoves: Array.Empty<int>(),
+            earlyRequiredHmMoves: Array.Empty<int>());
+
+        public static readonly Game Sun = new Game(
+            gameKind: GameEnum.Sun,
+            hasPhysicalSpecialSplit: true,
+            canChangeStaticPokemon: true,
+            hasMoveTutors: false,
+            hasTimeBasedEncounters: false,
+            supportsFoarStartingMoves: true,
+            generation: 7,
+            abilitiesPerPokemon: 3,
+            requiredFieldTMs: Array.Empty<int>(),
+            fieldMoves: Array.Empty<int>(),
+            earlyRequiredHmMoves: Array.Empty<int>());
+
+        public static readonly Game Moon = new Game(
+            gameKind: GameEnum.Moon,
+            hasPhysicalSpecialSplit: true,
+            canChangeStaticPokemon: true,
+            hasMoveTutors: false,
+            hasTimeBasedEncounters: false,
+            supportsFoarStartingMoves: true,
+            generation: 7,
+            abilitiesPerPokemon: 3,
+            requiredFieldTMs: Array.Empty<int>(),
+            fieldMoves: Array.Empty<int>(),
+            earlyRequiredHmMoves: Array.Empty<int>());
+
+        private Game(
+            GameEnum gameKind,
+            bool hasPhysicalSpecialSplit, 
+            bool canChangeStaticPokemon, 
+            bool hasMoveTutors, 
+            bool hasTimeBasedEncounters, 
+            bool supportsFoarStartingMoves, 
+            int generation, 
+            int abilitiesPerPokemon, 
+            int[] requiredFieldTMs, 
+            int[] fieldMoves, 
+            int[] earlyRequiredHmMoves)
         {
-            switch (game)
-            {
-                case Game.Red:
-                case Game.Blue:
-                case Game.Green:
-                case Game.Yellow:
-                case Game.Black:
-                case Game.White:
-                case Game.Silver:
-                case Game.Gold:
-                case Game.Ruby:
-                case Game.Sapphire:
-                case Game.Diamond:
-                case Game.Pearl:
-                case Game.HeartGold:
-                case Game.SoulSilver:
-                case Game.X:
-                case Game.Y:
-                case Game.OmegaRuby:
-                case Game.AlphaSapphire:
-                case Game.Sun:
-                case Game.Moon:
-                    return false;
-
-                case Game.Crystal:
-                case Game.FireRed:
-                case Game.LeafGreen:
-                case Game.Emerald:
-                case Game.Platinum:
-                case Game.Black2:
-                case Game.White2:
-                    return true;
-
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            GameKind = gameKind;
+            HasPhysicalSpecialSplit = hasPhysicalSpecialSplit;
+            CanChangeStaticPokemon = canChangeStaticPokemon;
+            HasMoveTutors = hasMoveTutors;
+            HasTimeBasedEncounters = hasTimeBasedEncounters;
+            SupportsFoarStartingMoves = supportsFoarStartingMoves;
+            Generation = generation;
+            AbilitiesPerPokemon = abilitiesPerPokemon;
+            RequiredFieldTMs = requiredFieldTMs;
+            FieldMoves = fieldMoves;
+            EarlyRequiredHmMoves = earlyRequiredHmMoves;
         }
 
-        public static bool SupportsFoarStartingMoves(this Game game)
-        {
-            switch (game)
-            {
-                // TODO: For some reason, the old randomizer claims that some gen2 games can't have 4 starting moves. Gotta check if this is true
-                case Game.Silver:
-                case Game.Gold:
-                case Game.Crystal:
-                    return false;
+        public GameEnum GameKind { get; }
 
-                case Game.Red:
-                case Game.Blue:
-                case Game.Green:
-                case Game.Ruby:
-                case Game.Sapphire:
-                case Game.Emerald:
-                case Game.FireRed:
-                case Game.LeafGreen:
-                case Game.Yellow:
-                case Game.Diamond:
-                case Game.Pearl:
-                case Game.Platinum:
-                case Game.HeartGold:
-                case Game.SoulSilver:
-                case Game.Black:
-                case Game.White:
-                case Game.Black2:
-                case Game.White2:
-                case Game.X:
-                case Game.Y:
-                case Game.OmegaRuby:
-                case Game.AlphaSapphire:
-                case Game.Sun:
-                case Game.Moon:
-                    return true;
+        public bool HasPhysicalSpecialSplit { get; }
+        public bool CanChangeStaticPokemon { get; }
+        public bool HasMoveTutors { get; }
+        public bool HasTimeBasedEncounters { get; }
+        public bool SupportsFoarStartingMoves { get; }
 
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
+        public int Generation { get; }
+        public int AbilitiesPerPokemon { get; }
 
-        public static bool HasTimeBasedEncounters(this Game game)
-        {
-            switch (game)
-            {
-                case Game.X:
-                case Game.Y:
-                case Game.OmegaRuby:
-                case Game.AlphaSapphire:
-                case Game.Sun:
-                case Game.Moon:
-                case Game.Red:
-                case Game.Blue:
-                case Game.Green:
-                case Game.Ruby:
-                case Game.Sapphire:
-                case Game.Emerald:
-                case Game.FireRed:
-                case Game.LeafGreen:
-                case Game.Yellow:
-                    
-                // dppt technically do but we ignore them completely
-                case Game.Diamond:
-                case Game.Pearl:
-                case Game.Platinum:
-                    return false;
-
-                case Game.Silver:
-                case Game.Gold:
-                case Game.Crystal:
-                case Game.HeartGold:
-                case Game.SoulSilver:
-                case Game.Black:
-                case Game.White:
-                case Game.Black2:
-                case Game.White2:
-                    return true;
-
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-        
-        public static int AbilitiesPerPokemon(this Game game)
-        {
-            switch (game)
-            {
-                case Game.Red:
-                case Game.Blue:
-                case Game.Green:
-                case Game.Yellow:
-                case Game.Silver:
-                case Game.Gold:
-                case Game.Crystal:
-                    return 0;
-
-                case Game.Ruby:
-                case Game.Sapphire:
-                case Game.Emerald:
-                case Game.FireRed:
-                case Game.LeafGreen:
-                case Game.Diamond:
-                case Game.Pearl:
-                case Game.Platinum:
-                case Game.HeartGold:
-                case Game.SoulSilver:
-                    return 2;
-
-                case Game.Black:
-                case Game.White:
-                case Game.Black2:
-                case Game.White2:
-                case Game.X:
-                case Game.Y:
-                case Game.OmegaRuby:
-                case Game.AlphaSapphire:
-                case Game.Sun:
-                case Game.Moon:
-                    return 3;
-
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        public static bool CanChangeStaticPokemon(this Game game)
-        {
-            switch (game)
-            {
-                // TODO: For some reason, the old randomizer claims that some gen2 games can't change static pokemon. Gotta check if this is true
-                case Game.Silver:
-                case Game.Gold:
-                case Game.Crystal:
-                    return false;
-
-                case Game.Red:
-                case Game.Blue:
-                case Game.Green:
-                case Game.Yellow:
-                case Game.Ruby:
-                case Game.Sapphire:
-                case Game.Emerald:
-                case Game.FireRed:
-                case Game.LeafGreen:
-                case Game.Diamond:
-                case Game.Pearl:
-                case Game.Platinum:
-                case Game.HeartGold:
-                case Game.SoulSilver:
-                case Game.Black:
-                case Game.White:
-                case Game.Black2:
-                case Game.White2:
-                case Game.X:
-                case Game.Y:
-                case Game.OmegaRuby:
-                case Game.AlphaSapphire:
-                case Game.Sun:
-                case Game.Moon:
-                    return true;
-
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        public static bool HasPhysicalSpecialSplit(this Game game)
-        {
-            switch (game)
-            {
-                case Game.Red:
-                case Game.Blue:
-                case Game.Green:
-                case Game.Yellow:
-                case Game.Silver:
-                case Game.Gold:
-                case Game.Crystal:
-                    return false;
-
-                case Game.Ruby:
-                case Game.Sapphire:
-                case Game.Emerald:
-                case Game.FireRed:
-                case Game.LeafGreen:
-                case Game.Diamond:
-                case Game.Pearl:
-                case Game.Platinum:
-                case Game.HeartGold:
-                case Game.SoulSilver:
-                case Game.Black:
-                case Game.White:
-                case Game.Black2:
-                case Game.White2:
-                case Game.X:
-                case Game.Y:
-                case Game.OmegaRuby:
-                case Game.AlphaSapphire:
-                case Game.Sun:
-                case Game.Moon:
-                    return true;
-
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        public static int Generation(this Game game)
-        {
-            switch (game)
-            {
-                case Game.Red:
-                case Game.Blue:
-                case Game.Green:
-                case Game.Yellow:
-                    return 1;
-
-                case Game.Silver:
-                case Game.Gold:
-                case Game.Crystal:
-                    return 2;
-
-                case Game.Ruby:
-                case Game.Sapphire:
-                case Game.Emerald:
-                case Game.FireRed:
-                case Game.LeafGreen:
-                    return 3;
-
-                case Game.Diamond:
-                case Game.Pearl:
-                case Game.Platinum:
-                case Game.HeartGold:
-                case Game.SoulSilver:
-                    return 4;
-
-                case Game.Black:
-                case Game.White:
-                case Game.Black2:
-                case Game.White2:
-                    return 5;
-
-                case Game.X:
-                case Game.Y:
-                case Game.OmegaRuby:
-                case Game.AlphaSapphire:
-                    return 6;
-
-                case Game.Sun:
-                case Game.Moon:
-                    return 7;
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(game), game, null);
-            }
-        }
+        public int[] RequiredFieldTMs { get; }
+        public int[] FieldMoves { get; }
+        public int[] EarlyRequiredHmMoves { get; }
     }
 
-    public enum Game
+    public enum GameEnum
     {
         // Gen 1
         Red,

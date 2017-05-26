@@ -734,18 +734,18 @@ namespace RandomizerSharp.Randomizers
                 case Gen5RomHandler gen5:
                     byte[] patch;
 
-                    switch (gen5.Game)
+                    switch (gen5.Game.GameKind)
                     {
-                        case Game.Black2:
+                        case GameEnum.Black2:
                             patch = Resources.b2_instant_text;
                             break;
-                        case Game.White2:
+                        case GameEnum.White2:
                             patch = Resources.w2_instant_text;
                             break;
-                        case Game.Black:
+                        case GameEnum.Black:
                             patch = Resources.b1_instant_text;
                             break;
-                        case Game.White:
+                        case GameEnum.White:
                             patch = Resources.w1_instant_text;
                             break;
 
