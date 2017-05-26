@@ -31,7 +31,6 @@ namespace RandomizerSharp.PokemonModel
         public ISet<Pokemon> BannedPokemon { get; } = new HashSet<Pokemon>();
         public string DisplayName { get; set; }
         public Encounter[] Encounters { get; set; }
-        public int Offset { get; set; }
 
         public int Rate { get; set; }
 

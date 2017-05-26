@@ -7,8 +7,10 @@ namespace RandomizerSharp.PokemonModel
     {
         public TrainerPokemon[] Pokemon { get; set; }
         public int Poketype { get; set; }
-        public string Tag { get; set; }
         public int Trainerclass { get; set; }
+
+        // Not loaded from rom. Should therefore not be here
+        public string Tag { get; set; }
 
         public override string ToString()
         {

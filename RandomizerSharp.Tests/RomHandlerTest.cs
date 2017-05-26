@@ -288,24 +288,6 @@ namespace RandomizerSharp.Tests
         }
 
         [Test]
-        public void TestDoublesTrainerClasses()
-        {
-            TestOnAll(
-                handler =>
-                {
-                    handler.DoublesTrainerClasses.Populate(0);
-                },
-                (handler, newHandler) =>
-                {
-                    foreach (var (oldClass, newClass) in handler.DoublesTrainerClasses.Zip(newHandler.DoublesTrainerClasses))
-                    {
-                        Assert.AreEqual(oldClass, newClass);
-                    }
-                }
-            );
-        }
-
-        [Test]
         public void TestTrainerClassNames()
         {
             TestOnAll(
@@ -347,7 +329,6 @@ namespace RandomizerSharp.Tests
             TestOnAll(
                 handler =>
                 {
-                    // TODO: Not done
                     foreach (var trainer in handler.Trainers)
                     {
                         foreach (var pokemon in trainer.Pokemon)
@@ -363,40 +344,75 @@ namespace RandomizerSharp.Tests
                             pokemon.Move4 = 0;
                             pokemon.ResetMoves = false;
                         }
+
+                        //trainer.Poketype = 100;
+                        //trainer.Trainerclass = 100;
                     }
                 },
                 (handler, newHandler) =>
                 {
-                    foreach (var (oldName, newName) in handler.TrainerNames.Zip(newHandler.TrainerNames))
+                    foreach (var (oldTrainer, newTrainer) in handler.Trainers.Zip(newHandler.Trainers))
                     {
-                        Assert.AreEqual(oldName, newName);
+                        Assert.AreEqual(oldTrainer.Pokemon.Length, newTrainer.Pokemon.Length);
+
+                        // TODO: We can't really test PokeType and class, as BW2 has edge cases we need to figure out
+                        //Assert.AreEqual(oldTrainer.Poketype, newTrainer.Poketype);
+                        //Assert.AreEqual(oldTrainer.Trainerclass, newTrainer.Trainerclass);
+
+
+                        foreach (var (oldPoke, newPoke) in oldTrainer.Pokemon.Zip(newTrainer.Pokemon))
+                        {
+                            // TODO: Same goes for AiLevel and Level
+                            //Assert.AreEqual(oldPoke.AiLevel, newPoke.AiLevel);
+                            //Assert.AreEqual(oldPoke.Level, newPoke.Level);
+
+                            Assert.AreEqual(oldPoke.Pokemon.Id, newPoke.Pokemon.Id);
+                            Assert.AreEqual(oldPoke.Ability, newPoke.Ability);
+                            Assert.AreEqual(oldPoke.HeldItem, newPoke.HeldItem);
+                            Assert.AreEqual(oldPoke.Move1, newPoke.Move1);
+                            Assert.AreEqual(oldPoke.Move2, newPoke.Move2);
+                            Assert.AreEqual(oldPoke.Move3, newPoke.Move3);
+                            Assert.AreEqual(oldPoke.Move4, newPoke.Move4);
+                            Assert.AreEqual(oldPoke.ResetMoves, newPoke.ResetMoves);
+                        }
                     }
                 }
             );
         }
 
         [Test]
-        public void TestGame()
-        {
-            Assert.Fail();
-        }
-
-        [Test]
-        public void TestLoadedFilename()
-        {
-            Assert.Fail();
-        }
-
-        [Test]
         public void TestEncounters()
         {
-            Assert.Fail();
-        }
+            TestOnAll(
+                handler =>
+                {
+                    foreach (var encSet in handler.Encounters)
+                    {
+                        encSet.Rate = 100;
 
-        [Test]
-        public void TestIngameTrades()
-        {
-            Assert.Fail();
+                        foreach (var encounter in encSet.Encounters)
+                        {
+                            encounter.Level = 0;
+                            encounter.MaxLevel = 0;
+                            encounter.Pokemon1 = handler.AllPokemons[0];
+                        }
+                    }
+                },
+                (handler, newHandler) =>
+                {
+                    foreach (var (oldEncSet, newEncSet) in handler.Encounters.Zip(newHandler.Encounters))
+                    {
+                        Assert.AreEqual(oldEncSet.Rate, newEncSet.Rate);
+
+                        foreach (var (oldEnc, newEnc) in oldEncSet.Encounters.Zip(newEncSet.Encounters))
+                        {
+                            Assert.AreEqual(oldEnc.Level, newEnc.Level);
+                            Assert.AreEqual(oldEnc.MaxLevel, newEnc.MaxLevel);
+                            Assert.AreEqual(oldEnc.Pokemon1.Id, newEnc.Pokemon1.Id);
+                        }
+                    }
+                }
+            );
         }
     }
 }

@@ -228,7 +228,7 @@ namespace RandomizerSharp.NDS
             {
                 var newArm9 = GetArm9();
 
-                if (_arm9Compressed)
+                if (!_arm9Compressed)
                 {
                     newArm9 = BlzCoder.Encode(newArm9, true, "arm9.bin");
                     if (_arm9Szoffset > 0)
@@ -451,22 +451,23 @@ namespace RandomizerSharp.NDS
                 return _arm9Overlays[number].RamAddress;
             return -1;
         }
-
+        
         public byte[] GetArm9()
         {
             if (!_arm9Open)
             {
                 _arm9Open = true;
+                int arm9_offset = ReadFromFile(BaseRom, 0x20, 4);
+                int arm9_size = ReadFromFile(BaseRom, 0x2C, 4);
+                byte[] arm9 = new byte[arm9_size];
+                BaseRom.Seek(arm9_offset);
+                BaseRom.ReadFully(arm9);
+                // footer check
+                int nitrocode = ReadFromFile(BaseRom, 4);
 
-                var arm9Offset = ReadFromFile(BaseRom, 0x20, 4);
-                var arm9Size = ReadFromFile(BaseRom, 0x2C, 4);
-                var arm9 = new byte[arm9Size];
-                BaseRom.Seek(arm9Offset, SeekOrigin.Begin);
-                BaseRom.Read(arm9, 0, arm9.Length);
-                var nitrocode = ReadFromFile(BaseRom, 4);
-
-                if (nitrocode == unchecked((int) 0xDEC00621))
+                if (nitrocode == unchecked((int) 0xDEC0_0621))
                 {
+                    // found a footer
                     _arm9Footer = new byte[12];
                     WriteToByteArr(_arm9Footer, 0, 4, unchecked((int) 0xDEC00621));
                     BaseRom.Read(_arm9Footer, 4, 8);
@@ -476,36 +477,34 @@ namespace RandomizerSharp.NDS
                 {
                     _arm9HasFooter = false;
                 }
-
-                while (ReadFromByteArr(arm9, arm9.Length - 12, 4) == unchecked((int) 0xDEC00621) ||
-                       ReadFromByteArr(arm9, arm9.Length - 12, 4) == 0 &&
-                       ReadFromByteArr(arm9, arm9.Length - 8, 4) == 0 &&
-                       ReadFromByteArr(arm9, arm9.Length - 4, 4) == 0)
+                // Any extras?
+                while ((ReadFromByteArr(arm9, arm9.Length - 12, 4) == unchecked((int) 0xDEC00621)) || ((ReadFromByteArr(arm9, arm9.Length - 12, 4) == 0 && ReadFromByteArr(arm9, arm9.Length - 8, 4) == 0 && ReadFromByteArr(arm9, arm9.Length - 4, 4) == 0)))
                 {
                     if (!_arm9HasFooter)
                     {
                         _arm9HasFooter = true;
                         _arm9Footer = new byte[0];
                     }
-                    var newfooter = new byte[_arm9Footer.Length + 12];
+                    byte[] newfooter = new byte[_arm9Footer.Length + 12];
                     Array.Copy(arm9, arm9.Length - 12, newfooter, 0, 12);
                     Array.Copy(_arm9Footer, 0, newfooter, 12, _arm9Footer.Length);
                     _arm9Footer = newfooter;
-                    var newarm9 = new byte[arm9.Length - 12];
+                    byte[] newarm9 = new byte[arm9.Length - 12];
                     Array.Copy(arm9, 0, newarm9, 0, arm9.Length - 12);
                     arm9 = newarm9;
                 }
+                // Compression?
                 _arm9Compressed = false;
                 _arm9Szoffset = 0;
-                if (arm9[arm9.Length - 5] >= 0x08 && arm9[arm9.Length - 5] <= 0x0B)
+                if (((int)arm9[arm9.Length - 5]) >= 0x08 && ((int)arm9[arm9.Length - 5]) <= 0x0B)
                 {
-                    var compSize = ReadFromByteArr(arm9, arm9.Length - 8, 3);
-                    if (compSize > arm9.Length * 9 / 10 && compSize < arm9.Length * 11 / 10)
+                    int compSize = ReadFromByteArr(arm9, arm9.Length - 8, 3);
+                    if (compSize > (arm9.Length * 9 / 10) && compSize < (arm9.Length * 11 / 10))
                     {
                         _arm9Compressed = true;
-                        var compLength = new byte[3];
+                        byte[] compLength = new byte[3];
                         WriteToByteArr(compLength, 0, 3, arm9.Length);
-                        var foundOffsets = RomFunctions.Search(arm9, compLength);
+                        IList<int> foundOffsets = RomFunctions.Search(arm9, compLength);
                         if (foundOffsets.Count == 1)
                         {
                             _arm9Szmode = 1;
@@ -513,9 +512,9 @@ namespace RandomizerSharp.NDS
                         }
                         else
                         {
-                            var compLength2 = new byte[3];
+                            byte[] compLength2 = new byte[3];
                             WriteToByteArr(compLength2, 0, 3, arm9.Length + 0x4000);
-                            var foundOffsets2 = RomFunctions.Search(arm9, compLength2);
+                            IList<int> foundOffsets2 = RomFunctions.Search(arm9, compLength2);
                             if (foundOffsets2.Count == 1)
                             {
                                 _arm9Szmode = 2;
@@ -524,24 +523,28 @@ namespace RandomizerSharp.NDS
                         }
                     }
                 }
+
                 if (_arm9Compressed)
+                {
                     arm9 = BlzCoder.Decode(arm9, "arm9.bin");
+                }
 
 
                 _arm9Ramstored = arm9;
-                var newcopy = new byte[arm9.Length];
+                byte[] newcopy = new byte[arm9.Length];
                 Array.Copy(arm9, 0, newcopy, 0, arm9.Length);
                 return newcopy;
             }
-
+            else
             {
-                var newcopy = new byte[_arm9Ramstored.Length];
-                Array.Copy(_arm9Ramstored, 0, newcopy, 0, _arm9Ramstored.Length);
-                return newcopy;
+                    byte[] newcopy = new byte[_arm9Ramstored.Length];
+                    Array.Copy(_arm9Ramstored, 0, newcopy, 0, _arm9Ramstored.Length);
+                    return newcopy;
             }
         }
 
-        public void WriteFile(string filename, byte[] data)
+
+    public void WriteFile(string filename, byte[] data)
         {
             if (_files.ContainsKey(filename))
                 _files[filename].WriteOverride(data);
@@ -553,29 +556,29 @@ namespace RandomizerSharp.NDS
                 _arm9Overlays[number].Data = data;
         }
 
-        public void WriteArm9(byte[] arm9)
+        public  void WriteArm9(byte[] arm9)
         {
             if (!_arm9Open)
                 GetArm9();
 
             _arm9Changed = true;
 
-
+            if (_arm9Ramstored.Length == arm9.Length)
             {
-                if (_arm9Ramstored.Length == arm9.Length)
-                {
-                    Array.Copy(arm9, 0, _arm9Ramstored, 0, arm9.Length);
-                }
-                else
-                {
-                    _arm9Ramstored = null;
-                    _arm9Ramstored = new byte[arm9.Length];
-                    Array.Copy(arm9, 0, _arm9Ramstored, 0, arm9.Length);
-                }
+                // copy new in
+                Array.Copy(arm9, 0, _arm9Ramstored, 0, arm9.Length);
+            }
+            else
+            {
+                // make new array
+                _arm9Ramstored = null;
+                _arm9Ramstored = new byte[arm9.Length];
+                Array.Copy(arm9, 0, _arm9Ramstored, 0, arm9.Length);
             }
         }
 
-        public int ReadFromByteArr(byte[] data, int offset, int size)
+
+    public int ReadFromByteArr(byte[] data, int offset, int size)
         {
             var result = 0;
             for (var i = 0; i < size; i++)

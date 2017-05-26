@@ -22,7 +22,6 @@ namespace RandomizerSharp.RomHandlers
 
         public string[] ItemNames { get; protected set; } = Array.Empty<string>();
         
-        public int[] DoublesTrainerClasses { get; protected set; } = Array.Empty<int>();
         public string[] TrainerClassNames { get; protected set; } = Array.Empty<string>();
         public string[] TrainerNames { get; protected set; } = Array.Empty<string>();
         public Trainer[] Trainers { get; protected set; } = Array.Empty<Trainer>();
@@ -45,6 +44,7 @@ namespace RandomizerSharp.RomHandlers
         public int MaxTrainerNameLength { get; protected set; }
         public int MaxTrainerClassNameLength { get; protected set; }
         public int MaxSumOfTrainerNameLengths { get; protected set; } = int.MaxValue;
+        public int[] DoublesTrainerClasses { get; protected set; } = Array.Empty<int>();
 
         public abstract int InternalStringLength(string @string);
         public virtual bool TypeInGame(Typing type) => type.IsHackOnly == false;
