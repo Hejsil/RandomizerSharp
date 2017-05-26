@@ -79,7 +79,7 @@ namespace RandomizerSharp
                         throw new IOException("abrupt ending to IPS file, entry cut off before end of data block");
                     if (writeOffset + size > rom.Length)
                         throw new IOException("trying to patch data past the end of the ROM file");
-                    Array.Copy(patch, offset, rom, writeOffset, size);
+                    ArraySlice.Copy(patch, offset, rom, writeOffset, size);
                     offset += size;
                 }
             }

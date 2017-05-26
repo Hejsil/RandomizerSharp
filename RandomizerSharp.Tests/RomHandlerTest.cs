@@ -3,7 +3,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Security.AccessControl;
 using RandomizerSharp.PokemonModel;
 using RandomizerSharp.RomHandlers;
 using RandomizerSharp.Tests.Properties;
@@ -20,13 +19,11 @@ namespace RandomizerSharp.Tests
 
         private static readonly Func<Stream, AbstractRomHandler>[] RomHandlerCreators =
         {
-            Stream => new Gen5RomHandler(Stream)
+            stream => new Gen5RomHandler(stream)
         };
 
         private static void TestOnAll(Action<AbstractRomHandler> edit, Action<AbstractRomHandler, AbstractRomHandler> varify, [CallerMemberName] string id = "")
         {
-            var folder = TestContext.CurrentContext.TestDirectory;
-
             foreach (var (creator, filePath) in RomHandlerCreators.Zip(RomPaths, (func, s) => (func, s)))
             {
                 using (var file = File.OpenRead(filePath))

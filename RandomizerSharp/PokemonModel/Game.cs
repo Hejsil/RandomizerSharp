@@ -1,5 +1,4 @@
 ﻿using System;
-using RandomizerSharp.RomHandlers;
 
 namespace RandomizerSharp.PokemonModel
 {

@@ -5,7 +5,7 @@ namespace RandomizerSharp
 {
     public class DsDecmp
     {
-        public static ArraySlice<byte> Decompress(ArraySlice<byte> data, int offset = 0)
+        public static byte[] Decompress(ArraySlice<byte> data, int offset = 0)
         {
             switch (data[offset] & 0xFF)
             {
@@ -33,7 +33,7 @@ namespace RandomizerSharp
             return new byte[length];
         }
 
-        private static ArraySlice<byte> Decompress10Lz(IList<byte> data, int offset)
+        private static byte[] Decompress10Lz(IList<byte> data, int offset)
         {
             var outData = PerpareData(data, ref offset);
             var currSize = 0;
@@ -79,7 +79,7 @@ namespace RandomizerSharp
             return outData;
         }
 
-        private static ArraySlice<byte> Decompress11Lz(IList<byte> data, int offset)
+        private static byte[] Decompress11Lz(IList<byte> data, int offset)
         {
             var outData = PerpareData(data, ref offset);
             var currSize = 0;

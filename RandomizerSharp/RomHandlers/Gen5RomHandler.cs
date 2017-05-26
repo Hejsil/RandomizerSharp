@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -10,7 +8,6 @@ using RandomizerSharp.Constants;
 using RandomizerSharp.NDS;
 using RandomizerSharp.PokemonModel;
 using RandomizerSharp.Properties;
-using Tools.LinqT;
 
 namespace RandomizerSharp.RomHandlers
 {
@@ -472,7 +469,7 @@ namespace RandomizerSharp.RomHandlers
 
                 _moveNames[i] = AllMoves[i].Name;
                 data[0] = Gen5Constants.TypeToByte(AllMoves[i].Type);
-                data[2] = (byte) Gen5Constants.MoveCategoryIndices.IndexOf(AllMoves[i].Category);
+                data[2] = (byte) Array.IndexOf(Gen5Constants.MoveCategoryIndices, AllMoves[i].Category);
                 data[3] = (byte) AllMoves[i].Power;
 
                 var hitratio = (int) Math.Round(AllMoves[i].Hitratio);
@@ -1538,7 +1535,7 @@ namespace RandomizerSharp.RomHandlers
                 tnames.Concat(
                         _mnames.Where(mname => !mname.IsEmpty() && mname[0] >= 'A' && mname[0] <= 'Z')
                     )
-                    .Slice();
+                    .ToArray();
         }
 
         private void SaveTrainerNames()

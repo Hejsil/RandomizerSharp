@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Net.Cache;
 using RandomizerSharp.Constants;
 using RandomizerSharp.PokemonModel;
 using RandomizerSharp.RomHandlers;
