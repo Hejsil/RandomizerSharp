@@ -68,7 +68,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\GlobalConstants.cs" />
-    <Compile Include="Constants\SysConstants.cs" />
     <Compile Include="CustomNamesSet.cs" />
     <Compile Include="DSDecmp.cs" />
     <Compile Include="Extensions.cs" />

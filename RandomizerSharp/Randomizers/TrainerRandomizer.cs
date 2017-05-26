@@ -35,7 +35,7 @@ namespace RandomizerSharp.Randomizers
                 foreach (var tp in t.Pokemon)
                 {
                     var wgAllowed = !noEarlyWonderGuard || tp.Level >= 20;
-                    tp.Pokemon = PickReplacement(tp.Pokemon, usePowerLevels, null, noLegendaries, wgAllowed);
+                    tp.Pokemon = PickReplacement(tp.Pokemon, usePowerLevels, null, noLegendaries, !wgAllowed);
                     tp.ResetMoves = true;
                 }
             }
@@ -345,7 +345,7 @@ namespace RandomizerSharp.Randomizers
                         usePowerLevels,
                         typeForGroup,
                         noLegendaries,
-                        wgAllowed);
+                        !wgAllowed);
                     tp.ResetMoves = true;
                     if (levelModifier != 0)
                         tp.Level = Math.Min(100, (int) Math.Round(tp.Level * (1 + levelModifier / 100.0)));
@@ -386,7 +386,7 @@ namespace RandomizerSharp.Randomizers
                         usePowerLevels,
                         typeForTrainer,
                         noLegendaries,
-                        shedAllowed);
+                        !shedAllowed);
                     tp.ResetMoves = true;
                     if (levelModifier != 0)
                         tp.Level = Math.Min(100, (int) Math.Round(tp.Level * (1 + levelModifier / 100.0)));
@@ -400,15 +400,8 @@ namespace RandomizerSharp.Randomizers
             bool usePowerLevels,
             Typing type,
             bool noLegendaries,
-            bool wonderGuardAllowed)
+            bool noWonderGuard)
         {
-            var pickFrom = ValidPokemons;
-
-            if (type != null)
-                pickFrom = pickFrom.Where(pk => Equals(pk.PrimaryType, type) || Equals(pk.SecondaryType, type)).ToArray();
-            if (noLegendaries)
-                pickFrom = pickFrom.Where(pk => !pk.Legendary).ToArray();
-
             if (usePowerLevels)
             {
                 //  start with within 10% and add 5% either direction till we find
@@ -421,15 +414,18 @@ namespace RandomizerSharp.Randomizers
 
                 while (canPick.Count == 0 || canPick.Count < 3 && expandRounds < 2)
                 {
-                    foreach (var pk in pickFrom)
+                    foreach (var pk in ValidPokemons)
                     {
-                        var hasWonderGuard = pk.Ability1 == GlobalConstants.WonderGuardIndex ||
-                                             pk.Ability2 == GlobalConstants.WonderGuardIndex ||
-                                             pk.Ability3 == GlobalConstants.WonderGuardIndex;
-
+                        if (pk.PrimaryType != type && pk.SecondaryType != type)
+                            continue;
+                        if (noLegendaries && pk.Legendary)
+                            continue;
+                        if (noWonderGuard && HasWonderGuard(pk))
+                            continue;
+                        
                         var bst = pk.BstForPowerLevels();
 
-                        if (bst >= minTarget && bst <= maxTarget && (wonderGuardAllowed || !hasWonderGuard))
+                        if (bst >= minTarget && bst <= maxTarget)
                             canPick.Add(pk);
                     }
 
@@ -441,23 +437,29 @@ namespace RandomizerSharp.Randomizers
                 return canPick[Random.Next(canPick.Count)];
             }
 
-            if (wonderGuardAllowed)
             {
-                return pickFrom[Random.Next(pickFrom.Count)];
-            }
+                Pokemon pk;
 
-            {
-                var pk = pickFrom[Random.Next(pickFrom.Count)];
-
-                while (pk.Ability1 == GlobalConstants.WonderGuardIndex ||
-                       pk.Ability2 == GlobalConstants.WonderGuardIndex ||
-                       pk.Ability3 == GlobalConstants.WonderGuardIndex)
+                while (true)
                 {
-                    pk = pickFrom[Random.Next(pickFrom.Count)];
+                    pk = ValidPokemons[Random.Next(ValidPokemons.Count)];
+
+                    if (pk.PrimaryType != type && pk.SecondaryType != type)
+                        continue;
+                    if (noLegendaries && pk.Legendary)
+                        continue;
+                    if (noWonderGuard && HasWonderGuard(pk))
+                        continue;
+
+                    break;
                 }
 
                 return pk;
             }
         }
+
+        private static bool HasWonderGuard(Pokemon pk) => pk.Ability1 == GlobalConstants.WonderGuardIndex ||
+                                                          pk.Ability2 == GlobalConstants.WonderGuardIndex ||
+                                                          pk.Ability3 == GlobalConstants.WonderGuardIndex;
     }
 }

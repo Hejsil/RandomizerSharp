@@ -119,7 +119,7 @@ namespace RandomizerSharp
 
         private static void WriteNamesBlock(Stream @out, IEnumerable<string> names)
         {
-            var newln = SysConstants.LineSep;
+            var newln = Environment.NewLine;
             var outNames = new StringBuilder();
             var first = true;
             foreach (var name in names)

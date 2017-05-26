@@ -10,8 +10,8 @@ namespace RandomizerSharp.Constants
 
         public static IReadOnlyList<int> BattleTrappingAbilities { get; } = new[] { 23, 42, 71 };
 
-        public static readonly IReadOnlyList<int> DoubleHitMoves = new[] { 155, 458, 24, 530, 544, 41 }
-            ; // Twineedle -  Gear Grind -  Dual Chop -  Double Kick -  Double Hit -  Bonemerang
+        // Twineedle -  Gear Grind -  Dual Chop -  Double Kick -  Double Hit -  Bonemerang
+        public static readonly IReadOnlyList<int> DoubleHitMoves = new[] { 155, 458, 24, 530, 544, 41 }; 
 
         public const int MetronomeMove = 118;
 

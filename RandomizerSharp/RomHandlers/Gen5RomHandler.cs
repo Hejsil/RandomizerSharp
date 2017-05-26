@@ -592,6 +592,7 @@ namespace RandomizerSharp.RomHandlers
             ReplaceStarterFiles(starterNarc, pokespritesNarc, 0, Starters[0].Pokemon.Id);
             ReplaceStarterFiles(starterNarc, pokespritesNarc, 1, Starters[1].Pokemon.Id);
             ReplaceStarterFiles(starterNarc, pokespritesNarc, 2, Starters[2].Pokemon.Id);
+
             BaseRom.WriteFile(_romEntry.GetString("StarterGraphics"), starterNarc.Bytes);
 
             // Fix text depending on version
