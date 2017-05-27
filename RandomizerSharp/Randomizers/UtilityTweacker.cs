@@ -410,7 +410,7 @@ namespace RandomizerSharp.Randomizers
             //  run this to remove all custom non-Metronome moves
             foreach (var t in RomHandler.Trainers)
             foreach (var tpk in t.Pokemon)
-                tpk.ResetMoves = true;
+                tpk.ResetMoves();
 
             //  tms
             var tmMoves = RomHandler.TmMoves;
@@ -564,7 +564,7 @@ namespace RandomizerSharp.Randomizers
                     continue;
 
                 tp.Pokemon = newPokemon;
-                tp.ResetMoves = true;
+                tp.ResetMoves();
             }
 
             Pokemon FullyEvolve(Pokemon pokemon)

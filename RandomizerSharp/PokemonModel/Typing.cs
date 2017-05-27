@@ -34,30 +34,30 @@ namespace RandomizerSharp.PokemonModel
             Tri
         }
 
-        public static Typing Abnormal { get; } = new Typing("ABNORMAL", InnerEnum.Abnormal, true);
         public static Typing Bug { get; } = new Typing("BUG", InnerEnum.Bug);
         public static Typing Dark { get; } = new Typing("DARK", InnerEnum.Dark);
         public static Typing Dragon { get; } = new Typing("DRAGON", InnerEnum.Dragon);
         public static Typing Electric { get; } = new Typing("ELECTRIC", InnerEnum.Electric);
-        public static Typing Fairy { get; } = new Typing("FAIRY", InnerEnum.Fairy, true);
         public static Typing Fighting { get; } = new Typing("FIGHTING", InnerEnum.Fighting);
         public static Typing Fire { get; } = new Typing("FIRE", InnerEnum.Fire);
         public static Typing Flying { get; } = new Typing("FLYING", InnerEnum.Flying);
-        public static Typing Gas { get; } = new Typing("GAS", InnerEnum.Gas, true);
         public static Typing Ghost { get; } = new Typing("GHOST", InnerEnum.Ghost);
         public static Typing Grass { get; } = new Typing("GRASS", InnerEnum.Grass);
         public static Typing Ground { get; } = new Typing("GROUND", InnerEnum.Ground);
         public static Typing Ice { get; } = new Typing("ICE", InnerEnum.Ice);
-        public static Typing Light { get; } = new Typing("LIGHT", InnerEnum.Light, true);
 
         public static Typing Normal { get; } = new Typing("NORMAL", InnerEnum.Normal);
         public static Typing Poison { get; } = new Typing("POISON", InnerEnum.Poison);
         public static Typing Psychic { get; } = new Typing("PSYCHIC", InnerEnum.Psychic);
         public static Typing Rock { get; } = new Typing("ROCK", InnerEnum.Rock);
-        public static Typing Sound { get; } = new Typing("SOUND", InnerEnum.Sound, true);
         public static Typing Steel { get; } = new Typing("STEEL", InnerEnum.Steel);
-        public static Typing Tri { get; } = new Typing("TRI", InnerEnum.Tri, true);
         public static Typing Water { get; } = new Typing("WATER", InnerEnum.Water);
+        public static Typing Abnormal { get; } = new Typing("ABNORMAL", InnerEnum.Abnormal, true);
+        public static Typing Fairy { get; } = new Typing("FAIRY", InnerEnum.Fairy, true);
+        public static Typing Gas { get; } = new Typing("GAS", InnerEnum.Gas, true);
+        public static Typing Light { get; } = new Typing("LIGHT", InnerEnum.Light, true);
+        public static Typing Tri { get; } = new Typing("TRI", InnerEnum.Tri, true);
+        public static Typing Sound { get; } = new Typing("SOUND", InnerEnum.Sound, true);
         public static Typing Wind { get; } = new Typing("WIND", InnerEnum.Wind, true);
         public static Typing Wood { get; } = new Typing("WOOD", InnerEnum.Wood, true);
 

@@ -541,9 +541,9 @@ namespace RandomizerSharp.Randomizers
             foreach (var pkmn in ValidPokemons)
             {
                 var flags = pkmn.MoveTutorCompatibility;
-                for (var i = 1; i <= mts.Length; i++)
+                for (var i = 0; i < mts.Length; i++)
                 {
-                    var move = mts[i - 1];
+                    var move = mts[i];
                     var mv = ValidMoves[move];
                     var probability = 0.5;
                     if (preferSameType)

@@ -36,7 +36,7 @@ namespace RandomizerSharp.Randomizers
                 {
                     var wgAllowed = !noEarlyWonderGuard || tp.Level >= 20;
                     tp.Pokemon = PickReplacement(tp.Pokemon, usePowerLevels, null, noLegendaries, !wgAllowed);
-                    tp.ResetMoves = true;
+                    tp.ResetMoves();
                 }
             }
 
@@ -203,7 +203,7 @@ namespace RandomizerSharp.Randomizers
                     }
 
                     bestPoke.Pokemon = starter;
-                    bestPoke.ResetMoves = true;
+                    bestPoke.ResetMoves();
                 }
             }
 
@@ -346,7 +346,9 @@ namespace RandomizerSharp.Randomizers
                         typeForGroup,
                         noLegendaries,
                         !wgAllowed);
-                    tp.ResetMoves = true;
+
+                    tp.ResetMoves();
+
                     if (levelModifier != 0)
                         tp.Level = Math.Min(100, (int) Math.Round(tp.Level * (1 + levelModifier / 100.0)));
                 }
@@ -387,7 +389,9 @@ namespace RandomizerSharp.Randomizers
                         typeForTrainer,
                         noLegendaries,
                         !shedAllowed);
-                    tp.ResetMoves = true;
+
+                    tp.ResetMoves();
+
                     if (levelModifier != 0)
                         tp.Level = Math.Min(100, (int) Math.Round(tp.Level * (1 + levelModifier / 100.0)));
                 }

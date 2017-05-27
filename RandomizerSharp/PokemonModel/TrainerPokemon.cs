@@ -14,8 +14,16 @@
         public int Move4 { get; set; }
 
         public Pokemon Pokemon { get; set; }
+        
+        public void ResetMoves()
+        {
+            var moves = RomFunctions.GetMovesAtLevel(Pokemon, Level);
 
-        public bool ResetMoves { get; set; } = false;
+            Move1 = moves[0];
+            Move2 = moves[1];
+            Move3 = moves[2];
+            Move4 = moves[3];
+        }
 
         public override string ToString() => $"{Pokemon.Name} Lv{Level}";
     }

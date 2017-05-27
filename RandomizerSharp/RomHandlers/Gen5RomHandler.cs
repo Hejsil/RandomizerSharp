@@ -367,7 +367,7 @@ namespace RandomizerSharp.RomHandlers
                 var flags = new bool[Gen5Constants.TmCount + Gen5Constants.HmCount + 1];
 
                 for (var j = 0; j < 13; j++)
-                    ReadByteIntoFlags(data, flags, j * 8 + 1, Gen5Constants.BsTmhmCompatOffset + j);
+                    ReadByteIntoFlags(data, flags, j * 8, Gen5Constants.BsTmhmCompatOffset + j);
 
                 pokemon.TMHMCompatibility = flags;
 
@@ -544,7 +544,7 @@ namespace RandomizerSharp.RomHandlers
                 // Save TmHm compatibility
 
                 for (var j = 0; j < 13; j++)
-                    data[Gen5Constants.BsTmhmCompatOffset + j] = GetByteFromFlags(pokemon.TMHMCompatibility, j * 8 + 1);
+                    data[Gen5Constants.BsTmhmCompatOffset + j] = GetByteFromFlags(pokemon.TMHMCompatibility, j * 8);
             }
 
 
@@ -1120,6 +1120,7 @@ namespace RandomizerSharp.RomHandlers
                             PpTxtHandler.WriteWord(trpoke, pokeOffs + 4, tp.Pokemon.Id);
                             // no form info, so no byte 6/7
                             pokeOffs += 8;
+
                             if ((tr.Poketype & 2) == 2)
                             {
                                 PpTxtHandler.WriteWord(trpoke, pokeOffs, tp.HeldItem);
@@ -1128,22 +1129,12 @@ namespace RandomizerSharp.RomHandlers
 
                             if ((tr.Poketype & 1) != 1)
                                 continue;
+                            
+                            PpTxtHandler.WriteWord(trpoke, pokeOffs, tp.Move1);
+                            PpTxtHandler.WriteWord(trpoke, pokeOffs + 2, tp.Move2);
+                            PpTxtHandler.WriteWord(trpoke, pokeOffs + 4, tp.Move3);
+                            PpTxtHandler.WriteWord(trpoke, pokeOffs + 6, tp.Move4);
 
-                            if (tp.ResetMoves)
-                            {
-                                var pokeMoves = RomFunctions.GetMovesAtLevel(tp.Pokemon, tp.Level);
-                                for (var m = 0; m < 4; m++)
-                                {
-                                    PpTxtHandler.WriteWord(trpoke, pokeOffs + m * 2, pokeMoves[m]);
-                                }
-                            }
-                            else
-                            {
-                                PpTxtHandler.WriteWord(trpoke, pokeOffs, tp.Move1);
-                                PpTxtHandler.WriteWord(trpoke, pokeOffs + 2, tp.Move2);
-                                PpTxtHandler.WriteWord(trpoke, pokeOffs + 4, tp.Move3);
-                                PpTxtHandler.WriteWord(trpoke, pokeOffs + 6, tp.Move4);
-                            }
                             pokeOffs += 8;
                         }
                     }
@@ -1172,21 +1163,11 @@ namespace RandomizerSharp.RomHandlers
                             PpTxtHandler.WriteWord(pkmndata, 0, tp.Pokemon.Id);
                             PpTxtHandler.WriteWord(pkmndata, 12, tp.HeldItem);
                             // handle moves
-                            if (tp.ResetMoves)
-                            {
-                                var pokeMoves = RomFunctions.GetMovesAtLevel(tp.Pokemon, tp.Level);
-                                for (var m = 0; m < 4; m++)
-                                {
-                                    PpTxtHandler.WriteWord(pkmndata, 2 + m * 2, pokeMoves[m]);
-                                }
-                            }
-                            else
-                            {
-                                PpTxtHandler.WriteWord(pkmndata, 2, tp.Move1);
-                                PpTxtHandler.WriteWord(pkmndata, 4, tp.Move2);
-                                PpTxtHandler.WriteWord(pkmndata, 6, tp.Move3);
-                                PpTxtHandler.WriteWord(pkmndata, 8, tp.Move4);
-                            }
+                            
+                            PpTxtHandler.WriteWord(pkmndata, 2, tp.Move1);
+                            PpTxtHandler.WriteWord(pkmndata, 4, tp.Move2);
+                            PpTxtHandler.WriteWord(pkmndata, 6, tp.Move3);
+                            PpTxtHandler.WriteWord(pkmndata, 8, tp.Move4);
                         }
                     }
                 }
@@ -1387,16 +1368,16 @@ namespace RandomizerSharp.RomHandlers
             {
                 var data = _pokeNarc.Files[i];
                 var pkmn = AllPokemons[i];
-                var flags = new bool[Gen5Constants.Bw2MoveTutorCount + 1];
+                var flags = new bool[Gen5Constants.Bw2MoveTutorCount];
                 for (var mt = 0; mt < 4; mt++)
                 {
                     var mtflags = new bool[countsPersonalOrder[mt] + 1];
                     for (var j = 0; j < 4; j++)
-                        ReadByteIntoFlags(data, mtflags, j * 8 + 1, Gen5Constants.BsMtCompatOffset + mt * 4 + j);
+                        ReadByteIntoFlags(data, mtflags, j * 8, Gen5Constants.BsMtCompatOffset + mt * 4 + j);
                     var offsetOfThisData = 0;
                     for (var cmoIndex = 0; cmoIndex < personalToMoveOrder[mt]; cmoIndex++)
                         offsetOfThisData += countsMoveOrder[cmoIndex];
-                    Array.Copy(mtflags, 1, flags, offsetOfThisData + 1, countsPersonalOrder[mt]);
+                    Array.Copy(mtflags, 0, flags, offsetOfThisData, countsPersonalOrder[mt]);
                 }
 
                 pkmn.MoveTutorCompatibility = flags;
@@ -1421,12 +1402,15 @@ namespace RandomizerSharp.RomHandlers
                 for (var mt = 0; mt < 4; mt++)
                 {
                     var offsetOfThisData = 0;
+
                     for (var cmoIndex = 0; cmoIndex < personalToMoveOrder[mt]; cmoIndex++)
                         offsetOfThisData += countsMoveOrder[cmoIndex];
-                    var mtflags = new bool[countsPersonalOrder[mt] + 1];
-                    Array.Copy(flags, offsetOfThisData + 1, mtflags, 1, countsPersonalOrder[mt]);
+
+                    var mtflags = new bool[countsPersonalOrder[mt]];
+                    Array.Copy(flags, offsetOfThisData, mtflags, 0, countsPersonalOrder[mt]);
+
                     for (var j = 0; j < 4; j++)
-                        data[Gen5Constants.BsMtCompatOffset + mt * 4 + j] = GetByteFromFlags(mtflags, j * 8 + 1);
+                        data[Gen5Constants.BsMtCompatOffset + mt * 4 + j] = GetByteFromFlags(mtflags, j * 8);
                 }
             }
         }

@@ -38,6 +38,12 @@ namespace RandomizerSharp
                 arr[i] = value;
         }
 
+        public static void Populate<T>(this T[] arr, Func<T> valueGetter)
+        {
+            for (var i = 0; i < arr.Length; i++)
+                arr[i] = valueGetter();
+        }
+
         public static int ReadFully(this Stream stream, byte[] buffer) => stream.Read(buffer, 0, buffer.Length);
 
         public static long Seek(this Stream stream, int offset) => stream.Seek(offset, SeekOrigin.Begin);

@@ -59,6 +59,9 @@
     <Compile Include="Controls\PokemonControl.xaml.cs">
       <DependentUpon>PokemonControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\PokemonsControl.xaml.cs">
+      <DependentUpon>PokemonsControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Setting\IngameTradeRandomization.cs" />
     <Compile Include="Setting\IngameTradeSettings.cs" />
     <Compile Include="Setting\Settings.cs" />
@@ -69,6 +72,10 @@
       <DependentUpon>TraitControl.xaml</DependentUpon>
     </Compile>
     <Page Include="Controls\PokemonControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\PokemonsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
