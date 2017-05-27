@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using ImageProcessor.Imaging;
 using RandomizerSharp.Constants;
 using RandomizerSharp.NDS;
 using RandomizerSharp.PokemonModel;
@@ -1793,7 +1795,28 @@ namespace RandomizerSharp.RomHandlers
                 var uncompressedPic = DsDecmp.Decompress(compressedPic);
 
                 // Output to 64x144 tiled image to prepare for unscrambling
-                pokemon.Sprite = GfxFunctions.DrawTiledImage(uncompressedPic, palette, 48, 64, 144, 4);
+                var bim = GfxFunctions.DrawTiledImage(uncompressedPic, palette, 48, 64, 144, 4);
+
+                // Unscramble the above onto a 96x96 canvas
+                pokemon.Sprite = new Bitmap(96, 96);
+
+                using (var g = Graphics.FromImage(pokemon.Sprite))
+                {
+                    g.DrawImage(bim, new Rectangle(0,   0, 64 -  0, 64 -  0), new Rectangle( 0,  0, 64 -  0, 64 - 0), GraphicsUnit.Pixel);
+                    g.DrawImage(bim, new Rectangle(64,  0, 96 - 64,  8 -  0), new Rectangle( 0, 64, 32 -  0, 72 - 64), GraphicsUnit.Pixel);
+                    g.DrawImage(bim, new Rectangle(64,  8, 96 - 64, 16 -  8), new Rectangle(32, 64, 64 - 32, 72 - 64), GraphicsUnit.Pixel);
+                    g.DrawImage(bim, new Rectangle(64, 16, 96 - 64, 24 - 16), new Rectangle( 0, 72, 32 -  0, 80 - 72), GraphicsUnit.Pixel);
+                    g.DrawImage(bim, new Rectangle(64, 24, 96 - 64, 32 - 24), new Rectangle(32, 72, 64 - 32, 80 - 72), GraphicsUnit.Pixel);
+                    g.DrawImage(bim, new Rectangle(64, 32, 96 - 64, 40 - 32), new Rectangle( 0, 80, 32 -  0, 88 - 80), GraphicsUnit.Pixel);
+                    g.DrawImage(bim, new Rectangle(64, 40, 96 - 64, 48 - 40), new Rectangle(32, 80, 64 - 32, 88 - 80), GraphicsUnit.Pixel);
+                    g.DrawImage(bim, new Rectangle(64, 48, 96 - 64, 56 - 48), new Rectangle( 0, 88, 32 -  0, 96 - 88), GraphicsUnit.Pixel);
+                    g.DrawImage(bim, new Rectangle(64, 56, 96 - 64, 64 - 56), new Rectangle(32, 88, 64 - 32, 96 - 88), GraphicsUnit.Pixel);
+                    g.DrawImage(bim, new Rectangle( 0, 64, 64 -  0, 96 - 64), new Rectangle( 0, 96, 64 -  0, 128 - 96), GraphicsUnit.Pixel);
+                    g.DrawImage(bim, new Rectangle(64, 64, 96 - 64, 72 - 64), new Rectangle( 0, 128, 32 -  0, 136 - 128), GraphicsUnit.Pixel);
+                    g.DrawImage(bim, new Rectangle(64, 72, 96 - 64, 80 - 72), new Rectangle(32, 128, 64 - 32, 136 - 128), GraphicsUnit.Pixel);
+                    g.DrawImage(bim, new Rectangle(64, 80, 96 - 64, 88 - 80), new Rectangle( 0, 136, 32 - 0, 144 - 136), GraphicsUnit.Pixel);
+                    g.DrawImage(bim, new Rectangle(64, 88, 96 - 64, 96 - 88), new Rectangle(32, 136, 64 - 32, 144 - 136), GraphicsUnit.Pixel);
+                }
             }
         }
 

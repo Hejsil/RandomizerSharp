@@ -3,8 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:RandomizerSharp.UI.ViewModels"
+             xmlns:converters="clr-namespace:RandomizerSharp.UI.Converters"
              mc:Ignorable="d" 
-             d:DesignHeight="500" d:DesignWidth="300">
+             d:DesignHeight="500" d:DesignWidth="500"
+             d:DataContext="{d:DesignInstance viewModels:PokemonViewModel}">
+    <UserControl.Resources>
+        <converters:CatchRateToPercentStringConverter x:Key="CatchRateToPercentStringConverter" />
+        <converters:BitmapToBitmapSourceConverter x:Key="BitmapToBitmapSourceConverter"></converters:BitmapToBitmapSourceConverter>
+    </UserControl.Resources>
     <GroupBox Header="Pokemon Data">
         <Grid>
             <Grid.RowDefinitions>
@@ -19,80 +26,165 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
             <GroupBox Grid.Row="0" Grid.Column="0" Margin="5" Header="Info">
-                <StackPanel VerticalAlignment="Center" Margin="5">
+                <StackPanel Margin="5">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Id: "></TextBlock>
-                        <TextBlock Text="1"></TextBlock>
+                        <TextBlock Text="{Binding Id}"></TextBlock>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Name: "></TextBlock>
-                        <TextBox Text="Bulbasaur"></TextBox>
+                        <TextBox Text="{Binding Name}" MinWidth="85"></TextBox>
                     </StackPanel>
                 </StackPanel>
             </GroupBox>
 
             <GroupBox Grid.Row="0" Grid.Column="1" Margin="5" Header="Sprite">
-                <Image Margin="5" VerticalAlignment="Center"></Image>
+                <Image Margin="5" Source="{Binding Sprite, Converter={StaticResource BitmapToBitmapSourceConverter}}"></Image>
             </GroupBox>
 
 
-            <GroupBox Grid.Row="1" Grid.ColumnSpan="2"  Grid.Column="0" Margin="5" Header="Type">
-                <StackPanel VerticalAlignment="Center" Margin="5"  Orientation="Horizontal" HorizontalAlignment="Center">
-                    <StackPanel.Resources>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Setter Property="Margin" Value="2.5,0,2.5,0"/>
-                        </Style>
-                    </StackPanel.Resources>
+            <GroupBox Grid.Row="1" Grid.ColumnSpan="2"  Grid.Column="0" Margin="5" Header="Types">
+                <Grid Margin="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="5"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Grass" Background="Green"></TextBlock>
-                    <TextBlock Text="Poison" Background="Purple"></TextBlock>
-                </StackPanel>
+                    <ComboBox Grid.Column="0" SelectedItem="{Binding PrimaryType}"></ComboBox>
+                    <ComboBox Grid.Column="2" SelectedItem="{Binding SecondaryType}"></ComboBox>
+                </Grid>
             </GroupBox>
 
-            <GroupBox Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Margin="5" Header="Natures">
-                <StackPanel VerticalAlignment="Center" Margin="5" Orientation="Horizontal" HorizontalAlignment="Center">
-                    <StackPanel.Resources>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Setter Property="Margin" Value="5,0,5,0"/>
-                        </Style>
-                    </StackPanel.Resources>
-
-                    <TextBlock Text="Overgrow"></TextBlock>
-                    <TextBlock Text="???"></TextBlock>
-                    <TextBlock Text="Chlorophyll"></TextBlock>
-                </StackPanel>
+            <GroupBox Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Margin="5" Header="Abilities">
+                <Grid Margin="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="5"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="5"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    
+                    <ComboBox Grid.Column="0" SelectedItem="{Binding Ability1}"></ComboBox>
+                    <ComboBox Grid.Column="2" SelectedItem="{Binding Ability2}"></ComboBox>
+                    <ComboBox Grid.Column="4" SelectedItem="{Binding Ability3}"></ComboBox>
+                </Grid>
             </GroupBox>
 
-            <GroupBox  Grid.Row="3" Grid.Column="0" Margin="5" Header="Gender ratio">
 
+            <GroupBox Grid.Row="3" Grid.Column="0" Margin="5" Header="Leveling rate">
+                <ComboBox Margin="5" SelectedItem="{Binding GrowthExpCurve}"></ComboBox>
             </GroupBox>
 
             <GroupBox Grid.Row="3" Grid.Column="1" Margin="5" Header="Catch rate">
-                <StackPanel VerticalAlignment="Center" Margin="5"  Orientation="Horizontal" HorizontalAlignment="Center">
-                    <TextBox Text="45"></TextBox>
-                    <TextBlock Text="(5.9%)" Margin="2,0,0,0" FontSize="10" VerticalAlignment="Center"></TextBlock>
-                </StackPanel>
+                <Grid Margin="5" HorizontalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        <ColumnDefinition Width="5"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox Grid.Column="0" Text="{Binding CatchRate}" VerticalAlignment="Center"></TextBox>
+                    <TextBlock Grid.Column="2" Text="{Binding CatchRate, Converter={StaticResource CatchRateToPercentStringConverter}}" FontSize="10" VerticalAlignment="Center"></TextBlock>
+                </Grid>
             </GroupBox>
 
-            <GroupBox Grid.Row="4" Grid.Column="0" Margin="5" Header="Base experience yield">
-                <TextBox Margin="5" VerticalAlignment="Center" Text="64"></TextBox>
+            <GroupBox Grid.Row="0" Grid.Column="2" Grid.RowSpan="3" Margin="5" Header="Stats">
+                <Grid Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="5"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="5"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="5"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="5"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="5"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="5"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        <ColumnDefinition Width="5"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        <ColumnDefinition Width="5"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="HP"></TextBlock>
+                    <Slider Grid.Row="0" Grid.Column="2" Width="100" Value="{Binding HP}" Maximum="255"></Slider>
+                    <TextBox Grid.Row="0" Grid.Column="4" Width="35" Text="{Binding HP}"></TextBox>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Attack"></TextBlock>
+                    <Slider Grid.Row="2" Grid.Column="2" Width="100" Value="{Binding Attack}" Maximum="255"></Slider>
+                    <TextBox Grid.Row="2" Grid.Column="4" Width="35" Text="{Binding Attack}"></TextBox>
+
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Defense"></TextBlock>
+                    <Slider Grid.Row="4" Grid.Column="2" Width="100" Value="{Binding Defense}" Maximum="255"></Slider>
+                    <TextBox Grid.Row="4" Grid.Column="4" Width="35" Text="{Binding Defense}"></TextBox>
+
+                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Sp. Atk"></TextBlock>
+                    <Slider Grid.Row="6" Grid.Column="2" Width="100" Value="{Binding Spatk}" Maximum="255"></Slider>
+                    <TextBox Grid.Row="6" Grid.Column="4" Width="35" Text="{Binding Spatk}"></TextBox>
+
+                    <TextBlock Grid.Row="8" Grid.Column="0" Text="Sp. Def"></TextBlock>
+                    <Slider Grid.Row="8" Grid.Column="2" Width="100" Value="{Binding Spdef}" Maximum="255"></Slider>
+                    <TextBox Grid.Row="8" Grid.Column="4" Width="35" Text="{Binding Spdef}"></TextBox>
+
+                    <TextBlock Grid.Row="10" Grid.Column="0" Text="Speed"></TextBlock>
+                    <Slider Grid.Row="10" Grid.Column="2" Width="100" Value="{Binding Speed}" Maximum="255"></Slider>
+                    <TextBox Grid.Row="10" Grid.Column="4" Width="35" Text="{Binding Speed}"></TextBox>
+
+                    <TextBlock Grid.Row="12" Grid.Column="0" Text="Special"></TextBlock>
+                    <Slider Grid.Row="12" Grid.Column="2" IsEnabled="False" Width="100" Value="{Binding Special, Mode=OneWay}" Maximum="255"></Slider>
+                    <TextBox Grid.Row="12" Grid.Column="4" IsEnabled="False" Width="35" Text="{Binding Special, Mode=OneWay}"></TextBox>
+                </Grid>
             </GroupBox>
 
-            <GroupBox Grid.Row="4" Grid.Column="1" Margin="5" Header="Leveling rate">
-                <ComboBox Margin="5" VerticalAlignment="Center">
-
-                </ComboBox>
+            <GroupBox Grid.Row="3" Grid.Column="2" Grid.RowSpan="2" Margin="5" Header="Evolutions">
+                <Grid Margin="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="5"></ColumnDefinition>
+                        <ColumnDefinition Width="25"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25"></RowDefinition>
+                        <RowDefinition Height="5"></RowDefinition>
+                        <RowDefinition Height="25"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    
+                    <ListView Grid.Column="0" Grid.Row="0" Grid.RowSpan="4" ItemsSource="{Binding EvolutionsFrom}"></ListView>
+                    <Button Grid.Row="0" Grid.Column="2"></Button>
+                    <Button Grid.Row="2" Grid.Column="2"></Button>
+                </Grid>
+            </GroupBox>
+            
+            <!--
+            <GroupBox Grid.Row="3" Grid.Column="2" Grid.RowSpan="2" Margin="5" Header="Learnable Move tutor moves">
+                <ListView Margin="5"></ListView>
             </GroupBox>
 
-            <GroupBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" Header="Leveling rate">
-                <StackPanel>
-
-                </StackPanel>
+            <GroupBox Grid.Row="5" Grid.Column="2" Margin="5" Header="Learnable TMs/HMs">
+                <ListView Margin="5"></ListView>
             </GroupBox>
+
+            <GroupBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" Header="Learnt from level">
+                <ListView Margin="5"></ListView>
+            </GroupBox>
+            -->
         </Grid>
     </GroupBox>
 </UserControl>

@@ -37,6 +37,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -62,20 +63,26 @@
     <Compile Include="Controls\PokemonsControl.xaml.cs">
       <DependentUpon>PokemonsControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Setting\IngameTradeRandomization.cs" />
-    <Compile Include="Setting\IngameTradeSettings.cs" />
-    <Compile Include="Setting\Settings.cs" />
-    <Compile Include="Setting\StarterRandomization.cs" />
-    <Compile Include="Setting\StaticRandomization.cs" />
-    <Compile Include="Setting\TrainerSettings.cs" />
     <Compile Include="Controls\TraitControl.xaml.cs">
       <DependentUpon>TraitControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\BitmapToBitmapSourceConverter.cs" />
+    <Compile Include="Converters\CatchRateToPercentStringConverter.cs" />
+    <Compile Include="Converters\NullToBoolConverter.cs" />
+    <Compile Include="ViewModels\BaseViewModel.cs" />
+    <Compile Include="ViewModels\Commands\Command.cs" />
+    <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\PokemonsViewModel.cs" />
+    <Compile Include="ViewModels\PokemonViewModel.cs" />
     <Page Include="Controls\PokemonControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\PokemonsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -119,5 +126,6 @@
       <Name>RandomizerSharp</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

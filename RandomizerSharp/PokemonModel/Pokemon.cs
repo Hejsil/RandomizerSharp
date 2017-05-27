@@ -86,20 +86,22 @@ namespace RandomizerSharp.PokemonModel
         public int CatchRate { get; set; }
 
         public int CommonHeldItem { get; set; }
+        public int RareHeldItem { get; set; }
         public int DarkGrassHeldItem { get; set; }
         
         public ExpCurve GrowthExpCurve { get; set; }
         public Typing PrimaryType { get; set; }
-        public int RareHeldItem { get; set; }
         public Typing SecondaryType { get; set; }
-        public List<int> ShuffledStatsOrder { get; set; } = new List<int> { 0, 1, 2, 3, 4, 5 };
 
-        public bool TemporaryFlag { get; set; }
         public Bitmap Sprite { get; set; }
 
         // ReSharper disable once InconsistentNaming
         public bool[] TMHMCompatibility { get; set; } = Array.Empty<bool>();
         public bool[] MoveTutorCompatibility { get; set; } = Array.Empty<bool>();
+
+        public bool TemporaryFlag { get; set; }
+        public List<int> ShuffledStatsOrder { get; set; } = new List<int> { 0, 1, 2, 3, 4, 5 };
+
 
         public Pokemon(int id) => Id = id;
 

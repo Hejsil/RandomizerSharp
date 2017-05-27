@@ -41,24 +41,27 @@ namespace RandomizerSharp
             var widthInTiles = width / tileWidth;
 
             var result = new Bitmap(width, height);
-            var bim = new FastBitmap(result);
 
-            for (var tile = 0; tile < numTiles; tile++)
+            using (var bim = new FastBitmap(result))
             {
-                var tileX = tile % widthInTiles;
-                var tileY = tile / widthInTiles;
-                for (var yT = 0; yT < tileHeight; yT++)
-                for (var xT = 0; xT < tileWidth; xT++)
+                for (var tile = 0; tile < numTiles; tile++)
                 {
-                    var value =
-                        data[tile * bytesPerTile + yT * tileWidth / pixelsPerByte + xT / pixelsPerByte + offset] & 0xFF;
-                    if (pixelsPerByte != 1)
-                        value = (int) ((uint) value >> (xT % pixelsPerByte * bpp)) & ((1 << bpp) - 1);
-                    bim.SetPixel(tileX * tileWidth + xT, tileY * tileHeight + yT, Color.FromArgb(palette[value]));
+                    var tileX = tile % widthInTiles;
+                    var tileY = tile / widthInTiles;
+                    for (var yT = 0; yT < tileHeight; yT++)
+                    for (var xT = 0; xT < tileWidth; xT++)
+                    {
+                        var value = data[tile * bytesPerTile + yT * tileWidth / pixelsPerByte + xT / pixelsPerByte + offset] & 0xFF;
+
+                        if (pixelsPerByte != 1)
+                            value = (int)((uint)value >> (xT % pixelsPerByte * bpp)) & ((1 << bpp) - 1);
+
+                        bim.SetPixel(tileX * tileWidth + xT, tileY * tileHeight + yT, Color.FromArgb(palette[value]));
+                    }
                 }
             }
 
-            return bim;
+            return result;
         }
 
         public static int Conv16BitColorToArgb(int palValue)

@@ -4,20 +4,34 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RandomizerSharp.UI"
+        xmlns:controls="clr-namespace:RandomizerSharp.UI.Controls"
+        xmlns:converters="clr-namespace:RandomizerSharp.UI.Converters"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <DockPanel>
+        Title="MainWindow" Height="700" Width="700">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Dictionary.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+            <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
+        </ResourceDictionary>
+    </Window.Resources>
+    <DockPanel Name="Panel" DataContext="{StaticResource MainViewModel}">
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="File">
-                <MenuItem Header="Open Rom"></MenuItem>
-                <MenuItem Header="Save Rom"></MenuItem>
+                <MenuItem Name="OpenRomItem" Header="Open Rom" Click="OpenRomItem_OnClick"></MenuItem>
+                <MenuItem Name="SaveRomItem" Header="Save Rom" IsEnabled="False" Click="SaveRomItem_OnClick"></MenuItem>
                 <Separator></Separator>
                 <MenuItem Header="Exit"></MenuItem>
             </MenuItem>
         </Menu>
         
         <TabControl>
-            
+            <TabItem Header="Pokemons" IsEnabled="{Binding PokemonsViewModel, Converter={StaticResource NullToBoolConverter}}">
+                <Grid IsEnabled="{Binding PokemonsViewModel, Converter={StaticResource NullToBoolConverter}}">
+                    <controls:PokemonsControl DataContext="{Binding PokemonsViewModel}"></controls:PokemonsControl>
+                </Grid>
+            </TabItem>
         </TabControl>
     </DockPanel>
 </Window>

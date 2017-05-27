@@ -4,8 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:RandomizerSharp.UI.Controls"
+             xmlns:viewModels="clr-namespace:RandomizerSharp.UI.ViewModels"
+             xmlns:converters="clr-namespace:RandomizerSharp.UI.Converters"
              mc:Ignorable="d" 
-             d:DesignHeight="500" d:DesignWidth="500">
+             d:DesignHeight="700" d:DesignWidth="700"
+             d:DataContext="{d:DesignInstance viewModels:PokemonsViewModel}">
+    <UserControl.Resources>
+        <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             
@@ -16,11 +22,20 @@
             <ColumnDefinition Width="Auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
-        <GroupBox Grid.Column="0" Header="All Pokemons">
-            <ListView></ListView>
+        <GroupBox Grid.Column="0" Header="All _pokemons">
+            <ListView Margin="5" ItemsSource="{Binding Pokemons}" SelectedItem="{Binding SelectedPokemon}">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Id" Width="35" DisplayMemberBinding="{Binding Id}"></GridViewColumn>
+                        <GridViewColumn Header="Name" Width="80" DisplayMemberBinding="{Binding Name}"></GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
         </GroupBox>
 
-        <local:PokemonControl Grid.Column="1"></local:PokemonControl>
+        <Grid Grid.Column="1" IsEnabled="{Binding SelectedPokemon, Converter={StaticResource NullToBoolConverter}}">
+            <local:PokemonControl DataContext="{Binding SelectedPokemon}"></local:PokemonControl>
+        </Grid>
         
         
     </Grid>
