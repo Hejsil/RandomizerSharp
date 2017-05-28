@@ -4,16 +4,13 @@ namespace RandomizerSharp.PokemonModel
 {
     public class Move
     {
-        public Move(int id)
-        {
-            Id = id;
-        }
+        public Move(int id) => Id = id;
 
         public static IReadOnlyList<int> GameBreaking { get; } = new [] { 49, 82 };
 
         public const int StruggleId = 165;
         public MoveCategory Category { get; set; }
-        public double Hitratio { get; set; }
+        public int Hitratio { get; set; }
         public int Id { get; }
 
         public string Name { get; set; }

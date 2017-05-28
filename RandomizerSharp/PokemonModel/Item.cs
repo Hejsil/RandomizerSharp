@@ -2,20 +2,9 @@
 {
     public class Item
     {
-        public Item(int id, Kind type)
-        {
-            Id = id;
-            Type = type;
-        }
+        public Item(int id) => Id = id;
 
         public int Id { get; }
-        public Kind Type { get; }
-        
-        public enum Kind
-        {
-            Technical,
-            Hidden,
-            Other
-        }
+        public string Name { get; set; }
     }
 }

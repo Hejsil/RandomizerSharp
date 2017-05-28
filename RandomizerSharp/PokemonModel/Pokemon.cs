@@ -79,15 +79,15 @@ namespace RandomizerSharp.PokemonModel
         public int Special => (Spatk + Spdef) / 2;
         public int Speed { get; set; }
 
-        public int Ability1 { get; set; }
-        public int Ability2 { get; set; }
-        public int Ability3 { get; set; }
+        public Ability Ability1 { get; set; }
+        public Ability Ability2 { get; set; }
+        public Ability Ability3 { get; set; }
 
         public int CatchRate { get; set; }
 
-        public int CommonHeldItem { get; set; }
-        public int RareHeldItem { get; set; }
-        public int DarkGrassHeldItem { get; set; }
+        public Item CommonHeldItem { get; set; }
+        public Item RareHeldItem { get; set; }
+        public Item DarkGrassHeldItem { get; set; }
         
         public ExpCurve GrowthExpCurve { get; set; }
         public Typing PrimaryType { get; set; }

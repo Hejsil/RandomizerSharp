@@ -4,7 +4,7 @@
     {
         public Pokemon GivenPokemon { get; set; }
 
-        public int Item { get; set; }
+        public Item Item { get; set; }
 
         public int[] Ivs { get; set; } = new int[0];
 

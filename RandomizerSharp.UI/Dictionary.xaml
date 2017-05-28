@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:RandomizerSharp.UI"
                     xmlns:viewModels="clr-namespace:RandomizerSharp.UI.ViewModels">
-    <viewModels:MainViewModel x:Key="MainViewModel">
+    <viewModels:RomHandlerModelView x:Key="RomHandlerModel">
         
-    </viewModels:MainViewModel>
+    </viewModels:RomHandlerModelView>
 </ResourceDictionary>

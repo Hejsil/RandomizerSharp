@@ -27,7 +27,7 @@
     {
         public int Level { get; set; }
 
-        public int Move { get; set; }
+        public Move Move { get; set; }
 
         public override string ToString() => $"move {Move} at level {Level}";
     }

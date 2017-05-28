@@ -11,7 +11,7 @@ using RandomizerSharp.UI.ViewModels.Commands;
 
 namespace RandomizerSharp.UI.ViewModels
 {
-    public class MainViewModel : BaseViewModel
+    public class RomHandlerModelView : BaseViewModel
     {
         private AbstractRomHandler _romHandler;
         private PokemonsViewModel _pokemonsViewModel;
@@ -22,7 +22,7 @@ namespace RandomizerSharp.UI.ViewModels
             set
             {
                 _romHandler = value;
-                PokemonsViewModel = new PokemonsViewModel(RomHandler.AllPokemons);
+                PokemonsViewModel = new PokemonsViewModel(this, RomHandler.Pokemons);
                 OnPropertyChanged();
                 SaveRom.OnCanExecuteChanged();
             }
@@ -41,7 +41,8 @@ namespace RandomizerSharp.UI.ViewModels
         public Command OpenRom { get; }
         public Command SaveRom { get; }
 
-        public MainViewModel()
+        public RomHandlerModelView()
+            : base(null)
         {
             OpenRom = new Command(
                 arg => true,

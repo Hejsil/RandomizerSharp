@@ -2,7 +2,7 @@
 {
     public class StarterPokemon
     {
-        public int HeldItem { get; set; }
+        public Item HeldItem { get; set; }
         public Pokemon Pokemon { get; set; }
     }
 }

@@ -11,7 +11,7 @@ namespace RandomizerSharp.UI
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly MainViewModel _context;
+        private readonly RomHandlerModelView _context;
         private readonly OpenFileDialog _openFileDialog = new OpenFileDialog();
         private readonly SaveFileDialog _saveFileDialog = new SaveFileDialog();
 
@@ -19,7 +19,7 @@ namespace RandomizerSharp.UI
         {
             InitializeComponent();
 
-            _context = (MainViewModel) Panel.DataContext;
+            _context = (RomHandlerModelView) Panel.DataContext;
             _context.OpenRom.CanExecuteChanged += (sender, args) => OpenRomItem.IsEnabled = _context.OpenRom.CanExecute(null);
             _context.SaveRom.CanExecuteChanged += (sender, args) => SaveRomItem.IsEnabled = _context.SaveRom.CanExecute(null);
         }

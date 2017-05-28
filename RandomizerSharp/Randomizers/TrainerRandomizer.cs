@@ -36,7 +36,7 @@ namespace RandomizerSharp.Randomizers
                 {
                     var wgAllowed = !noEarlyWonderGuard || tp.Level >= 20;
                     tp.Pokemon = PickReplacement(tp.Pokemon, usePowerLevels, null, noLegendaries, !wgAllowed);
-                    tp.ResetMoves();
+                    tp.ResetMoves(RomHandler.Moves[0]);
                 }
             }
 
@@ -203,7 +203,7 @@ namespace RandomizerSharp.Randomizers
                     }
 
                     bestPoke.Pokemon = starter;
-                    bestPoke.ResetMoves();
+                    bestPoke.ResetMoves(RomHandler.Moves[0]);
                 }
             }
 
@@ -347,7 +347,7 @@ namespace RandomizerSharp.Randomizers
                         noLegendaries,
                         !wgAllowed);
 
-                    tp.ResetMoves();
+                    tp.ResetMoves(RomHandler.Moves[0]);
 
                     if (levelModifier != 0)
                         tp.Level = Math.Min(100, (int) Math.Round(tp.Level * (1 + levelModifier / 100.0)));
@@ -390,7 +390,7 @@ namespace RandomizerSharp.Randomizers
                         noLegendaries,
                         !shedAllowed);
 
-                    tp.ResetMoves();
+                    tp.ResetMoves(RomHandler.Moves[0]);
 
                     if (levelModifier != 0)
                         tp.Level = Math.Min(100, (int) Math.Round(tp.Level * (1 + levelModifier / 100.0)));
@@ -462,8 +462,8 @@ namespace RandomizerSharp.Randomizers
             }
         }
 
-        private static bool HasWonderGuard(Pokemon pk) => pk.Ability1 == GlobalConstants.WonderGuardIndex ||
-                                                          pk.Ability2 == GlobalConstants.WonderGuardIndex ||
-                                                          pk.Ability3 == GlobalConstants.WonderGuardIndex;
+        private static bool HasWonderGuard(Pokemon pk) => pk.Ability1.Id == GlobalConstants.WonderGuardIndex ||
+                                                          pk.Ability2.Id == GlobalConstants.WonderGuardIndex ||
+                                                          pk.Ability3.Id == GlobalConstants.WonderGuardIndex;
     }
 }

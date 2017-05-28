@@ -78,7 +78,6 @@ namespace RandomizerSharp.Randomizers
             var trades = RomHandler.IngameTrades;
             var usedRequests = new List<Pokemon>();
             var usedGivens = new List<Pokemon>();
-            var possibleItems = RomHandler.AllowedItems;
 
             foreach (var trade in trades)
             {
@@ -126,7 +125,7 @@ namespace RandomizerSharp.Randomizers
 
                 if (randomItem)
                 {
-                    trade.Item = possibleItems.RandomItem(Random);
+                    trade.Item = RandomItem();
                 }
             }
         }
@@ -167,59 +166,23 @@ namespace RandomizerSharp.Randomizers
         public void RandomizeStarterHeldItems(bool banBadItems)
         {
             var oldHeldItems = RomHandler.Starters;
-            var possibleItems = banBadItems ? RomHandler.NonBadItems : RomHandler.AllowedItems;
 
             foreach (var t in oldHeldItems)
-                t.HeldItem = possibleItems.RandomItem(Random);
+                t.HeldItem = RandomItem();
         }
 
         public void ShuffleFieldItems()
         {
-            var currentItems = RomHandler.RegularFieldItems;
-            var currentTMs = RomHandler.CurrentFieldTMs;
-            currentItems.Shuffle(Random);
-            currentTMs.Shuffle(Random);
+            RomHandler.FieldItems.Shuffle(Random);
         }
 
         public void RandomizeFieldItems(bool banBadItems)
         {
-            var possibleItems = banBadItems ? RomHandler.NonBadItems : RomHandler.AllowedItems;
-
-            var currentItems = RomHandler.RegularFieldItems;
-            var currentTMs = RomHandler.CurrentFieldTMs;
-            var requiredTMs = RomHandler.Game.RequiredFieldTMs;
-            var fieldItemCount = currentItems.Length;
-            var fieldTmCount = currentTMs.Length;
-            var reqTmCount = requiredTMs.Length;
-            var totalTmCount = RomHandler.TmMoves.Length;
-            var newItems = new List<int>();
-            var newTMs = new List<int>();
-
-            for (var i = 0; i < fieldItemCount; i++)
-                newItems.Add(possibleItems.RandomNonTm(Random));
-
-            newTMs.AddRange(requiredTMs);
-
-            for (var i = reqTmCount; i < fieldTmCount; i++)
+            for (var i = 0; i < RomHandler.FieldItems.Length; i++)
             {
-                while (true)
-                {
-                    var tm = Random.Next(totalTmCount) + 1;
-                    if (newTMs.Contains(tm))
-                        continue;
-
-                    newTMs.Add(tm);
-                    break;
-                }
+                // TODO: We might loss required items when randomizing
+                RomHandler.FieldItems[i] = RandomItem();
             }
-
-            newItems.Shuffle(Random);
-            newTMs.Shuffle(Random);
-
-            for (var i = 0; i < newItems.Count; ++i)
-                currentItems[i] = newItems[i];
-            for (var i = 0; i < newTMs.Count; ++i)
-                currentTMs[i] = newTMs[i];
         }
 
         public void RandomizeHiddenHollowPokemon()

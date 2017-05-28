@@ -51,7 +51,7 @@ namespace RandomizerSharp.Tests
                 {
                     foreach (var starter in handler.Starters)
                     {
-                        starter.Pokemon = handler.AllPokemons[Random.Next(handler.AllPokemons.Length)];
+                        starter.Pokemon = handler.Pokemons[Random.Next(handler.Pokemons.Count)];
 
                         // TODO: Not all games support starter helditems
                         //starter.HeldItem = _random.Next(256);
@@ -76,14 +76,14 @@ namespace RandomizerSharp.Tests
             TestOnAll(
                 handler =>
                 {
-                    foreach (var pokemon in handler.AllPokemons)
+                    foreach (var pokemon in handler.Pokemons)
                     {
                         pokemon.EvolutionsFrom.Clear();
                         pokemon.EvolutionsTo.Clear();
                         pokemon.MovesLearnt.Clear();
-                        pokemon.Ability1 = Random.Next(256);
-                        pokemon.Ability2 = Random.Next(256);
-                        pokemon.Ability3 = Random.Next(256);
+                        pokemon.Ability1 = handler.Abilities.RandomItem(Random);
+                        pokemon.Ability2 = handler.Abilities.RandomItem(Random);
+                        pokemon.Ability3 = handler.Abilities.RandomItem(Random);
                         pokemon.Hp = Random.Next(256);
                         pokemon.Attack = Random.Next(256);
                         pokemon.Defense = Random.Next(256);
@@ -91,9 +91,9 @@ namespace RandomizerSharp.Tests
                         pokemon.Spdef = Random.Next(256);
                         pokemon.Speed = Random.Next(256);
                         pokemon.CatchRate = Random.Next(256);
-                        pokemon.CommonHeldItem = Random.Next(256);
-                        pokemon.RareHeldItem = Random.Next(256);
-                        pokemon.DarkGrassHeldItem = Random.Next(256);
+                        pokemon.CommonHeldItem = handler.Items.RandomItem(Random);
+                        pokemon.RareHeldItem = handler.Items.RandomItem(Random);
+                        pokemon.DarkGrassHeldItem = handler.Items.RandomItem(Random);
 
                         var curvers = (ExpCurve[]) Enum.GetValues(typeof(ExpCurve));
                         pokemon.GrowthExpCurve = curvers[Random.Next(curvers.Length)];
@@ -111,14 +111,14 @@ namespace RandomizerSharp.Tests
                 },
                 (handler, newHandler) =>
                 {
-                    foreach (var (oldP, newP) in handler.AllPokemons.Zip(newHandler.AllPokemons))
+                    foreach (var (oldP, newP) in handler.Pokemons.Zip(newHandler.Pokemons))
                     {
                         Assert.AreEqual(oldP.EvolutionsFrom.Count, newP.EvolutionsTo.Count);
                         Assert.AreEqual(oldP.EvolutionsTo.Count, newP.EvolutionsTo.Count);
                         Assert.AreEqual(oldP.MovesLearnt.Count, newP.MovesLearnt.Count);
-                        Assert.AreEqual(oldP.Ability1, newP.Ability1);
-                        Assert.AreEqual(oldP.Ability2, newP.Ability2);
-                        Assert.AreEqual(oldP.Ability3, newP.Ability3);
+                        Assert.AreEqual(oldP.Ability1.Id, newP.Ability1.Id);
+                        Assert.AreEqual(oldP.Ability2.Id, newP.Ability2.Id);
+                        Assert.AreEqual(oldP.Ability3.Id, newP.Ability3.Id);
                         Assert.AreEqual(oldP.Hp, newP.Hp);
                         Assert.AreEqual(oldP.Attack, newP.Attack);
                         Assert.AreEqual(oldP.Defense, newP.Defense);
@@ -128,13 +128,13 @@ namespace RandomizerSharp.Tests
                         Assert.AreEqual(oldP.Special, newP.Special);
                         Assert.AreEqual(oldP.Speed, newP.Speed);
                         Assert.AreEqual(oldP.CatchRate, newP.CatchRate);
-                        Assert.AreEqual(oldP.CommonHeldItem, newP.CommonHeldItem);
-                        Assert.AreEqual(oldP.DarkGrassHeldItem, newP.DarkGrassHeldItem);
+                        Assert.AreEqual(oldP.CommonHeldItem?.Id, newP.CommonHeldItem?.Id);
+                        Assert.AreEqual(oldP.RareHeldItem?.Id, newP.RareHeldItem?.Id);
+                        Assert.AreEqual(oldP.DarkGrassHeldItem?.Id, newP.DarkGrassHeldItem?.Id);
                         Assert.AreEqual(oldP.GrowthExpCurve, newP.GrowthExpCurve);
                         Assert.AreEqual(oldP.Name, newP.Name);
                         Assert.AreEqual(oldP.PrimaryType, newP.PrimaryType);
                         Assert.AreEqual(oldP.SecondaryType, newP.SecondaryType);
-                        Assert.AreEqual(oldP.RareHeldItem, newP.RareHeldItem);
                         Assert.True(oldP.TMHMCompatibility.SequenceEqual(newP.TMHMCompatibility));
                         Assert.True(oldP.MoveTutorCompatibility.SequenceEqual(newP.MoveTutorCompatibility));
                     }
@@ -148,7 +148,7 @@ namespace RandomizerSharp.Tests
             TestOnAll(
                 handler =>
                 {
-                    handler.StaticPokemon.Populate(() => handler.AllPokemons[Random.Next(handler.AllPokemons.Length)]);
+                    handler.StaticPokemon.Populate(() => handler.Pokemons[Random.Next(handler.Pokemons.Count)]);
                 },
                 (handler, newHandler) =>
                 {
@@ -161,31 +161,34 @@ namespace RandomizerSharp.Tests
         }
 
         [Test]
-        public void TestAbilityNames()
+        public void TestAbilities()
         {
             TestOnAll(
                 handler =>
                 {
                     // TODO: Random ability name
-                    handler.AbilityNames.Populate("");
+                    foreach (var ability in handler.Abilities)
+                    {
+                        ability.Name = "";
+                    }
                 },
                 (handler, newHandler) =>
                 {
-                    foreach (var (oldN, newN) in handler.AbilityNames.Zip(newHandler.AbilityNames))
+                    foreach (var (oldAbility, newAbility) in handler.Abilities.Zip(newHandler.Abilities))
                     {
-                        Assert.AreEqual(oldN, newN);
+                        Assert.AreEqual(oldAbility.Name, newAbility.Name);
                     }
                 }
             );
         }
 
         [Test]
-        public void TestAllMoves()
+        public void TestMoves()
         {
             TestOnAll(
                 handler =>
                 {
-                    foreach (var move in handler.AllMoves)
+                    foreach (var move in handler.Moves)
                     {
                         var categories = (MoveCategory[]) Enum.GetValues(typeof(MoveCategory));
                         move.Category = categories[Random.Next(categories.Length)];
@@ -204,7 +207,7 @@ namespace RandomizerSharp.Tests
                 },
                 (handler, newHandler) =>
                 {
-                    foreach (var (oldM, newM) in handler.AllMoves.Zip(newHandler.AllMoves))
+                    foreach (var (oldM, newM) in handler.Moves.Zip(newHandler.Moves))
                     {
                         Assert.AreEqual(oldM.Category, newM.Category);
                         Assert.AreEqual(oldM.Hitratio, newM.Hitratio);
@@ -223,13 +226,13 @@ namespace RandomizerSharp.Tests
             TestOnAll(
                 handler =>
                 {
-                    handler.MoveTutorMoves.Populate(() => Random.Next(256));
+                    handler.MoveTutorMoves.Populate(() => handler.Moves[Random.Next(handler.Moves.Count)]);
                 },
                 (handler, newHandler) =>
                 {
                     foreach (var (oldM, newM) in handler.MoveTutorMoves.Zip(newHandler.MoveTutorMoves))
                     {
-                        Assert.AreEqual(oldM, newM);
+                        Assert.AreEqual(oldM.Id, newM.Id);
                     }
                 }
             );
@@ -241,13 +244,13 @@ namespace RandomizerSharp.Tests
             TestOnAll(
                 handler =>
                 {
-                    handler.FieldItems.Populate(() => Random.Next(256));
+                    handler.FieldItems.Populate(() => handler.Items.RandomItem(Random));
                 },
                 (handler, newHandler) =>
                 {
                     foreach (var (oldItem, newItem) in handler.FieldItems.Zip(newHandler.FieldItems))
                     {
-                        Assert.AreEqual(oldItem, newItem);
+                        Assert.AreEqual(oldItem.Id, newItem.Id);
                     }
                 }
             );
@@ -296,13 +299,16 @@ namespace RandomizerSharp.Tests
                 handler =>
                 {
                     // TODO: Random name
-                    handler.ItemNames.Populate("");
+                    foreach (var item in handler.Items)
+                    {
+                        item.Name = "";
+                    }
                 },
                 (handler, newHandler) =>
                 {
-                    foreach (var (oldName, newName) in handler.ItemNames.Zip(newHandler.ItemNames))
+                    foreach (var (oldItem, newItem) in handler.Items.Zip(newHandler.Items))
                     {
-                        Assert.AreEqual(oldName, newName);
+                        Assert.AreEqual(oldItem.Name, newItem.Name);
                     }
                 }
             );
@@ -356,7 +362,7 @@ namespace RandomizerSharp.Tests
                     {
                         foreach (var pokemon in trainer.Pokemon)
                         {
-                            pokemon.Pokemon = handler.AllPokemons[Random.Next(handler.AllPokemons.Length)];
+                            pokemon.Pokemon = handler.Pokemons[Random.Next(handler.Pokemons.Count)];
 
 
                             // TODO: Not all trainer pokemons can have held items
@@ -421,7 +427,7 @@ namespace RandomizerSharp.Tests
                         {
                             encounter.Level = Random.Next(256);
                             encounter.MaxLevel = Random.Next(256);
-                            encounter.Pokemon1 = handler.AllPokemons[Random.Next(handler.AllPokemons.Length)];
+                            encounter.Pokemon1 = handler.Pokemons[Random.Next(handler.Pokemons.Count)];
                         }
                     }
                 },

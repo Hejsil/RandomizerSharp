@@ -474,7 +474,7 @@ namespace RandomizerSharp.Randomizers
             if (banNegativeAbilities)
                 bannedAbilities.AddRange(GlobalConstants.NegativeAbilities);
 
-            var maxAbility = RomHandler.AbilityNames.Length - 1;
+            var maxAbility = RomHandler.Abilities.Count - 1;
             if (evolutionSanity)
             {
                 //  copy abilities straight up evolution lines
@@ -482,32 +482,38 @@ namespace RandomizerSharp.Randomizers
                 CopyUpEvolutionsHelper(
                     pokemon =>
                     {
-                        if (pokemon.Ability1 == GlobalConstants.WonderGuardIndex ||
-                            pokemon.Ability2 == GlobalConstants.WonderGuardIndex ||
-                            pokemon.Ability3 == GlobalConstants.WonderGuardIndex)
+                        if (pokemon.Ability1.Id == GlobalConstants.WonderGuardIndex ||
+                            pokemon.Ability2.Id == GlobalConstants.WonderGuardIndex ||
+                            pokemon.Ability3.Id == GlobalConstants.WonderGuardIndex)
                             return;
 
                         // Pick first ability
-                        pokemon.Ability1 = PickRandomAbility(maxAbility, bannedAbilities);
+                        pokemon.Ability1 = RomHandler.Abilities[PickRandomAbility(maxAbility, bannedAbilities)];
 
                         // Second ability?
-                        pokemon.Ability2 = Random.NextDouble() < 0.5
-                            ? PickRandomAbility(maxAbility, bannedAbilities, pokemon.Ability1)
+                        var ability2 = Random.NextDouble() < 0.5
+                            ? PickRandomAbility(maxAbility, bannedAbilities, pokemon.Ability1.Id)
                             : 0;
 
+                        pokemon.Ability2 = RomHandler.Abilities[ability2];
+
                         // Third ability?
-                        if (hasDwAbilities)
-                            pokemon.Ability3 = PickRandomAbility(
-                                maxAbility,
-                                bannedAbilities,
-                                pokemon.Ability1,
-                                pokemon.Ability2);
+                        if (!hasDwAbilities)
+                            return;
+
+                        var ability3 = PickRandomAbility(
+                            maxAbility,
+                            bannedAbilities,
+                            pokemon.Ability1.Id,
+                            pokemon.Ability2.Id);
+
+                        pokemon.Ability3 = RomHandler.Abilities[ability3];
                     },
                     (evFrom, evTo, toMonIsFinalEvo) =>
                     {
-                        if (evTo.Ability1 == GlobalConstants.WonderGuardIndex ||
-                            evTo.Ability2 == GlobalConstants.WonderGuardIndex ||
-                            evTo.Ability3 == GlobalConstants.WonderGuardIndex)
+                        if (evTo.Ability1.Id == GlobalConstants.WonderGuardIndex ||
+                            evTo.Ability2.Id == GlobalConstants.WonderGuardIndex ||
+                            evTo.Ability3.Id == GlobalConstants.WonderGuardIndex)
                             return;
 
                         evTo.Ability1 = evFrom.Ability1;
@@ -523,21 +529,27 @@ namespace RandomizerSharp.Randomizers
                         continue;
 
                     //  Don't remove WG if already in place.
-                    if (pk.Ability1 == GlobalConstants.WonderGuardIndex ||
-                        pk.Ability2 == GlobalConstants.WonderGuardIndex ||
-                        pk.Ability3 == GlobalConstants.WonderGuardIndex)
+                    if (pk.Ability1.Id == GlobalConstants.WonderGuardIndex ||
+                        pk.Ability2.Id == GlobalConstants.WonderGuardIndex ||
+                        pk.Ability3.Id == GlobalConstants.WonderGuardIndex)
                         continue;
 
                     //  Pick first ability
-                    pk.Ability1 = PickRandomAbility(maxAbility, bannedAbilities);
-                    //  Second ability?
-                    pk.Ability2 = Random.NextDouble() < 0.5
-                        ? PickRandomAbility(maxAbility, bannedAbilities, pk.Ability1)
+                    pk.Ability1 = RomHandler.Abilities[PickRandomAbility(maxAbility, bannedAbilities)];
+
+                    var ability2 = Random.NextDouble() < 0.5
+                        ? PickRandomAbility(maxAbility, bannedAbilities, pk.Ability1.Id)
                         : 0;
 
+                    //  Second ability?
+                    pk.Ability2 = RomHandler.Abilities[ability2];
+
                     //  Third ability?
-                    if (hasDwAbilities)
-                        pk.Ability3 = PickRandomAbility(maxAbility, bannedAbilities, pk.Ability1, pk.Ability2);
+                    if (!hasDwAbilities)
+                        continue;
+
+                    var ability3 = PickRandomAbility(maxAbility, bannedAbilities, pk.Ability1.Id, pk.Ability2.Id);
+                    pk.Ability2 = RomHandler.Abilities[ability3];
                 }
             }
 
@@ -575,51 +587,50 @@ namespace RandomizerSharp.Randomizers
         public void RandomizeWildHeldItems(bool banBadItems)
         {
             var pokemon = ValidPokemons;
-            var possibleItems = banBadItems ? RomHandler.NonBadItems : RomHandler.AllowedItems;
 
             foreach (var pk in pokemon)
             {
-                if (pk.CommonHeldItem == -1 &&
-                    pk.RareHeldItem == -1 &&
-                    pk.DarkGrassHeldItem == -1)
+                if (pk.CommonHeldItem == null &&
+                    pk.RareHeldItem == null &&
+                    pk.DarkGrassHeldItem == null)
                     return;
 
-                var canHaveDarkGrass = pk.DarkGrassHeldItem != -1;
+                var canHaveDarkGrass = pk.DarkGrassHeldItem != null;
 
                 //  No guaranteed item atm
                 var decision = Random.NextDouble();
                 if (decision < 0.5)
                 {
                     //  No held item at all
-                    pk.CommonHeldItem = 0;
-                    pk.RareHeldItem = 0;
+                    pk.CommonHeldItem = RomHandler.Items[0];
+                    pk.RareHeldItem = RomHandler.Items[0];
                 }
                 else if (decision < 0.65)
                 {
                     //  Just a rare item
-                    pk.CommonHeldItem = 0;
-                    pk.RareHeldItem = possibleItems.RandomItem(Random);
+                    pk.CommonHeldItem = RomHandler.Items[0];
+                    pk.RareHeldItem = RandomItem();
                 }
                 else if (decision < 0.8)
                 {
                     //  Just a common item
-                    pk.CommonHeldItem = possibleItems.RandomItem(Random);
-                    pk.RareHeldItem = 0;
+                    pk.CommonHeldItem = RandomItem();
+                    pk.RareHeldItem = RomHandler.Items[0];
                 }
                 else if (decision < 0.95)
                 {
                     //  Both a common and rare item
-                    pk.CommonHeldItem = possibleItems.RandomItem(Random);
-                    pk.RareHeldItem = possibleItems.RandomItem(Random);
+                    pk.CommonHeldItem = RandomItem();
+                    pk.RareHeldItem = RandomItem();
 
                     while (pk.RareHeldItem == pk.CommonHeldItem)
-                        pk.RareHeldItem = possibleItems.RandomItem(Random);
+                        pk.RareHeldItem = RandomItem();
                 }
                 else
                 {
                     //  Guaranteed item
                     canHaveDarkGrass = false;
-                    var guaranteed = possibleItems.RandomItem(Random);
+                    var guaranteed = RandomItem();
                     pk.CommonHeldItem = guaranteed;
                     pk.RareHeldItem = guaranteed;
                 }
@@ -627,11 +638,11 @@ namespace RandomizerSharp.Randomizers
                 if (canHaveDarkGrass)
                 {
                     var dgDecision = Random.NextDouble();
-                    pk.DarkGrassHeldItem = dgDecision < 0.5 ? possibleItems.RandomItem(Random) : 0;
+                    pk.DarkGrassHeldItem = dgDecision < 0.5 ? RandomItem() : RomHandler.Items[0];
                 }
-                else if (pk.DarkGrassHeldItem != -1)
+                else if (pk.DarkGrassHeldItem != null)
                 {
-                    pk.DarkGrassHeldItem = 0;
+                    pk.DarkGrassHeldItem = RomHandler.Items[0];
                 }
             }
         }

@@ -59,10 +59,16 @@ namespace RandomizerSharp.Randomizers
                 case GameEnum.White:
                 case GameEnum.Black2:
                 case GameEnum.White2:
-                    ValidPokemons = RomHandler.AllPokemons.SliceFrom(1, Gen5Constants.PokemonCount);
-                    ValidMoves = RomHandler.AllMoves.SliceFrom(1, Gen5Constants.MoveCount);
+                    ValidPokemons = RomHandler.Pokemons.SliceFrom(1, Gen5Constants.PokemonCount);
+                    ValidMoves = RomHandler.Moves.SliceFrom(1, Gen5Constants.MoveCount);
                     break;
             }
+        }
+
+        protected Item RandomItem()
+        {
+            var items = RomHandler.Items;
+            return items[Random.Next(items.Count)];
         }
 
         protected Pokemon RandomPokemon()

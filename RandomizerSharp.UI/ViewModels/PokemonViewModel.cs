@@ -12,7 +12,8 @@ namespace RandomizerSharp.UI.ViewModels
     {
         private readonly Pokemon _pokemon;
 
-        public PokemonViewModel(Pokemon pokemon) => _pokemon = pokemon;
+        public PokemonViewModel(RomHandlerModelView handlerModelView, Pokemon pokemon)
+            : base(handlerModelView) => _pokemon = pokemon;
 
         public int? Id => _pokemon?.Id;
 
@@ -110,7 +111,7 @@ namespace RandomizerSharp.UI.ViewModels
             }
         }
 
-        public int? Ability1
+        public Ability Ability1
         {
             get => _pokemon?.Ability1;
             set
@@ -118,12 +119,12 @@ namespace RandomizerSharp.UI.ViewModels
                 if (value == null)
                     return;
 
-                _pokemon.Ability1 = (int)value;
+                _pokemon.Ability1 = value;
                 OnPropertyChanged();
             }
         }
 
-        public int? Ability2
+        public Ability Ability2
         {
             get => _pokemon?.Ability2;
             set
@@ -131,12 +132,12 @@ namespace RandomizerSharp.UI.ViewModels
                 if (value == null)
                     return;
 
-                _pokemon.Ability2 = (int)value;
+                _pokemon.Ability2 = value;
                 OnPropertyChanged();
             }
         }
 
-        public int? Ability3
+        public Ability Ability3
         {
             get => _pokemon?.Ability3;
             set
@@ -144,7 +145,7 @@ namespace RandomizerSharp.UI.ViewModels
                 if (value == null)
                     return;
 
-                _pokemon.Ability3 = (int)value;
+                _pokemon.Ability3 = value;
                 OnPropertyChanged();
             }
         }
@@ -162,7 +163,7 @@ namespace RandomizerSharp.UI.ViewModels
             }
         }
 
-        public int? CommonHeldItem
+        public Item CommonHeldItem
         {
             get => _pokemon?.CommonHeldItem;
             set
@@ -170,12 +171,12 @@ namespace RandomizerSharp.UI.ViewModels
                 if (value == null)
                     return;
 
-                _pokemon.CommonHeldItem = (int)value;
+                _pokemon.CommonHeldItem = value;
                 OnPropertyChanged();
             }
         }
 
-        public int? RareHeldItem
+        public Item RareHeldItem
         {
             get => _pokemon?.RareHeldItem;
             set
@@ -183,12 +184,12 @@ namespace RandomizerSharp.UI.ViewModels
                 if (value == null)
                     return;
 
-                _pokemon.RareHeldItem = (int)value;
+                _pokemon.RareHeldItem = value;
                 OnPropertyChanged();
             }
         }
 
-        public int? DarkGrassHeldItem
+        public Item DarkGrassHeldItem
         {
             get => _pokemon?.DarkGrassHeldItem;
             set
@@ -196,7 +197,7 @@ namespace RandomizerSharp.UI.ViewModels
                 if (value == null)
                     return;
 
-                _pokemon.DarkGrassHeldItem = (int)value;
+                _pokemon.DarkGrassHeldItem = value;
                 OnPropertyChanged();
             }
         }

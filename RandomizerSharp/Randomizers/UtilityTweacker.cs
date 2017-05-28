@@ -365,7 +365,7 @@ namespace RandomizerSharp.Randomizers
                 var damagingMoves = new List<Move>();
                 for (var i = 0; i < moves.Count; i++)
                 {
-                    var mv = ValidMoves[moves[i].Move];
+                    var mv = moves[i].Move;
                     if (mv.Power > 1)
                     {
                         //  considered a damaging move for this purpose
@@ -389,7 +389,7 @@ namespace RandomizerSharp.Randomizers
 
                 //  Reassign damaging moves in the ordered positions
                 for (var i = 0; i < damagingMoves.Count; i++)
-                    moves[damagingMoveIndices[i]].Move = damagingMoves[i].Id;
+                    moves[damagingMoveIndices[i]].Move = damagingMoves[i];
             }
         }
 
@@ -398,8 +398,9 @@ namespace RandomizerSharp.Randomizers
             var metronomeMl = new MoveLearnt
             {
                 Level = 1,
-                Move = GlobalConstants.MetronomeMove
+                Move = RomHandler.Moves.First(mv => mv.Id == GlobalConstants.MetronomeMove)
             };
+
             foreach (var pkmn in ValidPokemons)
             {
                 pkmn.MovesLearnt.Clear();
@@ -410,7 +411,7 @@ namespace RandomizerSharp.Randomizers
             //  run this to remove all custom non-Metronome moves
             foreach (var t in RomHandler.Trainers)
             foreach (var tpk in t.Pokemon)
-                tpk.ResetMoves();
+                tpk.ResetMoves(RomHandler.Moves[0]);
 
             //  tms
             var tmMoves = RomHandler.TmMoves;
@@ -419,11 +420,11 @@ namespace RandomizerSharp.Randomizers
 
             //  movetutors
             var mtMoves = RomHandler.MoveTutorMoves;
+            var metronome = RomHandler.Moves.First(mv => mv.Id == GlobalConstants.MetronomeMove);
             for (var i = 0; i < mtMoves.Length; i++)
-                mtMoves[i] = GlobalConstants.MetronomeMove;
+                mtMoves[i] = metronome;
 
             //  move tweaks
-            var metronome = ValidMoves[GlobalConstants.MetronomeMove];
             metronome.Pp = 40;
             var hms = RomHandler.HmMoves;
             foreach (var hm in hms)
@@ -456,10 +457,12 @@ namespace RandomizerSharp.Randomizers
                 var pkmnCompat = pkmn.MoveTutorCompatibility;
                 foreach (var ml in moveset)
                 {
-                    if (!mtMoves.Contains(ml.Move))
+                    var movelearnt = RomHandler.Moves.First(mv => mv == ml.Move);
+
+                    if (!mtMoves.Contains(movelearnt))
                         continue;
 
-                    var mtIndex = Array.IndexOf(mtMoves, ml.Move);
+                    var mtIndex = Array.IndexOf(mtMoves, movelearnt);
                     pkmnCompat[mtIndex + 1] = true;
                 }
             }
@@ -532,7 +535,7 @@ namespace RandomizerSharp.Randomizers
         public void RemoveBrokenMoves()
         {
             foreach (var pokemon in ValidPokemons)
-                pokemon.MovesLearnt.RemoveAll(move => Move.GameBreaking.Contains(move.Move));
+                pokemon.MovesLearnt.RemoveAll(move => Move.GameBreaking.Contains(move.Move.Id));
         }
 
         public void LevelModifyTrainers(int levelModifier)
@@ -564,7 +567,7 @@ namespace RandomizerSharp.Randomizers
                     continue;
 
                 tp.Pokemon = newPokemon;
-                tp.ResetMoves();
+                tp.ResetMoves(RomHandler.Moves[0]);
             }
 
             Pokemon FullyEvolve(Pokemon pokemon)
@@ -654,7 +657,7 @@ namespace RandomizerSharp.Randomizers
                     if (changeMoveEvos && evo.Type1 == EvolutionType.LevelWithMove)
                     {
                         // read move
-                        var move = evo.ExtraInfo;
+                        var move = RomHandler.Moves.First(mv => mv.Id == evo.ExtraInfo);
                         var levelLearntAt = 1;
                         foreach (var ml in evo.From.MovesLearnt)
                         {

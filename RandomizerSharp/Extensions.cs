@@ -32,6 +32,9 @@ namespace RandomizerSharp
             }
         }
 
+        public static T RandomItem<T>(this IList<T> list, Random random) => list[random.Next(list.Count)];
+        public static T RandomItem<T>(this IReadOnlyList<T> list, Random random) => list[random.Next(list.Count)];
+
         public static void Populate<T>(this T[] arr, T value)
         {
             for (var i = 0; i < arr.Length; i++)

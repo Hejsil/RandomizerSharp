@@ -418,9 +418,9 @@ namespace RandomizerSharp.NDS
             }
         }
 
-        private void Copy(Stream from, Stream to, byte[] buffer, int bytes)
+        private static void Copy(Stream from, Stream to, byte[] buffer, int bytes)
         {
-            var sizeofCopybuf = Math.Min(256 * 1024, bytes);
+            var sizeofCopybuf = Math.Min(buffer.Length, bytes);
             while (bytes > 0)
             {
                 var size2 = bytes >= sizeofCopybuf ? sizeofCopybuf : bytes;
@@ -430,18 +430,13 @@ namespace RandomizerSharp.NDS
             }
         }
 
-        public byte[] GetFile(string filename)
-        {
-            if (_files.ContainsKey(filename))
-                return _files[filename].LoadContents();
-
-            return null;
-        }
+        public byte[] GetFile(string filename) => _files.ContainsKey(filename) ? _files[filename].LoadContents() : null;
 
         public byte[] GetOverlay(int number)
         {
             if (number >= 0 && number < _arm9Overlays.Length)
                 return _arm9Overlays[number].GetContents();
+
             return null;
         }
 
@@ -449,6 +444,7 @@ namespace RandomizerSharp.NDS
         {
             if (number >= 0 && number < _arm9Overlays.Length)
                 return _arm9Overlays[number].RamAddress;
+
             return -1;
         }
         

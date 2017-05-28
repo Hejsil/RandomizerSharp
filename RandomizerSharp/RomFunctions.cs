@@ -61,14 +61,13 @@ namespace RandomizerSharp
             return finalEvolutions;
         }
 
-        public static int[] GetMovesAtLevel(Pokemon pkmn, int level, int emptyValue = 0)
+        public static Move[] GetMovesAtLevel(Pokemon pkmn, int level, Move emptyValue)
         {
-            var curMoves = new int[4];
-            if (emptyValue != 0)
-                curMoves.Populate(emptyValue);
+            var curMoves = new Move[4];
+            curMoves.Populate(emptyValue);
 
             var moveCount = 0;
-            IList<MoveLearnt> movepool = pkmn.MovesLearnt;
+            var movepool = pkmn.MovesLearnt;
             foreach (var ml in movepool)
             {
                 if (ml.Level > level)
@@ -76,23 +75,27 @@ namespace RandomizerSharp
                 var alreadyKnownMove = false;
                 for (var i = 0; i < moveCount; i++)
                 {
-                    if (curMoves[i] == ml.Move)
-                    {
-                        alreadyKnownMove = true;
-                        break;
-                    }
+                    if (curMoves[i] != ml.Move)
+                        continue;
+
+                    alreadyKnownMove = true;
+                    break;
                 }
-                if (!alreadyKnownMove)
-                    if (moveCount == 4)
-                    {
-                        for (var i = 0; i < 3; i++)
-                            curMoves[i] = curMoves[i + 1];
-                        curMoves[3] = ml.Move;
-                    }
-                    else
-                    {
-                        curMoves[moveCount++] = ml.Move;
-                    }
+
+                if (alreadyKnownMove)
+                    continue;
+                
+                if (moveCount == 4)
+                {
+                    for (var i = 0; i < 3; i++)
+                        curMoves[i] = curMoves[i + 1];
+
+                    curMoves[3] = ml.Move;
+                }
+                else
+                {
+                    curMoves[moveCount++] = ml.Move;
+                }
             }
             return curMoves;
         }
@@ -143,41 +146,38 @@ namespace RandomizerSharp
             }
         }
 
-        public static List<int> Search(IList<byte> haystack, IList<byte> needle, int beginOffset = 0) => Search(
+        public static List<int> Search(IList<byte> haystack, byte[] needle, int beginOffset = 0) => Search(
             haystack,
             beginOffset,
             haystack.Count,
             needle);
 
-        public static List<int> Search(IList<byte> haystack, int beginOffset, int endOffset, IList<byte> needle)
+        public static List<int> Search(IList<byte> haystack, int beginOffset, int endOffset, byte[] needle)
         {
             var currentMatchStart = beginOffset;
             var currentCharacterPosition = 0;
-            var docSize = endOffset;
-            var needleSize = needle.Count;
             var toFillTable = BuildKmpSearchTable(needle);
             var results = new List<int>();
+            int currentSum;
 
-            while (currentMatchStart + currentCharacterPosition < docSize)
+            while ((currentSum = currentMatchStart + currentCharacterPosition) < endOffset)
             {
-                if (needle[currentCharacterPosition] == haystack[currentCharacterPosition + currentMatchStart])
+                if (needle[currentCharacterPosition] == haystack[currentSum])
                 {
-                    currentCharacterPosition = currentCharacterPosition + 1;
+                    currentCharacterPosition++;
 
-                    if (currentCharacterPosition != needleSize)
+                    if (currentCharacterPosition != needle.Length)
                         continue;
 
                     results.Add(currentMatchStart);
                     currentCharacterPosition = 0;
-                    currentMatchStart = currentMatchStart + needleSize;
+                    currentMatchStart = currentMatchStart + needle.Length;
                 }
                 else
                 {
-                    currentMatchStart = currentMatchStart +
-                                        currentCharacterPosition -
-                                        toFillTable[currentCharacterPosition];
-                    currentCharacterPosition = toFillTable[currentCharacterPosition] > -1
-                        ? toFillTable[currentCharacterPosition] : 0;
+                    var toFillEntry = toFillTable[currentCharacterPosition];
+                    currentMatchStart = currentMatchStart + currentCharacterPosition - toFillEntry;
+                    currentCharacterPosition = Math.Max(toFillEntry, 0);
                 }
             }
 
@@ -211,14 +211,14 @@ namespace RandomizerSharp
             return -1;
         }
 
-        private static int[] BuildKmpSearchTable(IList<byte> needle)
+        private static int[] BuildKmpSearchTable(byte[] needle)
         {
-            var stable = new int[needle.Count];
+            var stable = new int[needle.Length];
             var pos = 2;
             var j = 0;
             stable[0] = -1;
             stable[1] = 0;
-            while (pos < needle.Count)
+            while (pos < needle.Length)
             {
                 if (needle[pos - 1] == needle[j])
                 {

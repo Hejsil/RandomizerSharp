@@ -11,6 +11,8 @@ namespace RandomizerSharp.UI.ViewModels
 {
     public abstract class BaseViewModel : INotifyPropertyChanged
     {
+        public RomHandlerModelView Parent { get; }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
@@ -18,5 +20,7 @@ namespace RandomizerSharp.UI.ViewModels
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        protected BaseViewModel(RomHandlerModelView parent) => Parent = parent;
     }
 }

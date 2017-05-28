@@ -80,6 +80,7 @@
     <Compile Include="NDS\NDSFile.cs" />
     <Compile Include="NDS\NDSRom.cs" />
     <Compile Include="NDS\NDSY9Entry.cs" />
+    <Compile Include="PokemonModel\Ability.cs" />
     <Compile Include="PokemonModel\ExpCurve.cs" />
     <Compile Include="PokemonModel\Encounter.cs" />
     <Compile Include="PokemonModel\EncounterSet.cs" />

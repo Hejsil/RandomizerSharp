@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using RandomizerSharp.PokemonModel;
 
@@ -6,38 +7,32 @@ namespace RandomizerSharp.RomHandlers
 {
     public abstract class AbstractRomHandler
     {
+        public IReadOnlyList<Pokemon> Pokemons { get; protected set; }
+        public IReadOnlyList<Move> Moves { get; protected set; }
+        public IReadOnlyList<Trainer> Trainers { get; protected set; } = Array.Empty<Trainer>();
+        public IReadOnlyList<EncounterSet> Encounters { get; protected set; } = Array.Empty<EncounterSet>();
+        public IReadOnlyList<IngameTrade> IngameTrades { get; protected set; } = Array.Empty<IngameTrade>();
+        public IReadOnlyList<Item> Items { get; protected set; } = Array.Empty<Item>();
+        public IReadOnlyList<Ability> Abilities { get; protected set; }
+
         public StarterPokemon[] Starters { get; protected set; }
-        public Pokemon[] AllPokemons { get; protected set; }
         public Pokemon[] StaticPokemon { get; protected set; }
 
-        public string[] AbilityNames { get; protected set; }
-        
-        public Move[] AllMoves { get; protected set; }
-        
-        public int[] MoveTutorMoves { get; protected set; } = Array.Empty<int>();
 
-        public int[] FieldItems { get; protected set; } = Array.Empty<int>();
+        public Move[] MoveTutorMoves { get; protected set; } = Array.Empty<Move>();
+
+        public Item[] FieldItems { get; protected set; } = Array.Empty<Item>();
         public int[] HmMoves { get; protected set; }
         public int[] TmMoves { get; protected set; }
 
-        public string[] ItemNames { get; protected set; } = Array.Empty<string>();
         
         public string[] TrainerClassNames { get; protected set; } = Array.Empty<string>();
         public string[] TrainerNames { get; protected set; } = Array.Empty<string>();
-        public Trainer[] Trainers { get; protected set; } = Array.Empty<Trainer>();
         
-        public EncounterSet[] Encounters { get; protected set; } = Array.Empty<EncounterSet>();
-        
-        public IngameTrade[] IngameTrades { get; protected set; } = Array.Empty<IngameTrade>();
+        public Game Game { get; protected set; }
 
-        public Game Game { get; set; }
-
-
-        // TODO: Is not read from rom, so should come from somewhere else
-        public int[] CurrentFieldTMs { get; protected set; } = Array.Empty<int>();
-        public int[] RegularFieldItems { get; protected set; } = Array.Empty<int>();
-        public ItemList AllowedItems { get; protected set; }
-        public ItemList NonBadItems { get; protected set; }
+        //public ItemList AllowedItems { get; protected set; }
+        //public ItemList NonBadItems { get; protected set; }
         public bool CanChangeTrainerText { get; protected set; }
         public bool FixedTrainerClassNamesLength { get; protected set; }
         public TrainerNameMode TrainerNameMode { get; protected set; }

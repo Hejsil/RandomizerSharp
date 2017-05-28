@@ -175,12 +175,7 @@ namespace RandomizerSharp.Randomizers
                 //  4 starting moves?
                 if (forceFourStartingMoves)
                 {
-                    var lv1Count = 0;
-                    foreach (var ml in moves)
-                    {
-                        if (ml.Level == 1)
-                            lv1Count++;
-                    }
+                    var lv1Count = moves.Count(ml => ml.Level == 1);
 
                     if (lv1Count < 4)
                         for (var i = 0; i < 4 - lv1Count; i++)
@@ -188,8 +183,9 @@ namespace RandomizerSharp.Randomizers
                             var fakeLv1 = new MoveLearnt
                             {
                                 Level = 1,
-                                Move = 0
+                                Move = RomHandler.Moves[0]
                             };
+
                             moves.Insert(0, fakeLv1);
                         }
                 }
@@ -298,7 +294,7 @@ namespace RandomizerSharp.Randomizers
                         mv = pickList[Random.Next(pickList.Count)];
 
                     //  write it
-                    moves[i].Move = mv.Id;
+                    moves[i].Move = mv;
                     if (i == lv1Index)
                         moves[i].Level = 1;
 
@@ -405,7 +401,7 @@ namespace RandomizerSharp.Randomizers
                 var pkmnCompat = pokemon.TMHMCompatibility;
                 foreach (var ml in moveset)
                 {
-                    if (!tmMoves.Contains(ml.Move))
+                    if (!tmMoves.Contains(ml.Move.Id))
                         continue;
 
                     var tmIndex = Array.IndexOf(tmMoves, ml.Move);
@@ -462,20 +458,25 @@ namespace RandomizerSharp.Randomizers
 
         public void RandomizeMoveTutorMoves(bool noBroken, bool preserveField, double goodDamagingProbability)
         {
+
+
+
+
+
             //  Pick some random Move Tutor moves, excluding TMs.
             var tms = RomHandler.TmMoves;
             var oldMTs = RomHandler.MoveTutorMoves;
             var mtCount = oldMTs.Length;
             var hms = RomHandler.HmMoves;
 
-            var banned = new List<int>(noBroken ? Move.GameBreaking : Enumerable.Empty<int>());
+            var banned = new List<Move>(noBroken ? RomHandler.Moves.Where(move => Move.GameBreaking.Contains(move.Id)) : Enumerable.Empty<Move>());
 
             //  field moves?
-            var fieldMoves = RomHandler.Game.FieldMoves;
+            var fieldMoves = RomHandler.Moves.Where(move => RomHandler.Game.FieldMoves.Contains(move.Id));
             var preservedFieldMoveCount = 0;
             if (preserveField)
             {
-                var banExistingField = new List<int>(oldMTs);
+                var banExistingField = new List<Move>(oldMTs);
                 banExistingField.RemoveAll(i => !fieldMoves.Contains(i));
                 preservedFieldMoveCount = banExistingField.Count;
                 banned.AddRange(banExistingField);
@@ -492,7 +493,7 @@ namespace RandomizerSharp.Randomizers
                 if (GlobalConstants.BannedRandomMoves[mv.Id] ||
                     tms.Contains(mv.Id) ||
                     hms.Contains(mv.Id) ||
-                    banned.Contains(mv.Id))
+                    banned.Contains(mv))
                     unusableMoves.Add(mv);
                 else if (GlobalConstants.BannedForDamagingMove[mv.Id] ||
                          mv.Power < GlobalConstants.MinDamagingMovePower)
@@ -502,8 +503,9 @@ namespace RandomizerSharp.Randomizers
             usableMoves.RemoveAll(unusableMoves.Contains);
             var usableDamagingMoves = new List<Move>(usableMoves);
             usableDamagingMoves.RemoveAll(unusableDamagingMoves.Contains);
+
             //  pick (tmCount - preservedFieldMoveCount) moves
-            var pickedMoves = new List<int>();
+            var pickedMoves = new List<Move>();
             for (var i = 0;
                 i < mtCount - preservedFieldMoveCount;
                 i++)
@@ -515,7 +517,7 @@ namespace RandomizerSharp.Randomizers
                 else
                     chosenMove = usableMoves[Random.Next(usableMoves.Count)];
 
-                pickedMoves.Add(chosenMove.Id);
+                pickedMoves.Add(chosenMove);
                 usableMoves.Remove(chosenMove);
                 usableDamagingMoves.Remove(chosenMove);
             }
@@ -523,6 +525,7 @@ namespace RandomizerSharp.Randomizers
             //  shuffle the picked moves because high goodDamagingProbability
             //  could bias them towards early numbers otherwise
             pickedMoves.Shuffle(Random);
+
             //  finally, distribute them as tutors
             var pickedMoveIndex = 0;
             for (var i = 0; i < mtCount; i++)
@@ -543,8 +546,7 @@ namespace RandomizerSharp.Randomizers
                 var flags = pkmn.MoveTutorCompatibility;
                 for (var i = 0; i < mts.Length; i++)
                 {
-                    var move = mts[i];
-                    var mv = ValidMoves[move];
+                    var mv = mts[i];
                     var probability = 0.5;
                     if (preferSameType)
                         if (pkmn.PrimaryType.Equals(mv.Type) ||

@@ -26,9 +26,10 @@ namespace RandomizerSharp.UI.ViewModels
             }
         }
 
-        public PokemonsViewModel(IEnumerable<Pokemon> pokemons)
+        public PokemonsViewModel(RomHandlerModelView handlerModelView, IEnumerable<Pokemon> pokemons)
+            : base(handlerModelView)
         {
-            Pokemons = CollectionViewSource.GetDefaultView(pokemons.Select(p => new PokemonViewModel(p)));
+            Pokemons = CollectionViewSource.GetDefaultView(pokemons.Select(p => new PokemonViewModel(Parent, p)));
         }
     }
 }
