@@ -6,8 +6,8 @@ before_install:
   - mono .nuget/nuget.exe # Output NuGet's version number
 install:
   - mono .nuget/nuget.exe restore RandomizerSharp.sln -Verbosity detailed
-  - mono .nuget/nuget.exe install NUnit.Runners -Version 3.6.1 -OutputDirectory ./src/packages
-  - nuget install NUnit.Runners -Version 3.6.1 -OutputDirectory testrunner
+  - mono .nuget/nuget.exe install NUnit.Runners -Version 3.2.1 -OutputDirectory ./src/packages
+  - nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
 script:
   - xbuild /p:Configuration=Release RandomizerSharp.sln
-  - mono ./testrunner/NUnit.Runners.3.6.1/tools/nunit-console.exe ./RandomizerSharp.Tests/bin/Release/RandomizerSharp.Tests.dll
+  - mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./RandomizerSharp.Tests/bin/Release/RandomizerSharp.Tests.dll
