@@ -13,7 +13,7 @@ namespace RandomizerSharp.UI.ViewModels
         private readonly Pokemon _pokemon;
 
         public PokemonViewModel(RomHandlerModelView handlerModelView, Pokemon pokemon)
-            : base(handlerModelView) => _pokemon = pokemon;
+            : base(handlerModelView) => _pokemon = pokemon ?? throw new ArgumentNullException();
 
         public int? Id => _pokemon?.Id;
 
@@ -21,7 +21,7 @@ namespace RandomizerSharp.UI.ViewModels
 
         public string Name
         {
-            get => _pokemon?.Name;
+            get => _pokemon.Name;
             set
             {
                 _pokemon.Name = value;
@@ -29,96 +29,75 @@ namespace RandomizerSharp.UI.ViewModels
             }
         }
 
-        public int? HP
+        public int HP
         {
-            get => _pokemon?.Hp;
+            get => _pokemon.Hp;
             set
             {
-                if (value == null)
-                    return;
-
-                _pokemon.Hp = (int)value;
+                _pokemon.Hp = value;
                 OnPropertyChanged();
             }
         }
 
-        public int? Attack
+        public int Attack
         {
-            get => _pokemon?.Attack;
+            get => _pokemon.Attack;
             set
             {
-                if (value == null)
-                    return;
-
-                _pokemon.Attack = (int)value;
+                _pokemon.Attack = value;
                 OnPropertyChanged();
             }
         }
 
-        public int? Defense
+        public int Defense
         {
-            get => _pokemon?.Defense;
+            get => _pokemon.Defense;
             set
             {
-                if (value == null)
-                    return;
-
-                _pokemon.Defense = (int)value;
+                _pokemon.Defense = value;
                 OnPropertyChanged();
             }
         }
 
-        public int? Spatk
+        public int Spatk
         {
-            get => _pokemon?.Spatk;
+            get => _pokemon.Spatk;
             set
             {
-                if (value == null)
-                    return;
-
-                _pokemon.Spatk = (int)value;
+                _pokemon.Spatk = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(Special));
             }
         }
 
-        public int? Spdef
+        public int Spdef
         {
-            get => _pokemon?.Spdef;
+            get => _pokemon.Spdef;
             set
             {
-                if (value == null)
-                    return;
-
-                _pokemon.Spdef = (int)value;
+                _pokemon.Spdef = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(Special));
             }
         }
 
-        public int? Special => _pokemon?.Special;
+        public int Special => _pokemon.Special;
 
-        public int? Speed
+        public int Speed
         {
-            get => _pokemon?.Speed;
+            get => _pokemon.Speed;
             set
             {
-                if (value == null)
-                    return;
-
-                _pokemon.Speed = (int)value;
+                _pokemon.Speed = value;
                 OnPropertyChanged();
             }
         }
 
         public Ability Ability1
         {
-            get => _pokemon?.Ability1;
+            get => _pokemon.Ability1;
             set
             {
-                if (value == null)
-                    return;
-
                 _pokemon.Ability1 = value;
                 OnPropertyChanged();
             }
@@ -126,12 +105,9 @@ namespace RandomizerSharp.UI.ViewModels
 
         public Ability Ability2
         {
-            get => _pokemon?.Ability2;
+            get => _pokemon.Ability2;
             set
             {
-                if (value == null)
-                    return;
-
                 _pokemon.Ability2 = value;
                 OnPropertyChanged();
             }
@@ -139,38 +115,29 @@ namespace RandomizerSharp.UI.ViewModels
 
         public Ability Ability3
         {
-            get => _pokemon?.Ability3;
+            get => _pokemon.Ability3;
             set
             {
-                if (value == null)
-                    return;
-
                 _pokemon.Ability3 = value;
                 OnPropertyChanged();
             }
         }
 
-        public int? CatchRate
+        public int CatchRate
         {
-            get => _pokemon?.CatchRate;
+            get => _pokemon.CatchRate;
             set
             {
-                if (value == null)
-                    return;
-
-                _pokemon.CatchRate = (int)value;
+                _pokemon.CatchRate = value;
                 OnPropertyChanged();
             }
         }
 
         public Item CommonHeldItem
         {
-            get => _pokemon?.CommonHeldItem;
+            get => _pokemon.CommonHeldItem;
             set
             {
-                if (value == null)
-                    return;
-
                 _pokemon.CommonHeldItem = value;
                 OnPropertyChanged();
             }
@@ -178,12 +145,9 @@ namespace RandomizerSharp.UI.ViewModels
 
         public Item RareHeldItem
         {
-            get => _pokemon?.RareHeldItem;
+            get => _pokemon.RareHeldItem;
             set
             {
-                if (value == null)
-                    return;
-
                 _pokemon.RareHeldItem = value;
                 OnPropertyChanged();
             }
@@ -191,38 +155,29 @@ namespace RandomizerSharp.UI.ViewModels
 
         public Item DarkGrassHeldItem
         {
-            get => _pokemon?.DarkGrassHeldItem;
+            get => _pokemon.DarkGrassHeldItem;
             set
             {
-                if (value == null)
-                    return;
-
                 _pokemon.DarkGrassHeldItem = value;
                 OnPropertyChanged();
             }
         }
 
-        public ExpCurve? GrowthExpCurve
+        public ExpCurve GrowthExpCurve
         {
-            get => _pokemon?.GrowthExpCurve;
+            get => _pokemon.GrowthExpCurve;
             set
             {
-                if (value == null)
-                    return;
-
-                _pokemon.GrowthExpCurve = (ExpCurve)value;
+                _pokemon.GrowthExpCurve = value;
                 OnPropertyChanged();
             }
         }
 
         public Typing PrimaryType
         {
-            get => _pokemon?.PrimaryType;
+            get => _pokemon.PrimaryType;
             set
             {
-                if (value == null)
-                    return;
-
                 _pokemon.PrimaryType = value;
                 OnPropertyChanged();
             }
@@ -230,12 +185,9 @@ namespace RandomizerSharp.UI.ViewModels
 
         public Typing SecondaryType
         {
-            get => _pokemon?.SecondaryType;
+            get => _pokemon.SecondaryType;
             set
             {
-                if (value == null)
-                    return;
-
                 _pokemon.SecondaryType = value;
                 OnPropertyChanged();
             }
@@ -243,41 +195,16 @@ namespace RandomizerSharp.UI.ViewModels
 
         public Bitmap Sprite
         {
-            get => _pokemon?.Sprite;
+            get => _pokemon.Sprite;
             set
             {
-                if (value == null)
-                    return;
-
                 _pokemon.Sprite = value;
                 OnPropertyChanged();
             }
         }
 
-        public bool[] TMHMCompatibility
-        {
-            get => _pokemon?.TMHMCompatibility;
-            set
-            {
-                if (value == null)
-                    return;
+        public bool[] TMHMCompatibility => _pokemon.TMHMCompatibility;
 
-                _pokemon.TMHMCompatibility = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public bool[] MoveTutorCompatibility
-        {
-            get => _pokemon?.MoveTutorCompatibility;
-            set
-            {
-                if (value == null)
-                    return;
-
-                _pokemon.MoveTutorCompatibility = value;
-                OnPropertyChanged();
-            }
-        }
+        public bool[] MoveTutorCompatibility => _pokemon.MoveTutorCompatibility;
     }
 }

@@ -32,6 +32,22 @@ namespace RandomizerSharp
             }
         }
 
+        public static int IndexOf<T>(this IEnumerable<T> enu, T item)
+        {
+            var eq = EqualityComparer<T>.Default;
+            var index = 0;
+
+            foreach (var element in enu)
+            {
+                if (eq.Equals(element, item))
+                    return index;
+
+                index++;
+            }
+
+            return -1;
+        }
+
         public static T RandomItem<T>(this IList<T> list, Random random) => list[random.Next(list.Count)];
         public static T RandomItem<T>(this IReadOnlyList<T> list, Random random) => list[random.Next(list.Count)];
 

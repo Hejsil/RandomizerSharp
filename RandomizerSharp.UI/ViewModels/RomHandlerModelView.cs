@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
 using System.Windows.Data;
-using RandomizerSharp.Properties;
 using RandomizerSharp.RomHandlers;
 using RandomizerSharp.UI.ViewModels.Commands;
 
@@ -15,6 +10,8 @@ namespace RandomizerSharp.UI.ViewModels
     {
         private AbstractRomHandler _romHandler;
         private PokemonsViewModel _pokemonsViewModel;
+        private AbilitiesViewModel _abilities;
+        private ICollectionView _types;
 
         public AbstractRomHandler RomHandler
         {
@@ -22,13 +19,15 @@ namespace RandomizerSharp.UI.ViewModels
             set
             {
                 _romHandler = value;
-                PokemonsViewModel = new PokemonsViewModel(this, RomHandler.Pokemons);
+                Pokemons = new PokemonsViewModel(this, RomHandler.Pokemons);
+                Abilities = new AbilitiesViewModel(this, RomHandler.Abilities);
+                Types = CollectionViewSource.GetDefaultView(RomHandler.Types);
                 OnPropertyChanged();
                 SaveRom.OnCanExecuteChanged();
             }
         }
 
-        public PokemonsViewModel PokemonsViewModel
+        public PokemonsViewModel Pokemons
         {
             get => _pokemonsViewModel;
             set
@@ -38,8 +37,31 @@ namespace RandomizerSharp.UI.ViewModels
             }
         }
 
+        public AbilitiesViewModel Abilities
+        {
+            get => _abilities;
+            set
+            {
+                _abilities = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ICollectionView Types
+        {
+            get => _types;
+            set
+            {
+                _types = value;
+                OnPropertyChanged();
+            }
+        }
+
         public Command OpenRom { get; }
         public Command SaveRom { get; }
+
+        public event EventHandler RomOpened;
+        public event EventHandler RomSaved;
 
         public RomHandlerModelView()
             : base(null)
@@ -49,7 +71,10 @@ namespace RandomizerSharp.UI.ViewModels
                 arg =>
                 {
                     if (arg is string path)
+                    {
                         RomHandler = new Gen5RomHandler(path);
+                        RomOpened?.Invoke(this, null);
+                    }
 
                     // TODO: We might want to give an error if this fails
                 });
@@ -59,7 +84,10 @@ namespace RandomizerSharp.UI.ViewModels
                 arg =>
                 {
                     if (arg is string path)
+                    {
                         RomHandler.SaveRom(path);
+                        RomSaved?.Invoke(this, null);
+                    }
 
                     // TODO: We might want to give an error if this fails
                 });

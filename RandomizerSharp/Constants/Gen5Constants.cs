@@ -287,27 +287,6 @@ namespace RandomizerSharp.Constants
         public const int TypeBw = 0;
         public const int TypeBw2 = 1;
 
-        public static readonly Typing[] TypeTable = new[]
-        {
-            Typing.Normal,
-            Typing.Fighting,
-            Typing.Flying,
-            Typing.Poison,
-            Typing.Ground,
-            Typing.Rock,
-            Typing.Bug,
-            Typing.Ghost,
-            Typing.Steel,
-            Typing.Fire,
-            Typing.Water,
-            Typing.Grass,
-            Typing.Electric,
-            Typing.Psychic,
-            Typing.Ice,
-            Typing.Dragon,
-            Typing.Dark
-        };
-
         public const int W2Route4EncounterFile = 105,
             W2VrExclusiveRoom1 = 78,
             W2VrExclusiveRoom2 = 79,
@@ -554,49 +533,6 @@ namespace RandomizerSharp.Constants
             NonBadItems1.BanRange(0x9F, 54); // berries DansGame
             NonBadItems1.BanRange(0x100, 4); // pokemon specific
             NonBadItems1.BanRange(0x104, 5); // contest scarves
-        }
-
-        public static byte TypeToByte(Typing type)
-        {
-            switch (type.InnerEnumValue)
-            {
-                case Typing.InnerEnum.Normal:
-                    return 0x00;
-                case Typing.InnerEnum.Fighting:
-                    return 0x01;
-                case Typing.InnerEnum.Flying:
-                    return 0x02;
-                case Typing.InnerEnum.Poison:
-                    return 0x03;
-                case Typing.InnerEnum.Ground:
-                    return 0x04;
-                case Typing.InnerEnum.Rock:
-                    return 0x05;
-                case Typing.InnerEnum.Bug:
-                    return 0x06;
-                case Typing.InnerEnum.Ghost:
-                    return 0x07;
-                case Typing.InnerEnum.Fire:
-                    return 0x09;
-                case Typing.InnerEnum.Water:
-                    return 0x0A;
-                case Typing.InnerEnum.Grass:
-                    return 0x0B;
-                case Typing.InnerEnum.Electric:
-                    return 0x0C;
-                case Typing.InnerEnum.Psychic:
-                    return 0x0D;
-                case Typing.InnerEnum.Ice:
-                    return 0x0E;
-                case Typing.InnerEnum.Dragon:
-                    return 0x0F;
-                case Typing.InnerEnum.Steel:
-                    return 0x08;
-                case Typing.InnerEnum.Dark:
-                    return 0x10;
-                default:
-                    return 0; // normal by default
-            }
         }
 
         /* @formatter:on */

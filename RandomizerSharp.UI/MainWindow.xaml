@@ -27,9 +27,9 @@
         </Menu>
         
         <TabControl>
-            <TabItem Header="Pokemons" IsEnabled="{Binding PokemonsViewModel, Converter={StaticResource NullToBoolConverter}}">
-                <Grid IsEnabled="{Binding PokemonsViewModel, Converter={StaticResource NullToBoolConverter}}">
-                    <controls:PokemonsControl DataContext="{Binding PokemonsViewModel}"></controls:PokemonsControl>
+            <TabItem Header="Pokemons" IsEnabled="{Binding Pokemons, Converter={StaticResource NullToBoolConverter}}">
+                <Grid IsEnabled="{Binding Pokemons, Converter={StaticResource NullToBoolConverter}}">
+                    <controls:PokemonsControl DataContext="{Binding Pokemons}"></controls:PokemonsControl>
                 </Grid>
             </TabItem>
         </TabControl>

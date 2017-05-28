@@ -22,7 +22,7 @@
             <ColumnDefinition Width="Auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
-        <GroupBox Grid.Column="0" Header="All _pokemons">
+        <GroupBox Grid.Column="0" Header="All Pokemons">
             <ListView Margin="5" ItemsSource="{Binding Pokemons}" SelectedItem="{Binding SelectedPokemon}">
                 <ListView.View>
                     <GridView>

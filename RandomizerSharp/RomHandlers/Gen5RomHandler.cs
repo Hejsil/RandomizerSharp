@@ -119,6 +119,27 @@ namespace RandomizerSharp.RomHandlers
             //AllowedItems = Gen5Constants.AllowedItems;
             //NonBadItems = Gen5Constants.NonBadItems;
             
+            Types = new[]
+            {
+                Typing.Normal,
+                Typing.Fighting,
+                Typing.Flying,
+                Typing.Poison,
+                Typing.Ground,
+                Typing.Rock,
+                Typing.Bug,
+                Typing.Ghost,
+                Typing.Steel,
+                Typing.Fire,
+                Typing.Water,
+                Typing.Grass,
+                Typing.Electric,
+                Typing.Psychic,
+                Typing.Ice,
+                Typing.Dragon,
+                Typing.Dark
+            };
+
             LoadItems();
             LoadFieldItems();
 
@@ -391,8 +412,8 @@ namespace RandomizerSharp.RomHandlers
                     Speed = stats[Gen5Constants.BsSpeedOffset],
                     Spatk = stats[Gen5Constants.BsSpAtkOffset],
                     Spdef = stats[Gen5Constants.BsSpDefOffset],
-                    PrimaryType = Gen5Constants.TypeTable[stats[Gen5Constants.BsPrimaryTypeOffset]],
-                    SecondaryType = Gen5Constants.TypeTable[stats[Gen5Constants.BsSecondaryTypeOffset]],
+                    PrimaryType = Types[stats[Gen5Constants.BsPrimaryTypeOffset]],
+                    SecondaryType = Types[stats[Gen5Constants.BsSecondaryTypeOffset]],
                     CatchRate = stats[Gen5Constants.BsCatchRateOffset],
                     GrowthExpCurve = Exp.FromByte(stats[Gen5Constants.BsGrowthCurveOffset]),
                     Ability1 = Abilities[stats[Gen5Constants.BsAbility1Offset]],
@@ -450,7 +471,7 @@ namespace RandomizerSharp.RomHandlers
                     Hitratio = moveData[4],
                     Power = moveData[3],
                     Pp = moveData[5],
-                    Type = Gen5Constants.TypeTable[moveData[0]],
+                    Type = Types[moveData[0]],
                     Category = Gen5Constants.MoveCategoryIndices[moveData[2]]
                 };
             }
@@ -527,7 +548,7 @@ namespace RandomizerSharp.RomHandlers
 
                 _moveNames[i] = Moves[i].Name;
 
-                data[0] = Gen5Constants.TypeToByte(Moves[i].Type);
+                data[0] = (byte) Types.IndexOf(Moves[i].Type);
                 data[2] = (byte) Array.IndexOf(Gen5Constants.MoveCategoryIndices, Moves[i].Category);
                 data[3] = (byte) Moves[i].Power;
                 data[4] = (byte) Moves[i].Hitratio;
@@ -553,12 +574,8 @@ namespace RandomizerSharp.RomHandlers
                 data[Gen5Constants.BsSpeedOffset] = (byte) pokemon.Speed;
                 data[Gen5Constants.BsSpAtkOffset] = (byte) pokemon.Spatk;
                 data[Gen5Constants.BsSpDefOffset] = (byte) pokemon.Spdef;
-                data[Gen5Constants.BsPrimaryTypeOffset] = Gen5Constants.TypeToByte(pokemon.PrimaryType);
-
-                if (pokemon.SecondaryType == null)
-                    data[Gen5Constants.BsSecondaryTypeOffset] = data[Gen5Constants.BsPrimaryTypeOffset];
-                else
-                    data[Gen5Constants.BsSecondaryTypeOffset] = Gen5Constants.TypeToByte(pokemon.SecondaryType);
+                data[Gen5Constants.BsPrimaryTypeOffset] = (byte) Types.IndexOf(pokemon.PrimaryType);
+                data[Gen5Constants.BsSecondaryTypeOffset] = (byte) Types.IndexOf(pokemon.SecondaryType);
 
                 data[Gen5Constants.BsCatchRateOffset] = (byte) pokemon.CatchRate;
                 data[Gen5Constants.BsGrowthCurveOffset] = pokemon.GrowthExpCurve.ToByte();

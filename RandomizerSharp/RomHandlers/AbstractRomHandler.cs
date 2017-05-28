@@ -7,25 +7,25 @@ namespace RandomizerSharp.RomHandlers
 {
     public abstract class AbstractRomHandler
     {
-        public IReadOnlyList<Pokemon> Pokemons { get; protected set; }
-        public IReadOnlyList<Move> Moves { get; protected set; }
+        public IReadOnlyList<Pokemon> Pokemons { get; protected set; } = Array.Empty<Pokemon>();
+        public IReadOnlyList<Move> Moves { get; protected set; } = Array.Empty<Move>();
         public IReadOnlyList<Trainer> Trainers { get; protected set; } = Array.Empty<Trainer>();
         public IReadOnlyList<EncounterSet> Encounters { get; protected set; } = Array.Empty<EncounterSet>();
         public IReadOnlyList<IngameTrade> IngameTrades { get; protected set; } = Array.Empty<IngameTrade>();
         public IReadOnlyList<Item> Items { get; protected set; } = Array.Empty<Item>();
-        public IReadOnlyList<Ability> Abilities { get; protected set; }
+        public IReadOnlyList<Ability> Abilities { get; protected set; } = Array.Empty<Ability>();
+        public IReadOnlyList<Typing> Types { get; protected set; } = Array.Empty<Typing>();
 
-        public StarterPokemon[] Starters { get; protected set; }
-        public Pokemon[] StaticPokemon { get; protected set; }
-
-
+        public StarterPokemon[] Starters { get; protected set; } = Array.Empty<StarterPokemon>();
+        public Pokemon[] StaticPokemon { get; protected set; } = Array.Empty<Pokemon>();
+        
         public Move[] MoveTutorMoves { get; protected set; } = Array.Empty<Move>();
 
         public Item[] FieldItems { get; protected set; } = Array.Empty<Item>();
-        public int[] HmMoves { get; protected set; }
-        public int[] TmMoves { get; protected set; }
+        public int[] HmMoves { get; protected set; } = Array.Empty<int>();
+        public int[] TmMoves { get; protected set; } = Array.Empty<int>();
 
-        
+
         public string[] TrainerClassNames { get; protected set; } = Array.Empty<string>();
         public string[] TrainerNames { get; protected set; } = Array.Empty<string>();
         

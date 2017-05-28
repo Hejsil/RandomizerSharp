@@ -22,6 +22,8 @@ namespace RandomizerSharp.UI
             _context = (RomHandlerModelView) Panel.DataContext;
             _context.OpenRom.CanExecuteChanged += (sender, args) => OpenRomItem.IsEnabled = _context.OpenRom.CanExecute(null);
             _context.SaveRom.CanExecuteChanged += (sender, args) => SaveRomItem.IsEnabled = _context.SaveRom.CanExecute(null);
+            _context.RomOpened += (sender, args) => System.Windows.Forms.MessageBox.Show("Rom have been opened");
+            _context.RomSaved += (sender, args) => System.Windows.Forms.MessageBox.Show("Rom have been saved");
         }
 
         private void OpenRomItem_OnClick(object sender, RoutedEventArgs e)

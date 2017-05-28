@@ -45,13 +45,13 @@ namespace RandomizerSharp.PokemonModel
         public static Typing Grass { get; } = new Typing("GRASS", InnerEnum.Grass);
         public static Typing Ground { get; } = new Typing("GROUND", InnerEnum.Ground);
         public static Typing Ice { get; } = new Typing("ICE", InnerEnum.Ice);
-
         public static Typing Normal { get; } = new Typing("NORMAL", InnerEnum.Normal);
         public static Typing Poison { get; } = new Typing("POISON", InnerEnum.Poison);
         public static Typing Psychic { get; } = new Typing("PSYCHIC", InnerEnum.Psychic);
         public static Typing Rock { get; } = new Typing("ROCK", InnerEnum.Rock);
         public static Typing Steel { get; } = new Typing("STEEL", InnerEnum.Steel);
         public static Typing Water { get; } = new Typing("WATER", InnerEnum.Water);
+
         public static Typing Abnormal { get; } = new Typing("ABNORMAL", InnerEnum.Abnormal, true);
         public static Typing Fairy { get; } = new Typing("FAIRY", InnerEnum.Fairy, true);
         public static Typing Gas { get; } = new Typing("GAS", InnerEnum.Gas, true);
@@ -121,7 +121,6 @@ namespace RandomizerSharp.PokemonModel
         public static Typing RandomType(Random random) => ValueList[random.Next(ValueList.Count)];
 
         public string CamelCase() => RomFunctions.CamelCase(ToString());
-
 
         public static IList<Typing> Values() => ValueList;
 

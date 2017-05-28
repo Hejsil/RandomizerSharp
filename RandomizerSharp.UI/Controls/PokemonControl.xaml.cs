@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using RandomizerSharp.PokemonModel;
 
 namespace RandomizerSharp.UI.Controls
 {
@@ -23,6 +24,8 @@ namespace RandomizerSharp.UI.Controls
         public PokemonControl()
         {
             InitializeComponent();
+
+            LevelingRateComboBox.ItemsSource = (ExpCurve[]) Enum.GetValues(typeof(ExpCurve));
         }
     }
 }
