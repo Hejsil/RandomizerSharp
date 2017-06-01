@@ -76,6 +76,7 @@
     <Compile Include="MiscTweak.cs" />
     <Compile Include="NDS\BLZCoder.cs" />
     <Compile Include="NDS\CRC16.cs" />
+    <Compile Include="NDS\Machine.cs" />
     <Compile Include="NDS\NARCArchive.cs" />
     <Compile Include="NDS\NDSFile.cs" />
     <Compile Include="NDS\NDSRom.cs" />
@@ -91,6 +92,7 @@
     <Compile Include="PokemonModel\HiddenHollow.cs" />
     <Compile Include="PokemonModel\IngameTrade.cs" />
     <Compile Include="PokemonModel\Item.cs" />
+    <Compile Include="PokemonModel\MachineLearnt.cs" />
     <Compile Include="PokemonModel\Move.cs" />
     <Compile Include="PokemonModel\MoveLearnt.cs" />
     <Compile Include="PokemonModel\ItemList.cs" />

@@ -14,11 +14,12 @@ namespace RandomizerSharp.PokemonModel
         public int Id { get; }
 
         public string Name { get; set; }
+        public string Description { get; set; }
         public int Power { get; set; }
         public int Pp { get; set; }
         public Typing Type { get; set; }
 
         public override string ToString() =>
-            $"#{Name} - Power: {Power}, Base PP: {Pp}, Type: {Type}, Hit%: {Hitratio}";
+            $"Move: {Id} {Name} - Power: {Power}, Base PP: {Pp}, Type: {Type}, Hit%: {Hitratio}";
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using RandomizerSharp.Constants;
+using RandomizerSharp.NDS;
 using RandomizerSharp.PokemonModel;
 using RandomizerSharp.RomHandlers;
 
@@ -126,9 +128,11 @@ namespace RandomizerSharp.Randomizers
             double goodDamagingProbability)
         {
             //  Get current sets
-            var hms = RomHandler.HmMoves;
+            var hms = RomHandler.Machines
+                .Where(machine => machine.Type == Machine.Kind.Hidden)
+                .Select(machine => machine.Move);
 
-            var allBanned = new HashSet<int>(noBroken ? Move.GameBreaking : Enumerable.Empty<int>());
+            var allBanned = new HashSet<Move>(noBroken ? RomHandler.Moves.Where(move => Move.GameBreaking.Contains(move.Id)) : Enumerable.Empty<Move>());
             allBanned.UnionWith(hms);
 
             //  Build sets of moves
@@ -138,7 +142,7 @@ namespace RandomizerSharp.Randomizers
             var validTypeDamagingMoves = new Dictionary<Typing, List<Move>>();
             foreach (var mv in ValidMoves)
             {
-                if (mv == null || GlobalConstants.BannedRandomMoves[mv.Id] || allBanned.Contains(mv.Id))
+                if (mv == null || GlobalConstants.BannedRandomMoves[mv.Id] || allBanned.Contains(mv))
                     continue;
 
                 validMoves.Add(mv);
@@ -320,17 +324,24 @@ namespace RandomizerSharp.Randomizers
             bool levelupTmMoveSanity,
             double goodDamagingProbability)
         {
-            //  Pick some random TM moves.
-            var hms = RomHandler.HmMoves;
-            var oldTMs = RomHandler.TmMoves;
+            //  Get current sets
+            var hms = RomHandler.Machines
+                .Where(machine => machine.Type == Machine.Kind.Hidden)
+                .Select(machine => machine.Move).ToArray();
 
-            var banned = new List<int>(noBroken ? Move.GameBreaking : Enumerable.Empty<int>());
+            //  Get current sets
+            var tms = RomHandler.Machines
+                .Where(machine => machine.Type == Machine.Kind.Technical)
+                .Select(machine => machine.Move).ToArray();
+
+            var banned = new List<Move>(noBroken ? RomHandler.Moves.Where(move => Move.GameBreaking.Contains(move.Id)) : Enumerable.Empty<Move>());
+
             //  field moves?
-            var fieldMoves = RomHandler.Game.FieldMoves;
+            var fieldMoves = RomHandler.Moves.Where(move => RomHandler.Game.FieldMoves.Contains(move.Id));
             var preservedFieldMoveCount = 0;
             if (preserveField)
             {
-                var banExistingField = new List<int>(oldTMs);
+                var banExistingField = new List<Move>(tms);
                 banExistingField.RemoveAll(i => !fieldMoves.Contains(i));
                 preservedFieldMoveCount = banExistingField.Count;
                 banned.AddRange(banExistingField);
@@ -346,8 +357,8 @@ namespace RandomizerSharp.Randomizers
             foreach (var mv in usableMoves)
             {
                 if (GlobalConstants.BannedRandomMoves[mv.Id] ||
-                    hms.Contains(mv.Id) ||
-                    banned.Contains(mv.Id))
+                    hms.Contains(mv) ||
+                    banned.Contains(mv))
                     unusableMoves.Add(mv);
                 else if (GlobalConstants.BannedForDamagingMove[mv.Id] ||
                          mv.Power < GlobalConstants.MinDamagingMovePower)
@@ -357,9 +368,10 @@ namespace RandomizerSharp.Randomizers
             usableMoves.RemoveAll(unusableMoves);
             var usableDamagingMoves = new List<Move>(usableMoves);
             usableDamagingMoves.RemoveAll(unusableDamagingMoves.Contains);
+
             //  pick (tmCount - preservedFieldMoveCount) moves
-            var pickedMoves = new List<int>();
-            for (var i = 0; i < oldTMs.Length - preservedFieldMoveCount; i++)
+            var pickedMoves = new List<Move>();
+            for (var i = 0; i < RomHandler.Machines.Count - preservedFieldMoveCount; i++)
             {
                 Move chosenMove;
                 if (Random.NextDouble() < goodDamagingProbability &&
@@ -368,7 +380,7 @@ namespace RandomizerSharp.Randomizers
                 else
                     chosenMove = usableMoves[Random.Next(usableMoves.Count)];
 
-                pickedMoves.Add(chosenMove.Id);
+                pickedMoves.Add(chosenMove);
                 usableMoves.Remove(chosenMove);
                 usableDamagingMoves.Remove(chosenMove);
             }
@@ -376,15 +388,16 @@ namespace RandomizerSharp.Randomizers
             //  shuffle the picked moves because high goodDamagingProbability
             //  could bias them towards early numbers otherwise
             pickedMoves.Shuffle(Random);
+
             //  finally, distribute them as tms
             var pickedMoveIndex = 0;
 
-            for (var i = 0; i < oldTMs.Length; i++)
+            for (var i = 0; i < RomHandler.Machines.Count; i++)
             {
-                if (preserveField && fieldMoves.Contains(oldTMs[i]))
+                if (preserveField && fieldMoves.Contains(tms[i]))
                     continue;
 
-                oldTMs[i] = pickedMoves[pickedMoveIndex++];
+                RomHandler.Machines[i].Move = pickedMoves[pickedMoveIndex++];
             }
 
             if (!levelupTmMoveSanity)
@@ -393,7 +406,6 @@ namespace RandomizerSharp.Randomizers
             //  if a pokemon learns a move in its moveset
             //  and there is a TM of that move, make sure
             //  that TM can be learned.
-            var tmMoves = RomHandler.TmMoves;
 
             foreach (var pokemon in ValidPokemons)
             {
@@ -401,37 +413,38 @@ namespace RandomizerSharp.Randomizers
                 var pkmnCompat = pokemon.TMHMCompatibility;
                 foreach (var ml in moveset)
                 {
-                    if (!tmMoves.Contains(ml.Move.Id))
+                    if (RomHandler.Machines.All(machine => machine.Move != ml.Move))
                         continue;
 
-                    var tmIndex = Array.IndexOf(tmMoves, ml.Move);
-                    pkmnCompat[tmIndex + 1] = true;
+                    var learnt = pkmnCompat.First(machineL => machineL.Machine.Move == ml.Move);
+                    learnt.Learns = true;
                 }
             }
         }
 
         public void RandomizeTmhmCompatibility(TmsHmsCompatibility compatibility)
         {
+            //  Get current sets
+            var tmHMs = RomHandler.Machines
+                .Select(machine => machine.Move).ToList();
+
             //  Get current compatibility
             //  new: increase HM chances if required early on
-            var requiredEarlyOn = RomHandler.Game.EarlyRequiredHmMoves;
-            var tmHMs = RomHandler.TmMoves.ToList();
-            tmHMs.AddRange(RomHandler.HmMoves);
+            var requiredEarlyOn = tmHMs.Where(move => RomHandler.Game.EarlyRequiredHmMoves.Contains(move.Id));
 
             foreach (var pkmn in ValidPokemons)
             {
                 var flags = pkmn.TMHMCompatibility;
-                for (var i = 1; i <= tmHMs.Count; i++)
+                for (var i = 0; i < tmHMs.Count; i++)
                 {
-                    var move = tmHMs[i - 1];
-                    var mv = ValidMoves[move];
+                    var move = tmHMs[i];
                     var probability = 0.5;
                     if (compatibility == TmsHmsCompatibility.RandomPreferType)
-                        if (pkmn.PrimaryType.Equals(mv.Type) ||
-                            pkmn.SecondaryType != null && pkmn.SecondaryType.Equals(mv.Type))
+                        if (pkmn.PrimaryType.Equals(move.Type) ||
+                            pkmn.SecondaryType != null && pkmn.SecondaryType.Equals(move.Type))
                             probability = 0.9;
-                        else if (mv.Type != null &&
-                                 mv.Type.Equals(Typing.Normal))
+                        else if (move.Type != null &&
+                                 move.Type.Equals(Typing.Normal))
                             probability = 0.5;
                         else
                             probability = 0.25;
@@ -439,19 +452,20 @@ namespace RandomizerSharp.Randomizers
                     if (requiredEarlyOn.Contains(move))
                         probability = Math.Min(1, probability * 1.8);
 
-                    flags[i] = Random.NextDouble() < probability;
+                    flags[i].Learns = Random.NextDouble() < probability;
                 }
             }
 
             if (compatibility != TmsHmsCompatibility.Full)
                 return;
 
-            var tmCount = RomHandler.TmMoves.Length;
+            //  Get current sets
+            var tmCount = RomHandler.Machines.Count(move => move.Type == Machine.Kind.Technical);
             foreach (var pokemon in ValidPokemons)
             {
                 var flags = pokemon.TMHMCompatibility;
                 for (var i = tmCount + 1; i < flags.Length; i++)
-                    flags[i] = true;
+                    flags[i].Learns = true;
             }
         }
 
@@ -459,15 +473,18 @@ namespace RandomizerSharp.Randomizers
         public void RandomizeMoveTutorMoves(bool noBroken, bool preserveField, double goodDamagingProbability)
         {
 
-
-
-
+            //  Get current sets
+            var hms = RomHandler.Machines
+                .Where(machine => machine.Type == Machine.Kind.Hidden)
+                .Select(machine => machine.Move).ToArray();
+            //  Get current sets
+            var tms = RomHandler.Machines
+                .Where(machine => machine.Type == Machine.Kind.Technical)
+                .Select(machine => machine.Move).ToArray();
 
             //  Pick some random Move Tutor moves, excluding TMs.
-            var tms = RomHandler.TmMoves;
             var oldMTs = RomHandler.MoveTutorMoves;
             var mtCount = oldMTs.Length;
-            var hms = RomHandler.HmMoves;
 
             var banned = new List<Move>(noBroken ? RomHandler.Moves.Where(move => Move.GameBreaking.Contains(move.Id)) : Enumerable.Empty<Move>());
 
@@ -491,8 +508,8 @@ namespace RandomizerSharp.Randomizers
             foreach (var mv in usableMoves)
             {
                 if (GlobalConstants.BannedRandomMoves[mv.Id] ||
-                    tms.Contains(mv.Id) ||
-                    hms.Contains(mv.Id) ||
+                    tms.Contains(mv) ||
+                    hms.Contains(mv) ||
                     banned.Contains(mv))
                     unusableMoves.Add(mv);
                 else if (GlobalConstants.BannedForDamagingMove[mv.Id] ||

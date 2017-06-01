@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using RandomizerSharp.NDS;
 using RandomizerSharp.PokemonModel;
 
 namespace RandomizerSharp.RomHandlers
@@ -15,15 +16,13 @@ namespace RandomizerSharp.RomHandlers
         public IReadOnlyList<Item> Items { get; protected set; } = Array.Empty<Item>();
         public IReadOnlyList<Ability> Abilities { get; protected set; } = Array.Empty<Ability>();
         public IReadOnlyList<Typing> Types { get; protected set; } = Array.Empty<Typing>();
+        public IReadOnlyList<Machine> Machines { get; protected set; } = Array.Empty<Machine>();
 
         public StarterPokemon[] Starters { get; protected set; } = Array.Empty<StarterPokemon>();
         public Pokemon[] StaticPokemon { get; protected set; } = Array.Empty<Pokemon>();
         
         public Move[] MoveTutorMoves { get; protected set; } = Array.Empty<Move>();
-
         public Item[] FieldItems { get; protected set; } = Array.Empty<Item>();
-        public int[] HmMoves { get; protected set; } = Array.Empty<int>();
-        public int[] TmMoves { get; protected set; } = Array.Empty<int>();
 
 
         public string[] TrainerClassNames { get; protected set; } = Array.Empty<string>();

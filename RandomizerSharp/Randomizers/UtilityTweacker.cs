@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using RandomizerSharp.Constants;
+using RandomizerSharp.NDS;
 using RandomizerSharp.PokemonModel;
 using RandomizerSharp.Properties;
 using RandomizerSharp.RomHandlers;
@@ -395,10 +396,12 @@ namespace RandomizerSharp.Randomizers
 
         public void MetronomeOnlyMode()
         {
+            var metronome = RomHandler.Moves.First(mv => mv.Id == GlobalConstants.MetronomeMove);
+
             var metronomeMl = new MoveLearnt
             {
                 Level = 1,
-                Move = RomHandler.Moves.First(mv => mv.Id == GlobalConstants.MetronomeMove)
+                Move = metronome
             };
 
             foreach (var pkmn in ValidPokemons)
@@ -413,25 +416,23 @@ namespace RandomizerSharp.Randomizers
             foreach (var tpk in t.Pokemon)
                 tpk.ResetMoves(RomHandler.Moves[0]);
 
-            //  tms
-            var tmMoves = RomHandler.TmMoves;
-            for (var i = 0; i < tmMoves.Length; i++)
-                tmMoves[i] = GlobalConstants.MetronomeMove;
-
+            foreach (var machine in RomHandler.Machines)
+            {
+                switch (machine.Type)
+                {
+                    case Machine.Kind.Hidden:
+                        machine.Move.Pp = 0;
+                        break;
+                    case Machine.Kind.Technical:
+                        machine.Move = metronome;
+                        break;
+                }
+            }
+            
             //  movetutors
             var mtMoves = RomHandler.MoveTutorMoves;
-            var metronome = RomHandler.Moves.First(mv => mv.Id == GlobalConstants.MetronomeMove);
             for (var i = 0; i < mtMoves.Length; i++)
                 mtMoves[i] = metronome;
-
-            //  move tweaks
-            metronome.Pp = 40;
-            var hms = RomHandler.HmMoves;
-            foreach (var hm in hms)
-            {
-                var thisHm = ValidMoves[hm];
-                thisHm.Pp = 0;
-            }
         }
 
         public void FullMoveTutorCompatibility()

@@ -203,7 +203,7 @@ namespace RandomizerSharp.UI.ViewModels
             }
         }
 
-        public bool[] TMHMCompatibility => _pokemon.TMHMCompatibility;
+        public MachineLearnt[] TMHMCompatibility => _pokemon.TMHMCompatibility;
 
         public bool[] MoveTutorCompatibility => _pokemon.MoveTutorCompatibility;
     }

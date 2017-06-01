@@ -42,6 +42,7 @@ namespace RandomizerSharp.RomHandlers
         private readonly string[] _pokeNames;
         private readonly string[] _itemNames;
         private readonly string[] _abilityNames;
+        private readonly string[] _moveDescriptions;
 
         private readonly Dictionary<int, string> _wildDictionaryNames = new Dictionary<int, string>();
 
@@ -105,6 +106,7 @@ namespace RandomizerSharp.RomHandlers
             _moveNames = GetStrings(false, _romEntry.GetInt("MoveNamesTextOffset"));
             _itemNames = GetStrings(false, _romEntry.GetInt("ItemNamesTextOffset"));
             _abilityNames = GetStrings(false, _romEntry.GetInt("AbilityNamesTextOffset"));
+            _moveDescriptions = GetStrings(false, _romEntry.GetInt("MoveDescriptionsTextOffset"));
 
             DoublesTrainerClasses = _romEntry.ArrayEntries["DoublesTrainerClasses"];
 
@@ -118,7 +120,7 @@ namespace RandomizerSharp.RomHandlers
 
             //AllowedItems = Gen5Constants.AllowedItems;
             //NonBadItems = Gen5Constants.NonBadItems;
-            
+
             Types = new[]
             {
                 Typing.Normal,
@@ -146,8 +148,7 @@ namespace RandomizerSharp.RomHandlers
             LoadAbilities();
 
             LoadMoves();
-            LoadTmMoves();
-            LoadHmMoves();
+            LoadTmHmMoves();
             LoadMoveTutorMoves();
 
             LoadPokemon();
@@ -443,12 +444,15 @@ namespace RandomizerSharp.RomHandlers
 
                 // Load TMHM Compatibility
                 var data = _pokeNarc.Files[i];
-                var flags = new bool[Gen5Constants.TmCount + Gen5Constants.HmCount + 1];
+                var flags = new bool[Machines.Count];
 
                 for (var j = 0; j < 13; j++)
                     ReadByteIntoFlags(data, flags, j * 8, Gen5Constants.BsTmhmCompatOffset + j);
 
-                pokemon.TMHMCompatibility = flags;
+                pokemon.TMHMCompatibility = new MachineLearnt[Machines.Count];
+
+                for (int j = 0; j < Machines.Count; j++)
+                    pokemon.TMHMCompatibility[j] = new MachineLearnt(Machines[j]) { Learns = flags[j] };
 
                 allPokemons[i] = pokemon;
             }
@@ -468,6 +472,7 @@ namespace RandomizerSharp.RomHandlers
                 allMoves[i] = new Move(i)
                 {
                     Name = _moveNames[i],
+                    Description = _moveDescriptions[i],
                     Hitratio = moveData[4],
                     Power = moveData[3],
                     Pp = moveData[5],
@@ -500,8 +505,7 @@ namespace RandomizerSharp.RomHandlers
             SaveFieldItems();
             SaveMoveTutorCompatibility();
             SaveMoveTutorMoves();
-            SaveTmMoves();
-            SaveHmMoves();
+            SaveTmHmMoves();
             SaveEncounters();
             SaveHiddenHollow();
             SaveTrainers();
@@ -547,6 +551,7 @@ namespace RandomizerSharp.RomHandlers
                 var data = _moveNarc.Files[i];
 
                 _moveNames[i] = Moves[i].Name;
+                _moveDescriptions[i] = Moves[i].Description;
 
                 data[0] = (byte) Types.IndexOf(Moves[i].Type);
                 data[2] = (byte) Array.IndexOf(Gen5Constants.MoveCategoryIndices, Moves[i].Category);
@@ -555,8 +560,8 @@ namespace RandomizerSharp.RomHandlers
                 data[5] = (byte) Moves[i].Pp;
             }
 
-
             SetStrings(false, _romEntry.GetInt("MoveNamesTextOffset"), _moveNames);
+            SetStrings(false, _romEntry.GetInt("MoveDescriptionsTextOffset"), _moveDescriptions);
             BaseRom.WriteFile(_romEntry.GetString("MoveData"), _moveNarc.Bytes);
         }
 
@@ -612,7 +617,7 @@ namespace RandomizerSharp.RomHandlers
                 // Save TmHm compatibility
 
                 for (var j = 0; j < 13; j++)
-                    data[Gen5Constants.BsTmhmCompatOffset + j] = GetByteFromFlags(pokemon.TMHMCompatibility, j * 8);
+                    data[Gen5Constants.BsTmhmCompatOffset + j] = GetByteFromFlags(pokemon.TMHMCompatibility.Select(m => m.Learns).ToArray(), j * 8);
             }
 
 
@@ -1278,29 +1283,7 @@ namespace RandomizerSharp.RomHandlers
             return true;
         }
 
-
-        private void LoadTmMoves()
-        {
-            var offset = Find(Arm9, Gen5Constants.TmDataPrefix);
-
-            if (offset <= 0)
-                return;
-
-            offset += Gen5Constants.TmDataPrefix.Length / 2; // because it was
-            // a prefix
-            TmMoves = new int[Gen5Constants.TmCount];
-
-            for (var i = 0; i < Gen5Constants.TmBlockOneCount; i++)
-                TmMoves[i] = PpTxtHandler.ReadWord(Arm9, offset + i * 2);
-
-            // Skip past first 92 TMs and 6 HMs
-            offset += (Gen5Constants.TmBlockOneCount + Gen5Constants.HmCount) * 2;
-
-            for (var i = 0; i < Gen5Constants.TmCount - Gen5Constants.TmBlockOneCount; i++)
-                TmMoves[i + Gen5Constants.TmBlockOneCount] = PpTxtHandler.ReadWord(Arm9, offset + i * 2);
-        }
-
-        private void SaveTmMoves()
+        private void LoadTmHmMoves()
         {
             var offset = Find(Arm9, Gen5Constants.TmDataPrefix);
 
@@ -1310,88 +1293,62 @@ namespace RandomizerSharp.RomHandlers
             offset += Gen5Constants.TmDataPrefix.Length / 2; // because it was
 
             // a prefix
-            for (var i = 0; i < Gen5Constants.TmBlockOneCount; i++)
-                PpTxtHandler.WriteWord(Arm9, offset + i * 2, TmMoves[i]);
+            var machines = new Machine[Gen5Constants.TmCount + Gen5Constants.HmCount];
+            var hmRange = new HashSet<int>(Enumerable.Range(Gen5Constants.TmBlockOneCount, Gen5Constants.HmCount));
 
-            // Skip past those 92 TMs and 6 HMs
-            offset += (Gen5Constants.TmBlockOneCount + Gen5Constants.HmCount) * 2;
-
-            for (var i = 0; i < Gen5Constants.TmCount - Gen5Constants.TmBlockOneCount; i++)
-                PpTxtHandler.WriteWord(Arm9, offset + i * 2, TmMoves[i + Gen5Constants.TmBlockOneCount]);
-
-            // Update TM item descriptions
-            var itemDescriptions = GetStrings(false, _romEntry.GetInt("ItemDescriptionsTextOffset"));
-            var moveDescriptions = GetStrings(false, _romEntry.GetInt("MoveDescriptionsTextOffset"));
-
-            // TM01 is item 328 and so on
-            for (var i = 0; i < Gen5Constants.TmBlockOneCount; i++)
-                itemDescriptions[i + Gen5Constants.TmBlockOneOffset] = moveDescriptions[TmMoves[i]];
-
-            // TM93-95 are 618-620
-            for (var i = 0; i < Gen5Constants.TmCount - Gen5Constants.TmBlockOneCount; i++)
+            for (var i = 0; i < machines.Length; i++, offset += 2)
             {
-                itemDescriptions[i + Gen5Constants.TmBlockTwoOffset] =
-                    moveDescriptions[TmMoves[i + Gen5Constants.TmBlockOneCount]];
+                var kind = hmRange.Contains(i) ? Machine.Kind.Hidden : Machine.Kind.Technical;
+                machines[i] = new Machine(i, kind)
+                {
+                    Move = Moves[PpTxtHandler.ReadWord(Arm9, offset)]
+                };
             }
 
-            // Save the new item descriptions
-            SetStrings(false, _romEntry.GetInt("ItemDescriptionsTextOffset"), itemDescriptions);
+            Machines = machines;
+        }
+
+        private void SaveTmHmMoves()
+        {
+            var offset = Find(Arm9, Gen5Constants.TmDataPrefix);
+
+            if (offset <= 0)
+                return;
 
             // Palettes
             var baseOfPalettes = IsBw2 ? Gen5Constants.Bw2ItemPalettesPrefix : Gen5Constants.Bw1ItemPalettesPrefix;
 
             var offsPals = Find(Arm9, baseOfPalettes);
+            var canEditPals = offsPals <= 0;
 
-            if (offsPals <= 0)
-                return;
+            offset += Gen5Constants.TmDataPrefix.Length / 2; // because it was
 
-            // Write pals
-            for (var i = 0; i < Gen5Constants.TmBlockOneCount; i++)
+            // Update TM item descriptions
+            var itemDescriptions = GetStrings(false, _romEntry.GetInt("ItemDescriptionsTextOffset"));
+
+            for (var i = 0; i < Machines.Count; i++, offset += 2)
             {
-                var itmNum = Gen5Constants.TmBlockOneOffset + i;
-                var m = Moves[TmMoves[i]];
-                var pal = TypeTmPaletteNumber(m.Type);
-                PpTxtHandler.WriteWord(Arm9, offsPals + itmNum * 4 + 2, pal);
+                var move = Machines[i].Move;
+                PpTxtHandler.WriteWord(Arm9, offset, move.Id);
+
+                int index;
+
+                if (i < Gen5Constants.TmBlockOneCount + Gen5Constants.HmCount)
+                    index = i + Gen5Constants.TmBlockOneOffset;
+                else // TM93-95 are 618-620
+                    index = i - (Gen5Constants.TmBlockOneCount + Gen5Constants.HmCount) + Gen5Constants.TmBlockTwoOffset;
+
+                itemDescriptions[index] = move.Description;
+
+                if (canEditPals)
+                {
+                    var pal = TypeTmPaletteNumber(move.Type);
+                    PpTxtHandler.WriteWord(Arm9, offsPals + index * 4 + 2, pal);
+                }
             }
-            for (var i = 0; i < Gen5Constants.TmCount - Gen5Constants.TmBlockOneCount; i++)
-            {
-                var itmNum = Gen5Constants.TmBlockTwoOffset + i;
-                var m = Moves[TmMoves[i + Gen5Constants.TmBlockOneCount]];
-                var pal = TypeTmPaletteNumber(m.Type);
-                PpTxtHandler.WriteWord(Arm9, offsPals + itmNum * 4 + 2, pal);
-            }
-        }
 
-        private void LoadHmMoves()
-        {
-            var offset = Find(Arm9, Gen5Constants.TmDataPrefix);
-
-            if (offset <= 0)
-                return;
-
-            offset += Gen5Constants.TmDataPrefix.Length / 2; // because it was a prefix
-            offset += Gen5Constants.TmBlockOneCount * 2; // TM data
-
-            var hmMoves = new int[Gen5Constants.HmCount];
-
-            for (var i = 0; i < hmMoves.Length; i++)
-                hmMoves[i] = PpTxtHandler.ReadWord(Arm9, offset + i * 2);
-
-            HmMoves = hmMoves;
-        }
-
-        private void SaveHmMoves()
-        {
-            var offset = Find(Arm9, Gen5Constants.TmDataPrefix);
-
-            if (offset <= 0)
-                return;
-
-            offset += Gen5Constants.TmDataPrefix.Length / 2; // because it was a prefix
-            offset += Gen5Constants.TmBlockOneCount * 2; // TM data
-
-            for (var i = 0; i < HmMoves.Length; i++)
-                PpTxtHandler.WriteWord(Arm9, offset + i * 2, HmMoves[i]);
+            // Save the new item descriptions
+            SetStrings(false, _romEntry.GetInt("ItemDescriptionsTextOffset"), itemDescriptions);
         }
 
 

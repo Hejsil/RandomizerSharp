@@ -11,7 +11,6 @@ namespace RandomizerSharp.UI.ViewModels
         private AbstractRomHandler _romHandler;
         private PokemonsViewModel _pokemonsViewModel;
         private AbilitiesViewModel _abilities;
-        private ICollectionView _types;
 
         public AbstractRomHandler RomHandler
         {
@@ -21,7 +20,6 @@ namespace RandomizerSharp.UI.ViewModels
                 _romHandler = value;
                 Pokemons = new PokemonsViewModel(this, RomHandler.Pokemons);
                 Abilities = new AbilitiesViewModel(this, RomHandler.Abilities);
-                Types = CollectionViewSource.GetDefaultView(RomHandler.Types);
                 OnPropertyChanged();
                 SaveRom.OnCanExecuteChanged();
             }
@@ -43,16 +41,6 @@ namespace RandomizerSharp.UI.ViewModels
             set
             {
                 _abilities = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public ICollectionView Types
-        {
-            get => _types;
-            set
-            {
-                _types = value;
                 OnPropertyChanged();
             }
         }

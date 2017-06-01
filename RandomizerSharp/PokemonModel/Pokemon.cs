@@ -96,7 +96,7 @@ namespace RandomizerSharp.PokemonModel
         public Bitmap Sprite { get; set; }
 
         // ReSharper disable once InconsistentNaming
-        public bool[] TMHMCompatibility { get; internal set; } = Array.Empty<bool>();
+        public MachineLearnt[] TMHMCompatibility { get; internal set; } = Array.Empty<MachineLearnt>();
         public bool[] MoveTutorCompatibility { get; internal set; } = Array.Empty<bool>();
 
         public bool TemporaryFlag { get; set; }

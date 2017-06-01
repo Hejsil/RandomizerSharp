@@ -100,8 +100,8 @@ namespace RandomizerSharp.Tests
                         
                         // TODO: Random name
                         pokemon.Name = "";
-                        pokemon.TMHMCompatibility.Populate(() => Convert.ToBoolean(Random.Next(2)));
                         pokemon.MoveTutorCompatibility.Populate(() => Convert.ToBoolean(Random.Next(2)));
+                        //pokemon.TMHMCompatibility.Populate(() => Convert.ToBoolean(Random.Next(2)));
 
                         // TODO: Some types are not in all games
                         // starter.PrimaryType = Typing.Values()[_random.Next(Typing.Values().Count)];
@@ -192,17 +192,15 @@ namespace RandomizerSharp.Tests
                     {
                         var categories = (MoveCategory[]) Enum.GetValues(typeof(MoveCategory));
                         move.Category = categories[Random.Next(categories.Length)];
-
-                        // TODO: Should be a byte long, but doubles are weird
-                        //move.Hitratio = _random.Next(256); 
+                        
+                        move.Hitratio = Random.Next(256);
+                        move.Power = Random.Next(256);
+                        move.Pp = Random.Next(256);
+                        move.Type = handler.Types.RandomItem(Random);
 
                         // TODO: Random name
                         move.Name = "";
-                        move.Power = Random.Next(256);
-                        move.Pp = Random.Next(256);
-                        
-                        // TODO: Some types are not in all games
-                        // move.Type = Typing.Values()[_random.Next(Typing.Values().Count)];
+                        move.Description = "";
                     }
                 },
                 (handler, newHandler) =>
@@ -212,6 +210,7 @@ namespace RandomizerSharp.Tests
                         Assert.AreEqual(oldM.Category, newM.Category);
                         Assert.AreEqual(oldM.Hitratio, newM.Hitratio);
                         Assert.AreEqual(oldM.Name, newM.Name);
+                        Assert.AreEqual(oldM.Description, newM.Description);
                         Assert.AreEqual(oldM.Power, newM.Power);
                         Assert.AreEqual(oldM.Pp, newM.Pp);
                         Assert.AreEqual(oldM.Type, newM.Type);
@@ -251,42 +250,6 @@ namespace RandomizerSharp.Tests
                     foreach (var (oldItem, newItem) in handler.FieldItems.Zip(newHandler.FieldItems))
                     {
                         Assert.AreEqual(oldItem.Id, newItem.Id);
-                    }
-                }
-            );
-        }
-
-        [Test]
-        public void TestHmMoves()
-        {
-            TestOnAll(
-                handler =>
-                {
-                    handler.HmMoves.Populate(() => Random.Next(256));
-                },
-                (handler, newHandler) =>
-                {
-                    foreach (var (oldHm, newHm) in handler.HmMoves.Zip(newHandler.HmMoves))
-                    {
-                        Assert.AreEqual(oldHm, newHm);
-                    }
-                }
-            );
-        }
-
-        [Test]
-        public void TestTmMoves()
-        {
-            TestOnAll(
-                handler =>
-                {
-                    handler.TmMoves.Populate(() => Random.Next(256));
-                },
-                (handler, newHandler) =>
-                {
-                    foreach (var (oldTm, newTm) in handler.TmMoves.Zip(newHandler.TmMoves))
-                    {
-                        Assert.AreEqual(oldTm, newTm);
                     }
                 }
             );
