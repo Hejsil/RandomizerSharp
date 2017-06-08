@@ -71,7 +71,7 @@
     <Compile Include="Converters\NullToBoolConverter.cs" />
     <Compile Include="ViewModels\AbilitiesViewModel.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
-    <Compile Include="ViewModels\Commands\AbilityViewModel.cs" />
+    <Compile Include="ViewModels\AbilityViewModel.cs" />
     <Compile Include="ViewModels\Commands\Command.cs" />
     <Compile Include="ViewModels\RomHandlerModelView.cs" />
     <Compile Include="ViewModels\PokemonsViewModel.cs" />
