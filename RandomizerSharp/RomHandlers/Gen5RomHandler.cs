@@ -152,12 +152,10 @@ namespace RandomizerSharp.RomHandlers
 
             Pokemons = LoadPokemon();
             StaticPokemon = LoadStaticPokemon();
-            LoadPokemonSprites();
 
             LoadHiddenHollow();
             Encounters = LoadEncounters();
             Starters = LoadStarters();
-            LoadMoveTutorCompatibility();
 
             IngameTrades = LoadIngameTrades();
 
@@ -380,31 +378,34 @@ namespace RandomizerSharp.RomHandlers
 
         private Pokemon[] LoadPokemon()
         {
+            var countsPersonalOrder = new[] { 15, 17, 13, 15 };
+            var countsMoveOrder = new[] { 13, 15, 15, 17 };
+            var personalToMoveOrder = new[] { 1, 3, 0, 2 };
             var allPokemons = new Pokemon[_pokeNames.Length];
 
             for (var i = 0; i < allPokemons.Length; i++)
             {
-                var stats = _pokeNarc.Files[i];
+                var data = _pokeNarc.Files[i];
 
                 var pokemon = new Pokemon(i)
                 {
                     Name = _pokeNames[i],
-                    Hp = stats[Gen5Constants.BsHpOffset],
-                    Attack = stats[Gen5Constants.BsAttackOffset],
-                    Defense = stats[Gen5Constants.BsDefenseOffset],
-                    Speed = stats[Gen5Constants.BsSpeedOffset],
-                    Spatk = stats[Gen5Constants.BsSpAtkOffset],
-                    Spdef = stats[Gen5Constants.BsSpDefOffset],
-                    PrimaryType = Types[stats[Gen5Constants.BsPrimaryTypeOffset]],
-                    SecondaryType = Types[stats[Gen5Constants.BsSecondaryTypeOffset]],
-                    CatchRate = stats[Gen5Constants.BsCatchRateOffset],
-                    GrowthExpCurve = Exp.FromByte(stats[Gen5Constants.BsGrowthCurveOffset]),
-                    Ability1 = Abilities[stats[Gen5Constants.BsAbility1Offset]],
-                    Ability2 = Abilities[stats[Gen5Constants.BsAbility2Offset]],
-                    Ability3 = Abilities[stats[Gen5Constants.BsAbility3Offset]],
-                    CommonHeldItem = Items[PpTxtHandler.ReadWord(stats, Gen5Constants.BsCommonHeldItemOffset)],
-                    RareHeldItem = Items[PpTxtHandler.ReadWord(stats, Gen5Constants.BsRareHeldItemOffset)],
-                    DarkGrassHeldItem = Items[PpTxtHandler.ReadWord(stats, Gen5Constants.BsDarkGrassHeldItemOffset)]
+                    Hp = data[Gen5Constants.BsHpOffset],
+                    Attack = data[Gen5Constants.BsAttackOffset],
+                    Defense = data[Gen5Constants.BsDefenseOffset],
+                    Speed = data[Gen5Constants.BsSpeedOffset],
+                    Spatk = data[Gen5Constants.BsSpAtkOffset],
+                    Spdef = data[Gen5Constants.BsSpDefOffset],
+                    PrimaryType = Types[data[Gen5Constants.BsPrimaryTypeOffset]],
+                    SecondaryType = Types[data[Gen5Constants.BsSecondaryTypeOffset]],
+                    CatchRate = data[Gen5Constants.BsCatchRateOffset],
+                    GrowthExpCurve = Exp.FromByte(data[Gen5Constants.BsGrowthCurveOffset]),
+                    Ability1 = Abilities[data[Gen5Constants.BsAbility1Offset]],
+                    Ability2 = Abilities[data[Gen5Constants.BsAbility2Offset]],
+                    Ability3 = Abilities[data[Gen5Constants.BsAbility3Offset]],
+                    CommonHeldItem = Items[PpTxtHandler.ReadWord(data, Gen5Constants.BsCommonHeldItemOffset)],
+                    RareHeldItem = Items[PpTxtHandler.ReadWord(data, Gen5Constants.BsRareHeldItemOffset)],
+                    DarkGrassHeldItem = Items[PpTxtHandler.ReadWord(data, Gen5Constants.BsDarkGrassHeldItemOffset)]
                 };
 
                 // Load learnt moves
@@ -425,16 +426,129 @@ namespace RandomizerSharp.RomHandlers
                 }
 
                 // Load TMHM Compatibility
-                var data = _pokeNarc.Files[i];
-                var flags = new bool[Machines.Count];
+                {
+                    var flags = new bool[Machines.Count];
 
-                for (var j = 0; j < 13; j++)
-                    ReadByteIntoFlags(data, flags, j * 8, Gen5Constants.BsTmhmCompatOffset + j);
+                    for (var j = 0; j < 13; j++)
+                        ReadByteIntoFlags(data, flags, j * 8, Gen5Constants.BsTmhmCompatOffset + j);
 
-                pokemon.TMHMCompatibility = new MachineLearnt[Machines.Count];
+                    pokemon.TMHMCompatibility = new MachineLearnt[Machines.Count];
 
-                for (int j = 0; j < Machines.Count; j++)
-                    pokemon.TMHMCompatibility[j] = new MachineLearnt(Machines[j]) { Learns = flags[j] };
+                    for (int j = 0; j < Machines.Count; j++)
+                        pokemon.TMHMCompatibility[j] = new MachineLearnt(Machines[j]) { Learns = flags[j] };
+                }
+
+                // Load move tutor compatiblity
+                {
+                    var flags = new bool[Gen5Constants.Bw2MoveTutorCount];
+                    for (var mt = 0; mt < 4; mt++)
+                    {
+                        var mtflags = new bool[countsPersonalOrder[mt] + 1];
+                        for (var j = 0; j < 4; j++)
+                            ReadByteIntoFlags(data, mtflags, j * 8, Gen5Constants.BsMtCompatOffset + mt * 4 + j);
+                        var offsetOfThisData = 0;
+                        for (var cmoIndex = 0; cmoIndex < personalToMoveOrder[mt]; cmoIndex++)
+                            offsetOfThisData += countsMoveOrder[cmoIndex];
+                        Array.Copy(mtflags, 0, flags, offsetOfThisData, countsPersonalOrder[mt]);
+                    }
+
+                    pokemon.MoveTutorCompatibility = flags;
+                }
+
+                // Load sprite
+                {
+
+                    // First prepare the palette, it's the easy bit
+                    var rawPalette = _pokespritesNarc.Files[pokemon.Id * 20 + 18];
+                    var palette = new int[16];
+                    for (var j = 1; j < 16; j++)
+                        palette[j] = GfxFunctions.Conv16BitColorToArgb(PpTxtHandler.ReadWord(rawPalette, 40 + j * 2));
+
+                    // Get the picture and uncompress it.
+                    var compressedPic = _pokespritesNarc.Files[pokemon.Id * 20];
+                    var uncompressedPic = DsDecmp.Decompress(compressedPic);
+
+                    // Output to 64x144 tiled image to prepare for unscrambling
+                    var bim = GfxFunctions.DrawTiledImage(uncompressedPic, palette, 48, 64, 144, 4);
+
+                    // Unscramble the above onto a 96x96 canvas
+                    pokemon.Sprite = new Bitmap(96, 96);
+
+                    using (var g = Graphics.FromImage(pokemon.Sprite))
+                    {
+                        g.DrawImage(
+                            bim,
+                            new Rectangle(0, 0, 64 - 0, 64 - 0),
+                            new Rectangle(0, 0, 64 - 0, 64 - 0),
+                            GraphicsUnit.Pixel);
+                        g.DrawImage(
+                            bim,
+                            new Rectangle(64, 0, 96 - 64, 8 - 0),
+                            new Rectangle(0, 64, 32 - 0, 72 - 64),
+                            GraphicsUnit.Pixel);
+                        g.DrawImage(
+                            bim,
+                            new Rectangle(64, 8, 96 - 64, 16 - 8),
+                            new Rectangle(32, 64, 64 - 32, 72 - 64),
+                            GraphicsUnit.Pixel);
+                        g.DrawImage(
+                            bim,
+                            new Rectangle(64, 16, 96 - 64, 24 - 16),
+                            new Rectangle(0, 72, 32 - 0, 80 - 72),
+                            GraphicsUnit.Pixel);
+                        g.DrawImage(
+                            bim,
+                            new Rectangle(64, 24, 96 - 64, 32 - 24),
+                            new Rectangle(32, 72, 64 - 32, 80 - 72),
+                            GraphicsUnit.Pixel);
+                        g.DrawImage(
+                            bim,
+                            new Rectangle(64, 32, 96 - 64, 40 - 32),
+                            new Rectangle(0, 80, 32 - 0, 88 - 80),
+                            GraphicsUnit.Pixel);
+                        g.DrawImage(
+                            bim,
+                            new Rectangle(64, 40, 96 - 64, 48 - 40),
+                            new Rectangle(32, 80, 64 - 32, 88 - 80),
+                            GraphicsUnit.Pixel);
+                        g.DrawImage(
+                            bim,
+                            new Rectangle(64, 48, 96 - 64, 56 - 48),
+                            new Rectangle(0, 88, 32 - 0, 96 - 88),
+                            GraphicsUnit.Pixel);
+                        g.DrawImage(
+                            bim,
+                            new Rectangle(64, 56, 96 - 64, 64 - 56),
+                            new Rectangle(32, 88, 64 - 32, 96 - 88),
+                            GraphicsUnit.Pixel);
+                        g.DrawImage(
+                            bim,
+                            new Rectangle(0, 64, 64 - 0, 96 - 64),
+                            new Rectangle(0, 96, 64 - 0, 128 - 96),
+                            GraphicsUnit.Pixel);
+                        g.DrawImage(
+                            bim,
+                            new Rectangle(64, 64, 96 - 64, 72 - 64),
+                            new Rectangle(0, 128, 32 - 0, 136 - 128),
+                            GraphicsUnit.Pixel);
+                        g.DrawImage(
+                            bim,
+                            new Rectangle(64, 72, 96 - 64, 80 - 72),
+                            new Rectangle(32, 128, 64 - 32, 136 - 128),
+                            GraphicsUnit.Pixel);
+                        g.DrawImage(
+                            bim,
+                            new Rectangle(64, 80, 96 - 64, 88 - 80),
+                            new Rectangle(0, 136, 32 - 0, 144 - 136),
+                            GraphicsUnit.Pixel);
+                        g.DrawImage(
+                            bim,
+                            new Rectangle(64, 88, 96 - 64, 96 - 88),
+                            new Rectangle(32, 136, 64 - 32, 144 - 136),
+                            GraphicsUnit.Pixel);
+                    }
+                }
+
 
                 allPokemons[i] = pokemon;
             }
@@ -691,35 +805,6 @@ namespace RandomizerSharp.RomHandlers
             return moves;
         }
 
-        private void LoadMoveTutorCompatibility()
-        {
-            if (!Game.HasMoveTutors)
-                return;
-
-
-            var countsPersonalOrder = new[] { 15, 17, 13, 15 };
-            var countsMoveOrder = new[] { 13, 15, 15, 17 };
-            var personalToMoveOrder = new[] { 1, 3, 0, 2 };
-            for (var i = 0; i < Pokemons.Count; i++)
-            {
-                var data = _pokeNarc.Files[i];
-                var pkmn = Pokemons[i];
-                var flags = new bool[Gen5Constants.Bw2MoveTutorCount];
-                for (var mt = 0; mt < 4; mt++)
-                {
-                    var mtflags = new bool[countsPersonalOrder[mt] + 1];
-                    for (var j = 0; j < 4; j++)
-                        ReadByteIntoFlags(data, mtflags, j * 8, Gen5Constants.BsMtCompatOffset + mt * 4 + j);
-                    var offsetOfThisData = 0;
-                    for (var cmoIndex = 0; cmoIndex < personalToMoveOrder[mt]; cmoIndex++)
-                        offsetOfThisData += countsMoveOrder[cmoIndex];
-                    Array.Copy(mtflags, 0, flags, offsetOfThisData, countsPersonalOrder[mt]);
-                }
-
-                pkmn.MoveTutorCompatibility = flags;
-            }
-        }
-
         private string[] LoadTrainerNames()
         {
             // blank one
@@ -815,105 +900,6 @@ namespace RandomizerSharp.RomHandlers
             }
 
             return trades.ToArray();
-        }
-
-        private void LoadPokemonSprites()
-        {
-
-            // TODO: We don't wonna load images all the times since they take up a lot of memory. We could save them to disk maybe?
-            return;
-            foreach (var pokemon in Pokemons)
-            {
-                // First prepare the palette, it's the easy bit
-                var rawPalette = _pokespritesNarc.Files[pokemon.Id * 20 + 18];
-                var palette = new int[16];
-                for (var j = 1; j < 16; j++)
-                    palette[j] = GfxFunctions.Conv16BitColorToArgb(PpTxtHandler.ReadWord(rawPalette, 40 + j * 2));
-
-                // Get the picture and uncompress it.
-                var compressedPic = _pokespritesNarc.Files[pokemon.Id * 20];
-                var uncompressedPic = DsDecmp.Decompress(compressedPic);
-
-                // Output to 64x144 tiled image to prepare for unscrambling
-                var bim = GfxFunctions.DrawTiledImage(uncompressedPic, palette, 48, 64, 144, 4);
-
-                // Unscramble the above onto a 96x96 canvas
-                pokemon.Sprite = new Bitmap(96, 96);
-
-                using (var g = Graphics.FromImage(pokemon.Sprite))
-                {
-                    g.DrawImage(
-                        bim,
-                        new Rectangle(0, 0, 64 - 0, 64 - 0),
-                        new Rectangle(0, 0, 64 - 0, 64 - 0),
-                        GraphicsUnit.Pixel);
-                    g.DrawImage(
-                        bim,
-                        new Rectangle(64, 0, 96 - 64, 8 - 0),
-                        new Rectangle(0, 64, 32 - 0, 72 - 64),
-                        GraphicsUnit.Pixel);
-                    g.DrawImage(
-                        bim,
-                        new Rectangle(64, 8, 96 - 64, 16 - 8),
-                        new Rectangle(32, 64, 64 - 32, 72 - 64),
-                        GraphicsUnit.Pixel);
-                    g.DrawImage(
-                        bim,
-                        new Rectangle(64, 16, 96 - 64, 24 - 16),
-                        new Rectangle(0, 72, 32 - 0, 80 - 72),
-                        GraphicsUnit.Pixel);
-                    g.DrawImage(
-                        bim,
-                        new Rectangle(64, 24, 96 - 64, 32 - 24),
-                        new Rectangle(32, 72, 64 - 32, 80 - 72),
-                        GraphicsUnit.Pixel);
-                    g.DrawImage(
-                        bim,
-                        new Rectangle(64, 32, 96 - 64, 40 - 32),
-                        new Rectangle(0, 80, 32 - 0, 88 - 80),
-                        GraphicsUnit.Pixel);
-                    g.DrawImage(
-                        bim,
-                        new Rectangle(64, 40, 96 - 64, 48 - 40),
-                        new Rectangle(32, 80, 64 - 32, 88 - 80),
-                        GraphicsUnit.Pixel);
-                    g.DrawImage(
-                        bim,
-                        new Rectangle(64, 48, 96 - 64, 56 - 48),
-                        new Rectangle(0, 88, 32 - 0, 96 - 88),
-                        GraphicsUnit.Pixel);
-                    g.DrawImage(
-                        bim,
-                        new Rectangle(64, 56, 96 - 64, 64 - 56),
-                        new Rectangle(32, 88, 64 - 32, 96 - 88),
-                        GraphicsUnit.Pixel);
-                    g.DrawImage(
-                        bim,
-                        new Rectangle(0, 64, 64 - 0, 96 - 64),
-                        new Rectangle(0, 96, 64 - 0, 128 - 96),
-                        GraphicsUnit.Pixel);
-                    g.DrawImage(
-                        bim,
-                        new Rectangle(64, 64, 96 - 64, 72 - 64),
-                        new Rectangle(0, 128, 32 - 0, 136 - 128),
-                        GraphicsUnit.Pixel);
-                    g.DrawImage(
-                        bim,
-                        new Rectangle(64, 72, 96 - 64, 80 - 72),
-                        new Rectangle(32, 128, 64 - 32, 136 - 128),
-                        GraphicsUnit.Pixel);
-                    g.DrawImage(
-                        bim,
-                        new Rectangle(64, 80, 96 - 64, 88 - 80),
-                        new Rectangle(0, 136, 32 - 0, 144 - 136),
-                        GraphicsUnit.Pixel);
-                    g.DrawImage(
-                        bim,
-                        new Rectangle(64, 88, 96 - 64, 96 - 88),
-                        new Rectangle(32, 136, 64 - 32, 144 - 136),
-                        GraphicsUnit.Pixel);
-                }
-            }
         }
 
         private void LoadHiddenHollow()
