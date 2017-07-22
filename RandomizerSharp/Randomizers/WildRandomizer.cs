@@ -21,6 +21,9 @@ namespace RandomizerSharp.Randomizers
 
         public void RandomEncounters(EncountersRandomization encountersRandomization, bool noLegendaries)
         {
+            var pickFrom = noLegendaries ? ValidPokemons.Where(p => !p.Legendary) : ValidPokemons;
+            var enumerable = pickFrom as Pokemon[] ?? pickFrom.ToArray();
+
             var currentEncounters = RomHandler.Encounters.ToList();
             currentEncounters.Shuffle(Random);
             
@@ -28,7 +31,7 @@ namespace RandomizerSharp.Randomizers
             {
                 case EncountersRandomization.CatchEmAll:
                     // Clone, so we don't modify original
-                    var allPokes = (noLegendaries ? NonLegendaryPokemon : ValidPokemons).ToList();
+                    var allPokes = enumerable.ToList();
 
                     foreach (var area in currentEncounters)
                     {
@@ -46,7 +49,7 @@ namespace RandomizerSharp.Randomizers
                             if (pickablePokemon.Count == 0)
                             {
                                 // Clone, so we don't modify original
-                                var tempPickable = (noLegendaries ? NonLegendaryPokemon : ValidPokemons).ToList();
+                                var tempPickable = enumerable.ToList();
                                 tempPickable.RemoveAll(area.BannedPokemon);
 
                                 if (tempPickable.Count == 0)
@@ -67,7 +70,7 @@ namespace RandomizerSharp.Randomizers
                                 if (allPokes.Count != 0)
                                     continue;
 
-                                allPokes.AddRange(noLegendaries ? NonLegendaryPokemon : ValidPokemons);
+                                allPokes.AddRange(enumerable);
 
                                 if (pickablePokemon == allPokes)
                                     continue;
@@ -119,7 +122,7 @@ namespace RandomizerSharp.Randomizers
                     }
                     break;
                 case EncountersRandomization.UsePowerLevel:
-                    var allowedPokes = (noLegendaries ? NonLegendaryPokemon : ValidPokemons).ToList();
+                    var allowedPokes = enumerable.ToList();
 
                     foreach (var area in currentEncounters)
                     {
@@ -140,10 +143,10 @@ namespace RandomizerSharp.Randomizers
                     {
                         foreach (var enc in area.Encounters)
                         {
-                            enc.Pokemon1 = noLegendaries ? RandomNonLegendaryPokemon() : RandomPokemon();
+                            enc.Pokemon1 = noLegendaries ? RandomPokemon(p => !p.Legendary) : RandomPokemon();
                             while (area.BannedPokemon.Contains(enc.Pokemon1))
                             {
-                                enc.Pokemon1 = noLegendaries ? RandomNonLegendaryPokemon() : RandomPokemon();
+                                enc.Pokemon1 = noLegendaries ? RandomPokemon(p => !p.Legendary) : RandomPokemon();
                             }
                         }
                     }
@@ -153,10 +156,13 @@ namespace RandomizerSharp.Randomizers
 
         public void Game1To1Encounters(bool useTimeOfDay, bool usePowerLevels, bool noLegendaries)
         {
+            var pickFrom = noLegendaries ? ValidPokemons.Where(p => !p.Legendary) : ValidPokemons;
+            var enumerable = pickFrom as Pokemon[] ?? pickFrom.ToArray();
+
             //  Build the full 1-to-1 map
             var translateMap = new Dictionary<Pokemon, Pokemon>();
             var remainingLeft = ValidPokemons.ToList();
-            var remainingRight = (noLegendaries ? NonLegendaryPokemon : ValidPokemons).ToList();
+            var remainingRight = enumerable.ToList();
 
             while (remainingLeft.Count != 0)
             {
@@ -195,7 +201,7 @@ namespace RandomizerSharp.Randomizers
                 if (remainingRight.Count != 0)
                     continue;
 
-                remainingRight.AddRange(noLegendaries ? NonLegendaryPokemon : ValidPokemons);
+                remainingRight.AddRange(enumerable);
             }
 
             //  Map remaining to themselves just in case
@@ -216,7 +222,7 @@ namespace RandomizerSharp.Randomizers
                     continue;
 
                 //  Ignore the map and put a random non-banned poke
-                var tempPickable = (noLegendaries ? NonLegendaryPokemon : ValidPokemons).ToList();
+                var tempPickable = enumerable.ToList();
                 tempPickable.RemoveAll(area.BannedPokemon.Contains);
 
                 if (tempPickable.Count == 0)
@@ -241,6 +247,9 @@ namespace RandomizerSharp.Randomizers
             bool usePowerLevels,
             bool noLegendaries)
         {
+            var pickFrom = noLegendaries ? ValidPokemons.Where(p => !p.Legendary) : ValidPokemons;
+            var enumerable = pickFrom as Pokemon[] ?? pickFrom.ToArray();
+
             //  New: randomize the order encounter sets are randomized in.
             //  Leads to less predictable results for various modifiers.
             //  Need to keep the original ordering around for saving though.
@@ -250,7 +259,7 @@ namespace RandomizerSharp.Randomizers
             //  Assume EITHER catch em all OR type themed for now
             if (catchEmAll)
             {
-                var allPokes = (noLegendaries ? NonLegendaryPokemon : ValidPokemons).ToList();
+                var allPokes = enumerable.ToList();
 
                 foreach (var area in scrambledEncounters)
                 {
@@ -270,7 +279,7 @@ namespace RandomizerSharp.Randomizers
                         if (pickablePokemon.Count == 0)
                         {
                             //  No more pickable pokes left, take a random one
-                            var tempPickable = (noLegendaries ? NonLegendaryPokemon : ValidPokemons).ToList();
+                            var tempPickable = enumerable.ToList();
                             tempPickable.RemoveAll(area.BannedPokemon.Contains);
 
                             if (tempPickable.Count == 0)
@@ -292,7 +301,7 @@ namespace RandomizerSharp.Randomizers
                             if (allPokes.Count != 0)
                                 continue;
 
-                            allPokes.AddRange(noLegendaries ? NonLegendaryPokemon : ValidPokemons);
+                            allPokes.AddRange(enumerable);
 
                             if (pickablePokemon == allPokes)
                                 continue;
@@ -357,7 +366,7 @@ namespace RandomizerSharp.Randomizers
             }
             else if (usePowerLevels)
             {
-                var allowedPokes = (noLegendaries ? NonLegendaryPokemon : ValidPokemons).ToList();
+                var allowedPokes = enumerable.ToList();
                 foreach (var area in scrambledEncounters)
                 {
                     //  Poke-set
@@ -397,9 +406,9 @@ namespace RandomizerSharp.Randomizers
                     var areaMap = new Dictionary<Pokemon, Pokemon>();
                     foreach (var areaPk in inArea)
                     {
-                        var picked = noLegendaries ? RandomNonLegendaryPokemon() : RandomPokemon();
+                        var picked = noLegendaries ? RandomPokemon(p => !p.Legendary) : RandomPokemon();
                         while (areaMap.ContainsValue(picked) || area.BannedPokemon.Contains(picked))
-                            picked = noLegendaries ? RandomNonLegendaryPokemon() : RandomPokemon();
+                            picked = noLegendaries ? RandomPokemon(p => !p.Legendary) : RandomPokemon();
 
                         areaMap[areaPk] = picked;
                     }

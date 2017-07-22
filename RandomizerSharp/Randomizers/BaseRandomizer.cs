@@ -11,8 +11,6 @@ namespace RandomizerSharp.Randomizers
     {
         protected ArraySlice<Pokemon> ValidPokemons { get; }
         protected ArraySlice<Move> ValidMoves { get; }
-        protected IEnumerable<Pokemon> NonLegendaryPokemon => ValidPokemons.Where(p => !p.Legendary);
-        protected IEnumerable<Pokemon> LegendaryPokemon => ValidPokemons.Where(p => p.Legendary);
 
         protected Random Random { get; }
         protected AbstractRomHandler RomHandler { get; }
@@ -77,18 +75,16 @@ namespace RandomizerSharp.Randomizers
             return pokemons[Random.Next(pokemons.Count)];
         }
 
-        protected Pokemon RandomNonLegendaryPokemon()
+        protected Pokemon RandomPokemon(Predicate<Pokemon> pred)
         {
-            var nonLegendaries = NonLegendaryPokemon;
-            var enumerable = nonLegendaries as Pokemon[] ?? nonLegendaries.ToArray();
-            return enumerable[Random.Next(enumerable.Length)];
-        }
+            Pokemon result;
 
-        protected Pokemon RandomLegendaryPokemon()
-        {
-            var legendaries = LegendaryPokemon;
-            var enumerable = legendaries as Pokemon[] ?? legendaries.ToArray();
-            return enumerable[Random.Next(enumerable.Length)];
+            do
+            {
+                result = ValidPokemons[Random.Next(ValidPokemons.Length)];
+            } while (!pred(result));
+
+            return result;
         }
 
         protected Typing RandomType()

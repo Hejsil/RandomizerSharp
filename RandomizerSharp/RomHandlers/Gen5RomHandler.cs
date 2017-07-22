@@ -1804,6 +1804,9 @@ namespace RandomizerSharp.RomHandlers
 
         private void LoadPokemonSprites()
         {
+
+            // TODO: We don't wonna load images all the times since they take up a lot of memory. We could save them to disk maybe?
+            return;
             foreach (var pokemon in Pokemons)
             {
                 // First prepare the palette, it's the easy bit

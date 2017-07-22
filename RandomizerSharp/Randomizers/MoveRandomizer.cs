@@ -406,14 +406,14 @@ namespace RandomizerSharp.Randomizers
             //  if a pokemon learns a move in its moveset
             //  and there is a TM of that move, make sure
             //  that TM can be learned.
-
+            var movesFromMachines = new HashSet<Move>(RomHandler.Machines.Select(m => m.Move));
             foreach (var pokemon in ValidPokemons)
             {
                 var moveset = pokemon.MovesLearnt;
                 var pkmnCompat = pokemon.TMHMCompatibility;
                 foreach (var ml in moveset)
                 {
-                    if (RomHandler.Machines.All(machine => machine.Move != ml.Move))
+                    if (!movesFromMachines.Contains(ml.Move))
                         continue;
 
                     var learnt = pkmnCompat.First(machineL => machineL.Machine.Move == ml.Move);
@@ -430,7 +430,8 @@ namespace RandomizerSharp.Randomizers
 
             //  Get current compatibility
             //  new: increase HM chances if required early on
-            var requiredEarlyOn = tmHMs.Where(move => RomHandler.Game.EarlyRequiredHmMoves.Contains(move.Id));
+            var earlies = new HashSet<int>(RomHandler.Game.EarlyRequiredHmMoves);
+            var requiredEarlyOn = new HashSet<Move>(tmHMs.Where(move => earlies.Contains(move.Id)));
 
             foreach (var pkmn in ValidPokemons)
             {

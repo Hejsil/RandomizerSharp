@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using RandomizerSharp.Randomizers;
 using RandomizerSharp.RomHandlers;
+using System;
 
 namespace RandomizerSharp
 {
@@ -8,11 +9,21 @@ namespace RandomizerSharp
     {
         private static void Main(string[] args)
         {
-            var rom =
-                @"A:\Mega\ProgramDataDump\RandomizerSettings\PokemonBlack2.nds";
-            var radomized = @"A:\Programs\desmume-0.9.11-win64\roms\random.nds";
+            string inPath = null, outPath = $"{DateTime.Now.Ticks}.nds";
 
-            var romHandler = new Gen5RomHandler(rom);
+            if (args.Length > 0)
+                inPath = args[0];
+
+            if (args.Length > 1)
+                outPath = args[1];
+
+            if (inPath == null)
+            {
+                Console.WriteLine(@"Input path was not specified");
+                return;
+            }
+
+            var romHandler = new Gen5RomHandler(inPath);
 
             // TODO: Given pokemons were not randomized 
             // TODO: Field items not randomized 
@@ -42,10 +53,31 @@ namespace RandomizerSharp
             util.RemoveBrokenMoves();
             util.RemoveTradeEvolutions(false);
 
-            if (File.Exists(radomized))
-                File.Delete(radomized);
+            if (File.Exists(outPath))
+            {
+                for (;;)
+                {
+                    Console.Write(@"{0} allready exists. Want to replace it? [Y/n]: ");
+                    var readLine = Console.ReadLine();
+                    if (readLine == null) continue;
 
-            romHandler.SaveRom(radomized);
+                    var answer = readLine.Trim().ToLower();
+                    Console.WriteLine();
+
+                    if (answer == "" || answer == "y")
+                    {
+                        File.Delete(outPath);
+                        romHandler.SaveRom(outPath);
+                        break;
+                    }
+
+                    if (answer == "n") break;
+                }
+            }
+            else
+            {
+                romHandler.SaveRom(outPath);
+            }
         }
     }
 }

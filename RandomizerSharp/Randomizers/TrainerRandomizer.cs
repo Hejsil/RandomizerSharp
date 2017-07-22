@@ -261,7 +261,7 @@ namespace RandomizerSharp.Randomizers
             bool usePowerLevels,
             bool weightByFrequency,
             bool noLegendaries,
-            bool noEarlyWonderGuard,
+            bool earlyWonderGuard,
             int levelModifier = 0)
         {
             var currentTrainers = RomHandler.Trainers;
@@ -339,7 +339,7 @@ namespace RandomizerSharp.Randomizers
                 foreach (var t in trainersInGroup)
                 foreach (var tp in t.Pokemon)
                 {
-                    var wgAllowed = !noEarlyWonderGuard || tp.Level >= 20;
+                    var wgAllowed = earlyWonderGuard || tp.Level >= 20;
                     tp.Pokemon = PickReplacement(
                         tp.Pokemon,
                         usePowerLevels,
@@ -382,7 +382,7 @@ namespace RandomizerSharp.Randomizers
 
                 foreach (var tp in t.Pokemon)
                 {
-                    var shedAllowed = !noEarlyWonderGuard || tp.Level >= 20;
+                    var shedAllowed = !earlyWonderGuard || tp.Level >= 20;
                     tp.Pokemon = PickReplacement(
                         tp.Pokemon,
                         usePowerLevels,
@@ -404,7 +404,7 @@ namespace RandomizerSharp.Randomizers
             bool usePowerLevels,
             Typing type,
             bool noLegendaries,
-            bool noWonderGuard)
+            bool wonderGuard)
         {
             if (usePowerLevels)
             {
@@ -424,7 +424,7 @@ namespace RandomizerSharp.Randomizers
                             continue;
                         if (noLegendaries && pk.Legendary)
                             continue;
-                        if (noWonderGuard && HasWonderGuard(pk))
+                        if (!wonderGuard && HasWonderGuard(pk))
                             continue;
                         
                         var bst = pk.BstForPowerLevels();
@@ -452,7 +452,7 @@ namespace RandomizerSharp.Randomizers
                         continue;
                     if (noLegendaries && pk.Legendary)
                         continue;
-                    if (noWonderGuard && HasWonderGuard(pk))
+                    if (wonderGuard && HasWonderGuard(pk))
                         continue;
 
                     break;

@@ -8,8 +8,8 @@ namespace RandomizerSharp.PokemonModel
     {
         public const int ShedinjaNumber = 292;
 
-        private static readonly IList<int> Legendaries =
-            new List<int>
+        private static readonly HashSet<int> Legendaries =
+            new HashSet<int>
             {
                 144,
                 145,
@@ -134,7 +134,7 @@ namespace RandomizerSharp.PokemonModel
 
         public int BstForPowerLevels()
         {
-            if (Id == 292)
+            if (Id == ShedinjaNumber)
                 return (Attack + Defense + Spatk + Spdef + Speed) * 6 / 5;
 
             return Hp + Attack + Defense + Spatk + Spdef + Speed;

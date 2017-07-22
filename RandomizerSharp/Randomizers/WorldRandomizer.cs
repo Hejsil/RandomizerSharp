@@ -25,8 +25,10 @@ namespace RandomizerSharp.Randomizers
             var currentStaticPokemon = RomHandler.StaticPokemon;
             if (legendForLegend)
             {
-                var legendariesLeft = LegendaryPokemon.ToList();
-                var nonlegsLeft = NonLegendaryPokemon.ToList();
+                var legendariesLeft = ValidPokemons.ToList();
+                var nonlegsLeft = ValidPokemons.ToList();
+                legendariesLeft.RemoveAll(p => !p.Legendary);
+                nonlegsLeft.RemoveAll(p => p.Legendary);
 
                 for (var i = 0; i < currentStaticPokemon.Length; ++i)
                 {
@@ -39,7 +41,7 @@ namespace RandomizerSharp.Randomizers
                         if (legendariesLeft.Count != 0)
                             continue;
 
-                        legendariesLeft.AddRange(LegendaryPokemon);
+                        legendariesLeft.AddRange(ValidPokemons.Where(p => p.Legendary));
                     }
                     else
                     {
@@ -50,7 +52,7 @@ namespace RandomizerSharp.Randomizers
                         if (nonlegsLeft.Count != 0)
                             continue;
 
-                        nonlegsLeft.AddRange(NonLegendaryPokemon);
+                        nonlegsLeft.AddRange(ValidPokemons.Where(p => !p.Legendary));
                     }
                 }
             }
