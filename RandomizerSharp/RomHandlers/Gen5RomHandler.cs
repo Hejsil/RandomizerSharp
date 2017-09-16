@@ -576,11 +576,11 @@ namespace RandomizerSharp.RomHandlers
                     {
                         var et = EvolutionType.FromIndex(5, method);
                         var extraInfo = PpTxtHandler.ReadWord(evoEntry, evo * 6 + 2);
-                        var evol = new Evolution(pk, Pokemons[species], true, et, extraInfo);
+                        var evol = new Evolution(pk, allPokemons[species], true, et, extraInfo);
                         if (!pk.EvolutionsFrom.Contains(evol))
                         {
                             pk.EvolutionsFrom.Add(evol);
-                            Pokemons[species].EvolutionsTo.Add(evol);
+                            allPokemons[species].EvolutionsTo.Add(evol);
                         }
                     }
                 }

@@ -195,6 +195,14 @@ namespace RandomizerSharp.Randomizers
             return twoEvoPokes[Random.Next(twoEvoPokes.Length)];
         }
 
+        public void EvolutionRoulette()
+        {
+            foreach (var pokemon in ValidPokemons)
+            {
+                
+            }
+        }
+
         public void RandomizeEvolutions(bool similarStrength, bool sameType, bool limitToThreeStages, bool forceChange)
         {
             var pokemonPool = new List<Pokemon>(ValidPokemons);
